@@ -1,0 +1,48 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: sport-edu-backend
+  profiles:
+    active: dev
+  jackson:
+    default-property-inclusion: non_null
+    time-zone: Asia/Shanghai
+
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  info:
+    env:
+      enabled: true
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+app:
+  name: 体育教培机构管理系统后端服务
+  security:
+    jwt-secret: 01234567890123456789012345678901
+    jwt-expiration-millis: 604800000
+  request:
+    id-header: X-Request-Id
+
+info:
+  app:
+    name: ${spring.application.name}
+    description: ${app.name}
+    profile: ${spring.profiles.active}
+    java-version: ${java.version:17}
