@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&amp;family=Plus+Jakarta+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "error": "#b02500",
+                    "primary-fixed-dim": "#f66700",
+                    "outline-variant": "#abadae",
+                    "on-primary": "#fff0ea",
+                    "tertiary-fixed-dim": "#f2f0f0",
+                    "on-error": "#ffefec",
+                    "surface-bright": "#f5f6f7",
+                    "tertiary-dim": "#504f4f",
+                    "surface-container-highest": "#dadddf",
+                    "on-secondary": "#f2f2f5",
+                    "on-primary-fixed": "#000000",
+                    "secondary-container": "#e2e2e5",
+                    "on-tertiary": "#f4f2f2",
+                    "on-tertiary-container": "#626262",
+                    "surface-container": "#e6e8ea",
+                    "secondary-fixed": "#e2e2e5",
+                    "on-primary-container": "#401500",
+                    "secondary-fixed-dim": "#d4d4d7",
+                    "tertiary-fixed": "#ffffff",
+                    "surface-variant": "#dadddf",
+                    "on-primary-fixed-variant": "#4f1c00",
+                    "surface-container-lowest": "#ffffff",
+                    "tertiary": "#5c5b5b",
+                    "background": "#f5f6f7",
+                    "on-surface": "#2c2f30",
+                    "error-container": "#f95630",
+                    "surface": "#f5f6f7",
+                    "on-surface-variant": "#595c5d",
+                    "inverse-primary": "#fe6b00",
+                    "secondary": "#5a5c5e",
+                    "on-error-container": "#520c00",
+                    "primary-container": "#ff7a2f",
+                    "surface-tint": "#9c3f00",
+                    "primary-dim": "#893600",
+                    "primary": "#9c3f00",
+                    "on-secondary-fixed-variant": "#5a5c5e",
+                    "inverse-on-surface": "#9b9d9e",
+                    "surface-container-low": "#eff1f2",
+                    "error-dim": "#b92902",
+                    "surface-dim": "#d1d5d7",
+                    "outline": "#757778",
+                    "tertiary-container": "#ffffff",
+                    "on-secondary-fixed": "#3e3f42",
+                    "inverse-surface": "#0c0f10",
+                    "secondary-dim": "#4e5052",
+                    "primary-fixed": "#ff7a2f",
+                    "on-background": "#2c2f30",
+                    "on-tertiary-fixed-variant": "#6d6d6d",
+                    "on-tertiary-fixed": "#505050",
+                    "surface-container-high": "#e0e3e4",
+                    "on-secondary-container": "#505254"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Lexend"],
+                    "body": ["Plus Jakarta Sans"],
+                    "label": ["Plus Jakarta Sans"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      body {
+        font-family: 'PingFang SC', 'Plus Jakarta Sans', sans-serif;
+      }
+      .font-lexend {
+        font-family: 'Lexend', sans-serif;
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex items-center justify-between px-4 h-16 w-full no-border tonal-shift bg-[#eff1f2] dark:bg-zinc-900">
+<button class="hover:opacity-80 transition-opacity active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[#2c2f30] dark:text-zinc-100" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="font-['Lexend'] font-bold text-lg tracking-tight text-[#2c2f30] dark:text-zinc-100">课程详情</h1>
+<button class="hover:opacity-80 transition-opacity active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[#2c2f30] dark:text-zinc-100" data-icon="share">share</span>
+</button>
+</header>
+<main class="pt-16 pb-24">
+<!-- Hero Section -->
+<section class="relative h-[530px] overflow-hidden">
+<img alt="Elite Tennis Training" class="w-full h-full object-cover" data-alt="Dynamic shot of a professional tennis player performing a powerful serve on a bright blue court with sunflare and sharp focus" src="https://lh3.googleusercontent.com/aida-public/AB6AXuApYmjbJBgBMqL7GFqJtwP45WJ-PJ2pewnMIPlcyTWzBld8FUd5dFjo0rLHkSQytqXcn6IcctP-8kJKK1JSiF5A21WXHuh_OK8TxddYMwFwnHzajDLHMORp4LXQky8jfpm_YEeE9Zhpm8DIyYbrDkwkhsaKhsfVuzRF2XVaEpy2Q2nxQd1ZhCh_uqubkqOmoXqDR3IAKqYXwLrMQ0WE3g26SbE3XfpMSqXXp_YPL7_esImsEySDy4CRIQPHWya227pATVyQEcyIAZo"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+<div class="absolute bottom-0 left-0 p-6 w-full">
+<div class="flex items-center gap-2 mb-2">
+<span class="bg-primary-container text-on-primary-container text-[10px] font-bold px-2 py-0.5 rounded-full tracking-wider uppercase">Elite Series</span>
+<span class="text-white/80 text-xs font-medium">专业网球/羽毛球</span>
+</div>
+<h2 class="text-white text-3xl font-extrabold tracking-tight leading-tight mb-2">精英私教·12节课包</h2>
+<div class="flex items-baseline gap-2">
+<span class="text-primary-fixed-dim text-2xl font-lexend font-bold">¥1200</span>
+<span class="text-white/60 text-sm">/ 套</span>
+</div>
+</div>
+</section>
+<!-- Dynamic Bento Highlights -->
+<section class="px-4 -mt-6 relative z-10 grid grid-cols-12 gap-3">
+<div class="col-span-8 bg-surface-container-lowest p-4 rounded-xl shadow-ambient">
+<div class="flex flex-col gap-1">
+<span class="text-primary font-lexend font-bold text-xl">专业导师</span>
+<p class="text-on-surface-variant text-sm">国家级退役运动员领衔执教</p>
+</div>
+</div>
+<div class="col-span-4 bg-primary p-4 rounded-xl shadow-ambient flex flex-col justify-between">
+<span class="material-symbols-outlined text-on-primary text-2xl" data-icon="timer">timer</span>
+<span class="text-on-primary text-xs font-bold">时间灵活</span>
+</div>
+<div class="col-span-12 bg-surface-container-low p-4 rounded-xl flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="home_pin">home_pin</span>
+</div>
+<div>
+<span class="block text-on-surface font-bold">上门授课</span>
+<span class="block text-on-surface-variant text-xs">全城覆盖，家门口的专业课</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline" data-icon="chevron_right">chevron_right</span>
+</div>
+</section>
+<!-- Course Description -->
+<section class="mt-8 px-6">
+<h3 class="text-on-surface font-lexend font-extrabold text-xl mb-4 border-l-4 border-primary pl-3">详细介绍</h3>
+<div class="bg-surface-container-lowest rounded-xl p-6 leading-relaxed text-on-surface-variant space-y-4">
+<p>本课程专为<span class="text-primary font-bold">基础薄弱人群</span>及希望精进技术的进阶学员打造。系统化的教学大纲，从基础握拍、步法移动到战术意识，全方位提升运动表现。</p>
+<div class="grid grid-cols-2 gap-4 py-2">
+<div class="border-l border-outline-variant/30 pl-3">
+<span class="block font-lexend font-bold text-on-surface">系统化</span>
+<span class="text-xs">阶梯式教学逻辑</span>
+</div>
+<div class="border-l border-outline-variant/30 pl-3">
+<span class="block font-lexend font-bold text-on-surface">定制化</span>
+<span class="text-xs">根据体质实时调整</span>
+</div>
+</div>
+<img alt="Training Process" class="w-full h-48 object-cover rounded-lg" data-alt="Overhead view of a tennis court with organized training equipment like cones, balls, and rackets in a professional setup" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTdD-Wfm7NSkZH1N1fjnGDIJnlAM0XHYixz-1yYCB6InrunIWi-jQBbooOULkDIfx--T5IM-0F0AIzMEM-geL1k4CqqLVPGl0ZZIO4m_OKlAbUpAcJp10WjIYxhL2niBlCku2TnoX2_5mNlQq8pOhs8Uf-11DlbMvZT_0tlUONbxtDOus8OC2Th-hwfoApVWt3cxPC1VLEZ2j8vGZhhhNV8EeNu0KAwCGpGGXUMUO0aE8gBV07fYglllUbVbtnJqGHi7qbeAQ6B68"/>
+</div>
+</section>
+<!-- Coach Information -->
+<section class="mt-8 px-6">
+<h3 class="text-on-surface font-lexend font-extrabold text-xl mb-4 border-l-4 border-primary pl-3">教练信息</h3>
+<div class="bg-gradient-to-br from-surface-container-lowest to-surface-container-low rounded-xl p-6 flex gap-4 items-center">
+<div class="relative">
+<img alt="Coach Ray" class="w-20 h-20 rounded-xl object-cover grayscale hover:grayscale-0 transition-all duration-500" data-alt="Professional portrait of a male athletic coach in sports gear, confident expression, outdoor soft lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnWMDeXS_9j8wlcRkOTZy3JSx6R0noDXrJnwyTyCPxlPKF-Q15P0V7HUTgN4rgBRSyzsDC_n5GtpLx-nTGb7bhF7MDdPGERTjsLogNVcU_H7EMeHELOqEVZyEoixB7-0Ehk7v0VFXBnWBfDspRtOU56bZWM_CXP0ndJD15yMbRDpSI1izzQR6pMQ5F6zd0AUrickpl-7yuApEWIbokqM7zgjxif77KyXkUj4NMEOi2mL7na_NsqACdghR4XXqgh3LXH95lZw3a090"/>
+<div class="absolute -bottom-1 -right-1 bg-primary text-white p-1 rounded-lg">
+<span class="material-symbols-outlined text-[12px]" data-icon="verified" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<h4 class="text-lg font-bold text-on-surface">张毅</h4>
+<span class="text-primary text-xs font-lexend font-bold">Coach Ray</span>
+</div>
+<p class="text-on-surface-variant text-sm mb-1">10年教龄 | ITF一级认证</p>
+<div class="flex gap-1">
+<span class="bg-secondary-container text-on-secondary-container text-[10px] px-2 py-0.5 rounded">耐心细致</span>
+<span class="bg-secondary-container text-on-secondary-container text-[10px] px-2 py-0.5 rounded">实战派</span>
+</div>
+</div>
+</div>
+</section>
+<!-- User Reviews -->
+<section class="mt-8 px-6">
+<div class="flex justify-between items-end mb-4">
+<h3 class="text-on-surface font-lexend font-extrabold text-xl border-l-4 border-primary pl-3">用户评价</h3>
+<span class="text-primary text-xs font-bold">查看全部 (128)</span>
+</div>
+<div class="space-y-4">
+<div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm">
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-[10px] font-bold">User</div>
+<span class="text-sm font-bold">林*舒</span>
+</div>
+<div class="flex text-primary">
+<span class="material-symbols-outlined text-sm" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+</div>
+<p class="text-on-surface-variant text-sm">零基础开始学的，教练非常专业，每一个动作都抠得很细，12节课下来明显感觉到体能和技术都有很大进步！</p>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-between items-center px-2 pb-safe bg-white/80 dark:bg-zinc-900/80 backdrop-blur-lg z-50 rounded-t-xl shadow-[0_-12px_24px_rgba(44,47,48,0.06)]">
+<button class="flex-1 flex flex-row items-center justify-center gap-2 bg-[#eff1f2] dark:bg-zinc-800 text-[#2c2f30] dark:text-zinc-200 py-4 mx-2 my-2 rounded-xl hover:brightness-110 active:scale-[0.98] transition-all duration-200 font-['PingFang_SC'] font-semibold text-sm">
+<span class="material-symbols-outlined" data-icon="chat_bubble">chat_bubble</span>
+<span>立即咨询</span>
+</button>
+<button class="flex-1 flex flex-row items-center justify-center gap-2 bg-gradient-to-r from-[#9c3f00] to-[#ff7a2f] text-white py-4 mx-2 my-2 rounded-xl hover:brightness-110 active:scale-[0.98] transition-all duration-200 font-['PingFang_SC'] font-semibold text-sm">
+<span class="material-symbols-outlined" data-icon="bolt">bolt</span>
+<span>立即预约</span>
+</button>
+</nav>
+</body></html>

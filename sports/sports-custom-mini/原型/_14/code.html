@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700;800;900&amp;family=Plus+Jakarta+Sans:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "on-secondary-fixed-variant": "#5a5c5e",
+                "surface-bright": "#f5f6f7",
+                "surface-container-high": "#e0e3e4",
+                "tertiary-container": "#ffffff",
+                "error": "#b02500",
+                "surface-container-low": "#eff1f2",
+                "inverse-surface": "#0c0f10",
+                "on-surface-variant": "#595c5d",
+                "on-tertiary-container": "#626262",
+                "surface-dim": "#d1d5d7",
+                "tertiary-fixed-dim": "#f2f0f0",
+                "secondary-fixed-dim": "#d4d4d7",
+                "error-container": "#f95630",
+                "secondary-fixed": "#e2e2e5",
+                "background": "#f5f6f7",
+                "error-dim": "#b92902",
+                "on-secondary": "#f2f2f5",
+                "inverse-primary": "#fe6b00",
+                "surface-container-highest": "#dadddf",
+                "primary-dim": "#893600",
+                "tertiary-dim": "#504f4f",
+                "on-primary-fixed": "#000000",
+                "on-tertiary-fixed": "#505050",
+                "secondary-dim": "#4e5052",
+                "surface-container-lowest": "#ffffff",
+                "primary-fixed-dim": "#f66700",
+                "on-tertiary": "#f4f2f2",
+                "inverse-on-surface": "#9b9d9e",
+                "on-secondary-container": "#505254",
+                "surface-variant": "#dadddf",
+                "on-primary-fixed-variant": "#4f1c00",
+                "surface-tint": "#9c3f00",
+                "outline": "#757778",
+                "on-error-container": "#520c00",
+                "on-background": "#2c2f30",
+                "on-surface": "#2c2f30",
+                "secondary-container": "#e2e2e5",
+                "primary": "#9c3f00",
+                "on-tertiary-fixed-variant": "#6d6d6d",
+                "on-error": "#ffefec",
+                "tertiary": "#5c5b5b",
+                "surface": "#f5f6f7",
+                "primary-fixed": "#ff7a2f",
+                "secondary": "#5a5c5e",
+                "surface-container": "#e6e8ea",
+                "primary-container": "#ff7a2f",
+                "outline-variant": "#abadae",
+                "on-primary": "#fff0ea",
+                "tertiary-fixed": "#ffffff",
+                "on-secondary-fixed": "#3e3f42",
+                "on-primary-container": "#401500"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+            },
+            "fontFamily": {
+                "headline": ["Lexend"],
+                "body": ["Plus Jakarta Sans"],
+                "label": ["Plus Jakarta Sans"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+        }
+        body {
+            font-family: 'PingFang SC', 'Plus Jakarta Sans', sans-serif;
+            background-color: #f5f6f7;
+            color: #2c2f30;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+        .text-gradient {
+            background: linear-gradient(45deg, #9c3f00, #ff7a2f);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface antialiased overflow-x-hidden">
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 w-full z-50 bg-[#f5f6f7] dark:bg-zinc-950 bg-gradient-to-b from-zinc-200/50 to-transparent">
+<div class="flex items-center justify-between px-6 h-16 w-full">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-[#2c2f30] active:scale-95 transition-transform cursor-pointer" data-icon="arrow_back">arrow_back</span>
+<h1 class="text-xl font-black text-[#2c2f30] dark:text-zinc-100 font-['Lexend'] tracking-tight">明星教练</h1>
+</div>
+<div class="flex items-center">
+<span class="material-symbols-outlined text-[#2c2f30] active:scale-95 transition-transform cursor-pointer" data-icon="share">share</span>
+</div>
+</div>
+</header>
+<main class="pt-20 pb-24 px-4 max-w-2xl mx-auto space-y-6">
+<!-- Search Section -->
+<section class="relative">
+<div class="relative group">
+<div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline" data-icon="search">search</span>
+</div>
+<input class="w-full pl-12 pr-4 py-4 bg-surface-container-lowest border-none rounded-xl shadow-sm focus:ring-2 focus:ring-primary-container transition-all placeholder:text-outline-variant text-body-md" placeholder="搜索教练姓名或特长..." type="text"/>
+</div>
+</section>
+<!-- Category Filter -->
+<nav class="flex overflow-x-auto pb-2 scrollbar-hide gap-3 no-scrollbar">
+<button class="flex-shrink-0 px-6 py-2 bg-gradient-to-br from-primary to-primary-container text-white rounded-xl font-semibold text-sm shadow-md">
+                全部
+            </button>
+<button class="flex-shrink-0 px-6 py-2 bg-surface-container-lowest text-on-surface-variant rounded-xl font-semibold text-sm hover:bg-surface-container-high transition-colors">
+                篮球
+            </button>
+<button class="flex-shrink-0 px-6 py-2 bg-surface-container-lowest text-on-surface-variant rounded-xl font-semibold text-sm hover:bg-surface-container-high transition-colors">
+                足球
+            </button>
+<button class="flex-shrink-0 px-6 py-2 bg-surface-container-lowest text-on-surface-variant rounded-xl font-semibold text-sm hover:bg-surface-container-high transition-colors">
+                羽毛球
+            </button>
+<button class="flex-shrink-0 px-6 py-2 bg-surface-container-lowest text-on-surface-variant rounded-xl font-semibold text-sm hover:bg-surface-container-high transition-colors">
+                网球
+            </button>
+</nav>
+<!-- Coach List -->
+<div class="space-y-4">
+<!-- Coach Card 1 -->
+<article class="bg-surface-container-lowest rounded-xl p-5 shadow-[0_12px_24px_rgba(44,47,48,0.04)] relative overflow-hidden group">
+<div class="flex gap-4">
+<div class="relative flex-shrink-0">
+<img class="w-24 h-32 object-cover rounded-xl shadow-inner" data-alt="dynamic close-up of a professional male fitness coach in athletic gear looking confident and athletic with gym background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDeyxFe2KSw9WNEOdzmNfgBxLK_bAVy4PfDD_3W_ox9shc4aDoyQCj3ewcYYUGV9TZteoYwsFsXsscPkYQl-KyAvsffToRlwc2Z41gQXsm5Rc6UTfVBp-ZQ2KuSx_gdbWcc7livY2Mdc0GvI0G4NijGduHmKdhq3708JD3j8Vo2cFAMPx0pyQxf-At-j3O8W71UdiOOkXiQLnDVaEHcsYQZQCh25ZdlLASneVUYyYFit1yS2EUHESPuxQGF35Hzlgn_BOT5XNP_hao"/>
+<div class="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur px-2 py-0.5 rounded-full border border-outline-variant/10 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-primary" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-[10px] font-bold">4.9</span>
+</div>
+</div>
+<div class="flex-1 min-w-0 flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start">
+<div>
+<h3 class="text-lg font-bold text-on-surface flex items-center gap-2">
+                                        张毅 <span class="text-sm font-normal text-on-surface-variant">Coach Ray</span>
+</h3>
+<p class="text-xs text-primary font-semibold mt-0.5">10年教龄 · 资深专家</p>
+</div>
+<span class="bg-surface-container-low text-on-secondary-fixed-variant text-[10px] px-2 py-1 rounded-md font-medium">篮球</span>
+</div>
+<div class="flex flex-wrap gap-1.5 mt-2">
+<span class="text-[10px] bg-secondary-container/50 text-on-secondary-container px-2 py-0.5 rounded-lg">国家一级运动员</span>
+<span class="text-[10px] bg-secondary-container/50 text-on-secondary-container px-2 py-0.5 rounded-lg">ITF认证</span>
+</div>
+<div class="mt-3 flex gap-2">
+<span class="text-[11px] text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-primary-container" data-icon="bolt">bolt</span>
+                                    技术控
+                                </span>
+<span class="text-[11px] text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-primary-container" data-icon="fitness_center">fitness_center</span>
+                                    体能专家
+                                </span>
+</div>
+</div>
+<p class="text-xs text-outline-variant line-clamp-1 mt-2">专注青少年进阶训练，擅长通过数据分析优化投篮姿势。</p>
+</div>
+</div>
+<div class="mt-5 flex items-center justify-between border-t border-outline-variant/10 pt-4">
+<div class="flex flex-col">
+<span class="text-[10px] text-outline-variant">体验课起</span>
+<div class="flex items-baseline gap-1">
+<span class="text-primary font-black text-lg">¥199</span>
+<span class="text-outline-variant text-[10px] line-through">¥400</span>
+</div>
+</div>
+<button class="bg-gradient-to-r from-primary to-primary-container text-white px-8 py-2.5 rounded-xl font-bold text-sm active:scale-95 transition-transform">选择教练</button>
+</div>
+</article>
+<!-- Coach Card 2 -->
+<article class="bg-surface-container-lowest rounded-xl p-5 shadow-[0_12px_24px_rgba(44,47,48,0.04)] relative overflow-hidden group">
+<div class="flex gap-4">
+<div class="relative flex-shrink-0">
+<img class="w-24 h-32 object-cover rounded-xl shadow-inner" data-alt="professional female tennis coach in athletic wear on a bright court, smiling and holding a racket with sun-kissed lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEIcn5bpJUIGsQfY1bnw2W88Kt9vexpbeIEtzoWv1MWQilLq3otl2g3FcLGdQFASvSfkzGhCAaJWXP2nNZJXTgX4rLOHdodTAqpJc1ocVnZz3cH0b1F0IV9VfJgPC5ks0qQowhR3qcxzZFS1Yi0L7zUNwpeIkv7Ip1VwDwYAYzpaTOYVjRV4RIovWA7cPhAvyzWlDDMKFTyUTBrW7gkhgNsafTuf59JhcY7Ml2yWwLOFD8pXA0xQMAJRkU8jbYHM_BYxICIwRdlz0"/>
+<div class="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur px-2 py-0.5 rounded-full border border-outline-variant/10 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-primary" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-[10px] font-bold">5.0</span>
+</div>
+</div>
+<div class="flex-1 min-w-0 flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start">
+<div>
+<h3 class="text-lg font-bold text-on-surface flex items-center gap-2">
+                                        林玥 <span class="text-sm font-normal text-on-surface-variant">Coach Luna</span>
+</h3>
+<p class="text-xs text-primary font-semibold mt-0.5">8年教龄 · 明星导师</p>
+</div>
+<span class="bg-surface-container-low text-on-secondary-fixed-variant text-[10px] px-2 py-1 rounded-md font-medium">网球</span>
+</div>
+<div class="flex flex-wrap gap-1.5 mt-2">
+<span class="text-[10px] bg-secondary-container/50 text-on-secondary-container px-2 py-0.5 rounded-lg">PTR职业认证</span>
+<span class="text-[10px] bg-secondary-container/50 text-on-secondary-container px-2 py-0.5 rounded-lg">曾获省运会冠军</span>
+</div>
+<div class="mt-3 flex gap-2">
+<span class="text-[11px] text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-primary-container" data-icon="psychology">psychology</span>
+                                    战术分析
+                                </span>
+<span class="text-[11px] text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-primary-container" data-icon="timer">timer</span>
+                                    高效燃脂
+                                </span>
+</div>
+</div>
+<p class="text-xs text-outline-variant line-clamp-1 mt-2">擅长女性网球入门，零基础教学，带你快速找到球感。</p>
+</div>
+</div>
+<div class="mt-5 flex items-center justify-between border-t border-outline-variant/10 pt-4">
+<div class="flex flex-col">
+<span class="text-[10px] text-outline-variant">体验课起</span>
+<div class="flex items-baseline gap-1">
+<span class="text-primary font-black text-lg">¥299</span>
+<span class="text-outline-variant text-[10px] line-through">¥600</span>
+</div>
+</div>
+<button class="bg-gradient-to-r from-primary to-primary-container text-white px-8 py-2.5 rounded-xl font-bold text-sm active:scale-95 transition-transform">选择教练</button>
+</div>
+</article>
+<!-- Coach Card 3 -->
+<article class="bg-surface-container-lowest rounded-xl p-5 shadow-[0_12px_24px_rgba(44,47,48,0.04)] relative overflow-hidden group">
+<div class="flex gap-4">
+<div class="relative flex-shrink-0">
+<img class="w-24 h-32 object-cover rounded-xl shadow-inner" data-alt="portrait of a muscular sports coach in a stadium tunnel, dramatic high-contrast lighting, looking focused and intense" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDwIcyCeSazhNFNLF_7MbtqgFuFB2-BJ7OdDQ9UMzxYwEOY42BAs4ut4gaqvb35fXcSK7l_XqY0Q_WmPjvZKAdcOEH9fmLWHN7N2cjauH13rLLiUiZejyPxI3AgkQZundn64VjjJm6HHbj0RB-5kOLr5Wkc5jimDed7CpeMTV8fa9YFjeOEiY9Kx5TYyhjo3rnt6LdB2xFg7lWUCFh904HbRbZB1vDTU3y790c7vKMXlClm7oaYeTE-BQtMpp_VBFEVhKQ9k3nrIiM"/>
+<div class="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur px-2 py-0.5 rounded-full border border-outline-variant/10 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-primary" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-[10px] font-bold">4.8</span>
+</div>
+</div>
+<div class="flex-1 min-w-0 flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start">
+<div>
+<h3 class="text-lg font-bold text-on-surface flex items-center gap-2">
+                                        陈锋 <span class="text-sm font-normal text-on-surface-variant">Coach Chen</span>
+</h3>
+<p class="text-xs text-primary font-semibold mt-0.5">15年教龄 · 总教练</p>
+</div>
+<span class="bg-surface-container-low text-on-secondary-fixed-variant text-[10px] px-2 py-1 rounded-md font-medium">羽毛球</span>
+</div>
+<div class="flex flex-wrap gap-1.5 mt-2">
+<span class="text-[10px] bg-secondary-container/50 text-on-secondary-container px-2 py-0.5 rounded-lg">世界羽联BWF认证</span>
+<span class="text-[10px] bg-secondary-container/50 text-on-secondary-container px-2 py-0.5 rounded-lg">金牌教练</span>
+</div>
+<div class="mt-3 flex gap-2">
+<span class="text-[11px] text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-primary-container" data-icon="sports">sports</span>
+                                    实战大师
+                                </span>
+<span class="text-[11px] text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-primary-container" data-icon="groups">groups</span>
+                                    团课专家
+                                </span>
+</div>
+</div>
+<p class="text-xs text-outline-variant line-clamp-1 mt-2">培养多名青少年省队选手，严谨、科学的教学风格。</p>
+</div>
+</div>
+<div class="mt-5 flex items-center justify-between border-t border-outline-variant/10 pt-4">
+<div class="flex flex-col">
+<span class="text-[10px] text-outline-variant">体验课起</span>
+<div class="flex items-baseline gap-1">
+<span class="text-primary font-black text-lg">¥250</span>
+<span class="text-outline-variant text-[10px] line-through">¥500</span>
+</div>
+</div>
+<button class="bg-gradient-to-r from-primary to-primary-container text-white px-8 py-2.5 rounded-xl font-bold text-sm active:scale-95 transition-transform">选择教练</button>
+</div>
+</article>
+</div>
+</main>
+<!-- Bottom Navigation Bar (Functional for Tab Actions) -->
+<footer class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-3 pb-safe bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl border-t border-zinc-200/15 dark:border-zinc-800/15 rounded-t-2xl z-50 shadow-[0_-12px_24px_rgba(44,47,48,0.06)] relative">
+<div class="flex flex-col items-center justify-center text-[#2c2f30] dark:text-zinc-400 px-6 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 active:scale-98 duration-200 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="chat_bubble">chat_bubble</span>
+<span class="font-['PingFang_SC'] text-[10px] font-semibold">立即咨询</span>
+</div>
+<div class="absolute -top-10 right-4 bg-surface-container-low/90 backdrop-blur px-3 py-1.5 rounded-lg border border-primary/10 shadow-sm pointer-events-none">
+<p class="text-[10px] text-primary-dim font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">info</span>
+        下单后将通过微信群沟通排课
+    </p>
+<div class="absolute -bottom-1 right-8 w-2 h-2 bg-surface-container-low border-r border-b border-primary/10 rotate-45"></div>
+</div><div class="flex flex-col items-center justify-center bg-gradient-to-br from-[#9c3f00] to-[#ff7a2f] text-white rounded-xl px-8 py-2 active:scale-98 duration-200 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="event_available">event_available</span>
+<span class="font-['PingFang_SC'] text-[10px] font-semibold">选他上课</span>
+</div>
+</footer>
+</body></html>

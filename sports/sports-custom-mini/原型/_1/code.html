@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700;800;900&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-fixed-dim": "#f66700",
+                    "primary": "#9c3f00",
+                    "on-primary-fixed": "#000000",
+                    "surface-dim": "#d1d5d7",
+                    "on-secondary": "#f2f2f5",
+                    "secondary-container": "#e2e2e5",
+                    "tertiary": "#5c5b5b",
+                    "on-error": "#ffefec",
+                    "on-tertiary": "#f4f2f2",
+                    "surface-container-high": "#e0e3e4",
+                    "tertiary-fixed": "#ffffff",
+                    "surface-container": "#e6e8ea",
+                    "on-secondary-fixed": "#3e3f42",
+                    "on-primary-fixed-variant": "#4f1c00",
+                    "secondary-fixed": "#e2e2e5",
+                    "error-dim": "#b92902",
+                    "surface-tint": "#9c3f00",
+                    "primary-container": "#ff7a2f",
+                    "outline-variant": "#abadae",
+                    "surface-container-low": "#eff1f2",
+                    "surface-container-lowest": "#ffffff",
+                    "on-surface": "#2c2f30",
+                    "surface-container-highest": "#dadddf",
+                    "surface-variant": "#dadddf",
+                    "secondary-dim": "#4e5052",
+                    "on-background": "#2c2f30",
+                    "tertiary-dim": "#504f4f",
+                    "on-primary": "#fff0ea",
+                    "error-container": "#f95630",
+                    "background": "#f5f6f7",
+                    "tertiary-container": "#ffffff",
+                    "outline": "#757778",
+                    "on-secondary-fixed-variant": "#5a5c5e",
+                    "inverse-primary": "#fe6b00",
+                    "secondary": "#5a5c5e",
+                    "on-tertiary-container": "#626262",
+                    "tertiary-fixed-dim": "#f2f0f0",
+                    "secondary-fixed-dim": "#d4d4d7",
+                    "primary-fixed": "#ff7a2f",
+                    "surface": "#f5f6f7",
+                    "on-error-container": "#520c00",
+                    "on-surface-variant": "#595c5d",
+                    "on-primary-container": "#401500",
+                    "on-tertiary-fixed": "#505050",
+                    "error": "#b02500",
+                    "surface-bright": "#f5f6f7",
+                    "inverse-on-surface": "#9b9d9e",
+                    "on-tertiary-fixed-variant": "#6d6d6d",
+                    "inverse-surface": "#0c0f10",
+                    "primary-dim": "#893600",
+                    "on-secondary-container": "#505254"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Lexend"],
+                    "body": ["Plus Jakarta Sans"],
+                    "label": ["Plus Jakarta Sans"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .glass-effect { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(16px); }
+        .shadow-ambient { box-shadow: 0 12px 24px rgba(44, 47, 48, 0.06); }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-[#f5f6f7] dark:bg-slate-900 flex items-center h-16 px-4 w-full">
+<div class="flex items-center gap-4">
+<button class="active:scale-95 transition-transform text-[#9c3f00] hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="font-['Lexend'] font-bold text-lg text-[#9c3f00]">详情</h1>
+</div>
+<div class="ml-auto flex gap-4">
+<button class="text-[#2c2f30] hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined" data-icon="share">share</span>
+</button>
+<button class="text-[#2c2f30] hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+</button>
+</div>
+</header>
+<main class="pt-16 pb-24 max-w-screen-md mx-auto">
+<!-- Hero Section: Product Carousel -->
+<section class="relative bg-surface-container-low h-[400px] overflow-hidden">
+<div class="flex h-full overflow-x-auto snap-x snap-mandatory no-scrollbar">
+<div class="shrink-0 w-full h-full snap-center">
+<img alt="KINETIC Pro Training Shoe" class="w-full h-full object-cover" data-alt="Close-up of a high-performance orange athletic sneaker with mesh texture on a minimalist light grey studio background, dynamic lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJ0bNzYxEY2l8L4HFCIzPfqTH8lYo8b8DRxHytzszgfpvf14X1aDWPCQCyMtURQREatxp-EzNOZY_IlLaFhQnBoIJI1NvB-Es7JthwsTbd1yz4WAEn6M57e0c08MJm1SzJNrtfO1WLS1R_UQ1mYSePa1bdP_flzSNbdmnsM67afvTmf7FCTerNZr62hZKRVTvCHH2JWit0cIAdG7b84NLzuBjhp83TvtJE5bL9dw4wUzj-m1cIKorNZU9Xu9Y0ie5lJO3cvRgf76s"/>
+</div>
+<div class="shrink-0 w-full h-full snap-center">
+<img alt="KINETIC Pro Training Shoe Side" class="w-full h-full object-cover" data-alt="Side profile of professional sports footwear, emphasizing the aerodynamic design and responsive sole, warm studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcN9kk2IURauw6PxnC26Q1ljBkDl17Avxm1TqKK2PXSdsPN1FKLkcaMHq5zNzNReiimUVvcGh96P4YK4rgtFcrjN1e6KoH3l-S-iuMTYyr6WUAOUS_mrb_AsacchpU52q3CSYWJz7Y35VcAHoC-oQI4vLJRcNgt2ybQYHfMsXVVVIC7jcXjc24iO9TEW9tQN0Pw3IBJI-w0ZyRA8KOMr762GvIANkzyNgAZ-u6Igy9B9vce05ZTK0cvLRzFRME1BF2Ss8id9vz7js"/>
+</div>
+</div>
+<div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
+<div class="w-8 h-1.5 rounded-full bg-primary-container"></div>
+<div class="w-2 h-1.5 rounded-full bg-on-surface/20"></div>
+<div class="w-2 h-1.5 rounded-full bg-on-surface/20"></div>
+</div>
+<div class="absolute top-4 right-4 bg-surface-container-lowest/80 backdrop-blur-md px-3 py-1 rounded-xl text-label-sm font-bold text-primary">
+                1/3
+            </div>
+</section>
+<!-- Product Summary Card -->
+<section class="mt-[-24px] relative z-10 px-4">
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-ambient">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-baseline gap-1">
+<span class="text-primary font-bold text-lg font-headline">¥</span>
+<span class="text-primary font-black text-4xl font-headline tracking-tighter">899</span>
+<span class="ml-2 text-on-surface-variant text-sm line-through opacity-50">¥1299</span>
+</div>
+<div class="bg-primary/10 text-primary text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider">
+                        NEW ARRIVAL
+                    </div>
+</div>
+<h2 class="text-headline-md font-bold mb-1 font-headline leading-tight">KINETIC 专业训练鞋</h2>
+<p class="text-body-md text-on-surface-variant mb-4 leading-relaxed">
+                    专为高强度间歇训练 (HIIT) 打造。双密度中底提供极致回弹，非对称抓地纹路助你掌控每一次爆发位移。
+                </p>
+<div class="flex items-center gap-6 py-4 border-t border-outline-variant/15">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-bold text-sm">4.9</span>
+<span class="text-on-surface-variant text-xs">(2k+ 评价)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container">local_fire_department</span>
+<span class="font-bold text-sm">销量 5000+</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Configuration Bento -->
+<!-- Product Specs (Tonal Layering) -->
+<section class="px-4 mt-6">
+<div class="bg-surface-container-low rounded-xl p-6">
+<h3 class="font-bold mb-4 font-headline uppercase tracking-widest text-xs text-on-surface-variant">Technical Specs</h3>
+<div class="space-y-4">
+<div class="flex justify-between items-center text-sm border-b border-outline-variant/10 pb-3">
+<span class="text-on-surface-variant">重量</span>
+<span class="font-bold">285g (Size 41)</span>
+</div>
+<div class="flex justify-between items-center text-sm border-b border-outline-variant/10 pb-3">
+<span class="text-on-surface-variant">落差</span>
+<span class="font-bold">4mm</span>
+</div>
+<div class="flex justify-between items-center text-sm border-b border-outline-variant/10 pb-3">
+<span class="text-on-surface-variant">中底材质</span>
+<span class="font-bold text-primary">KINETIC-FOAM™</span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<span class="text-on-surface-variant">适用场景</span>
+<span class="font-bold">室内训练 / 短距离爆发跑</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Dynamic Content Detail -->
+<section class="mt-8">
+<div class="px-4 mb-6">
+<h3 class="text-xl font-bold font-headline">极速动力，触地即发</h3>
+<div class="w-12 h-1 bg-primary mt-2"></div>
+</div>
+<div class="space-y-4 px-4">
+<div class="relative rounded-xl overflow-hidden group">
+<img alt="Workout Action" class="w-full h-80 object-cover" data-alt="Dramatic high-contrast photo of an athlete performing a explosive box jump in a moody gym setting, spotlight on the footwear" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCAqm_K4ur6N6HUVjmqrTE3PJAClp0EM-_AIJmmBn0a_Tm93DiOdqVae85GgXnjnX2ngeTr4trJeTq3yeNmVUcDro_8blBGME0sN5aSyPopGtHtNk9PqjKc1yiOdyNbNGO-0z6I-WZgtCnDYoHQblZQpWMf4uJz42TyQ89r4H55lTam-_Qz4HYsQevdrK8qBvXpN8RV-7bgiUBmhw4pue_TcrYWVuFTT-7rVP2kHsAVpZX-eWVzwmLc_g3GalZ2r5IWDuuUtBIPNI"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-6">
+<h4 class="text-white font-bold text-lg">稳定性与灵活性的巅峰平衡</h4>
+<p class="text-white/80 text-xs mt-1">TPU稳定片环绕足跟，锁定双足，即使是剧烈的侧向移动也从容应对。</p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-ambient">
+<img class="h-40 w-full object-cover" data-alt="Close up detail of breathable mesh fabric on a high tech running shoe, morning light texture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuARmpMB5i472bpUNCN0QXIHZ9gRzIec5uiQrcugy45quuFXu7FhHC-KOA5mh4tLZOOQ_Q9OEUJbnhnwqxVwdJJ90ePxCGqJk8UVTa1eScbA-VsJuDMe_6ZnwoQ5i2TYcbh96FKHPSxFYHe0muzDnpdZTL3WLFEt8dlu2ToVkNaQDLg0gAwhOO8w3yiuEdg0Z1l98Ymk5VAuHS3UIyIh7oqwX1J5ht2zYJFaVsvviOi-DsiXLqxUEn5eRlGNS7M-jCSZSfM6TRGRXwo"/>
+<div class="p-4">
+<h5 class="font-bold text-sm">工程透气网面</h5>
+<p class="text-[10px] text-on-surface-variant mt-1">保持双脚干爽，拒绝闷热感。</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-ambient">
+<img class="h-40 w-full object-cover" data-alt="Sole of a sneaker with aggressive geometric traction pattern, high contrast lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvxJmHgkUagwz60FneDdBqHI7AIumUfxaxOwLMLrXeOtbf_bXjbNXeFBW-evcBrs6L8sPj_fS3BKXPHLOUM-FYmKbVNaYNbP4aW-TkgIdlSveo94bOMdPaCJqdCKUPpiVIOBX5nUcOu8m2s-8yX0Ka5JqD_buD6h5KTT1Z54BSaxxz15ucQywsvUgZ9VPsIODu4tE13mJnJ0SCyMLJCPNo1AlH2CZJU1weYdFWqVrC1MxxVP53M-y49k1tXDAEpyXEv-09p1FE-wE"/>
+<div class="p-4">
+<h5 class="font-bold text-sm">全地形抓地底</h5>
+<p class="text-[10px] text-on-surface-variant mt-1">独特蜂窝结构，抓地力提升30%。</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Action Bar (Transactional Suppression logic applied) -->
+<footer class="fixed bottom-0 left-0 w-full h-24 glass-effect flex items-center px-6 gap-4 z-50 rounded-t-xl shadow-[0_-12px_24px_rgba(44,47,48,0.06)]">
+<div class="flex gap-4 items-center mr-auto">
+<button class="flex flex-col items-center gap-1 text-on-surface/60">
+<span class="material-symbols-outlined">headset_mic</span>
+<span class="text-[10px] font-medium">客服</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface/60">
+<span class="material-symbols-outlined">favorite</span>
+<span class="text-[10px] font-medium">收藏</span>
+</button>
+</div>
+<button class="flex-1 py-3.5 border-2 border-primary/20 text-primary font-bold rounded-xl active:scale-95 transition-all text-sm">
+            加入购物车
+        </button>
+<button class="flex-1 py-4 bg-gradient-to-r from-primary to-primary-container text-white font-black rounded-xl shadow-lg shadow-primary/20 active:scale-95 transition-all text-sm tracking-widest">
+            立即购买
+        </button>
+</footer>
+</body></html>

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&amp;family=Plus+Jakarta+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-fixed-dim": "#f66700",
+                    "primary": "#9c3f00",
+                    "on-primary-fixed": "#000000",
+                    "surface-dim": "#d1d5d7",
+                    "on-secondary": "#f2f2f5",
+                    "secondary-container": "#e2e2e5",
+                    "tertiary": "#5c5b5b",
+                    "on-error": "#ffefec",
+                    "on-tertiary": "#f4f2f2",
+                    "surface-container-high": "#e0e3e4",
+                    "tertiary-fixed": "#ffffff",
+                    "surface-container": "#e6e8ea",
+                    "on-secondary-fixed": "#3e3f42",
+                    "on-primary-fixed-variant": "#4f1c00",
+                    "secondary-fixed": "#e2e2e5",
+                    "error-dim": "#b92902",
+                    "surface-tint": "#9c3f00",
+                    "primary-container": "#ff7a2f",
+                    "outline-variant": "#abadae",
+                    "surface-container-low": "#eff1f2",
+                    "surface-container-lowest": "#ffffff",
+                    "on-surface": "#2c2f30",
+                    "surface-container-highest": "#dadddf",
+                    "surface-variant": "#dadddf",
+                    "secondary-dim": "#4e5052",
+                    "on-background": "#2c2f30",
+                    "tertiary-dim": "#504f4f",
+                    "on-primary": "#fff0ea",
+                    "error-container": "#f95630",
+                    "background": "#f5f6f7",
+                    "tertiary-container": "#ffffff",
+                    "outline": "#757778",
+                    "on-secondary-fixed-variant": "#5a5c5e",
+                    "inverse-primary": "#fe6b00",
+                    "secondary": "#5a5c5e",
+                    "on-tertiary-container": "#626262",
+                    "tertiary-fixed-dim": "#f2f0f0",
+                    "secondary-fixed-dim": "#d4d4d7",
+                    "primary-fixed": "#ff7a2f",
+                    "surface": "#f5f6f7",
+                    "on-error-container": "#520c00",
+                    "on-surface-variant": "#595c5d",
+                    "on-primary-container": "#401500",
+                    "on-tertiary-fixed": "#505050",
+                    "error": "#b02500",
+                    "surface-bright": "#f5f6f7",
+                    "inverse-on-surface": "#9b9d9e",
+                    "on-tertiary-fixed-variant": "#6d6d6d",
+                    "inverse-surface": "#0c0f10",
+                    "primary-dim": "#893600",
+                    "on-secondary-container": "#505254"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Lexend"],
+                    "body": ["Plus Jakarta Sans"],
+                    "label": ["Plus Jakarta Sans"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Plus Jakarta Sans', 'PingFang SC', sans-serif;
+            background-color: #f5f6f7;
+            color: #2c2f30;
+        }
+        .tonal-shift-bg-surface-container-low {
+            background-color: #eff1f2;
+        }
+        .shadow-ambient {
+            box-shadow: 0 12px 24px rgba(44, 47, 48, 0.06);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface selection:bg-primary-container selection:text-on-primary-container">
+<!-- Top AppBar Component -->
+<header class="fixed top-0 w-full z-50 bg-[#f5f6f7] flex items-center h-16 px-4 w-full">
+<button class="active:scale-95 transition-transform hover:opacity-80 transition-opacity p-2">
+<span class="material-symbols-outlined text-[#9c3f00]" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="flex-1 text-center font-['Lexend'] font-bold text-lg text-[#9c3f00]">详情</h1>
+<div class="w-10"></div> <!-- Spacer for balance -->
+</header>
+<main class="pt-20 pb-32 px-4 max-w-2xl mx-auto space-y-4">
+<!-- Address Section - Asymmetric Bento Style -->
+<section class="bg-surface-container-lowest rounded-xl p-5 shadow-ambient">
+<div class="flex items-start gap-4">
+<div class="bg-primary/5 p-3 rounded-xl">
+<span class="material-symbols-outlined text-primary" data-icon="location_on" style="font-variation-settings: 'FILL' 1;">location_on</span>
+</div>
+<div class="flex-1">
+<div class="flex items-center justify-between mb-1">
+<span class="text-on-surface font-bold text-base">张晓明</span>
+<span class="text-on-surface-variant font-medium text-sm">138 **** 8888</span>
+</div>
+<p class="text-on-surface-variant text-sm leading-relaxed mb-3">北京市朝阳区三里屯街道 SOHO 办公区 B座 2205室</p>
+<div class="flex gap-2">
+<span class="px-2 py-0.5 bg-primary-container/10 text-primary text-[10px] font-bold rounded-md">默认地址</span>
+<span class="px-2 py-0.5 bg-secondary-container text-secondary text-[10px] font-medium rounded-md">公司</span>
+</div>
+</div>
+<button class="mt-1">
+<span class="material-symbols-outlined text-outline" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</section>
+<!-- Order Summary Section - Glassmorphism Card -->
+<section class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-ambient">
+<div class="p-5 border-b border-outline-variant/10">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary text-xl" data-icon="fitness_center">fitness_center</span>
+<span class="font-['Lexend'] font-bold text-sm tracking-tight text-on-surface">POWER KINETIC STUDIO</span>
+</div>
+<!-- Product Item -->
+<div class="flex gap-4 items-center">
+<div class="relative w-24 h-24 rounded-xl overflow-hidden flex-shrink-0">
+<img alt="Course Image" class="w-full h-full object-cover" data-alt="Intense athlete doing crossfit training in a modern gym with atmospheric dramatic lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYeegk5pMJBhlarbNgr6owIPZ6KPkOR9xA7j3XI8_QjL3It2-souDushI7lUQCCOBUMXCDkKEp1iW1RFCiLjBT5CCri483I4v0wTVlZ0cdB-Uj2OAnswnvDsjslaydAfhfkcsGRb0GpYFChi8kEQXh1E-SVj5l1Xj0g_2o2705Xs9LYye5APc5BrS1Gq-zSwQbEgDpt_o06YUG-TTQjJ8mSbX_PISsQVnRlB_LM7-URg6IcTrEIUg7OrUkVFNQpQarvkhFrNpvCyE"/>
+<div class="absolute inset-0 bg-black/5 inner-shadow"></div>
+</div>
+<div class="flex-1 space-y-1">
+<h3 class="font-bold text-on-surface text-base line-clamp-1">高强度间歇性体能训练 (HIIT)</h3>
+<p class="text-on-surface-variant text-xs font-medium">进阶课程 · 60分钟 · 含专业补给</p>
+<div class="flex items-end justify-between pt-2">
+<div class="flex items-baseline gap-0.5">
+<span class="text-primary font-['Lexend'] text-xs font-bold">¥</span>
+<span class="text-primary font-['Lexend'] text-xl font-black">299</span>
+</div>
+<span class="text-on-surface-variant font-['Lexend'] text-sm font-medium">x1</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Detailed Options -->
+<div class="px-5 py-4 space-y-4">
+<div class="flex justify-between items-center">
+<label class="text-on-surface-variant text-sm font-medium">预约时间</label>
+<div class="flex items-center gap-1">
+<span class="text-on-surface text-sm font-bold">2023年11月24日 19:30</span>
+<span class="material-symbols-outlined text-outline text-lg" data-icon="event">event</span>
+</div>
+</div>
+<div class="flex justify-between items-center">
+<label class="text-on-surface-variant text-sm font-medium">优惠券</label>
+<div class="flex items-center gap-1">
+<span class="text-primary text-sm font-bold">- ¥50 (新人专享)</span>
+<span class="material-symbols-outlined text-outline text-lg" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+<div class="flex flex-col gap-2 pt-2">
+<label class="text-on-surface-variant text-sm font-medium">订单备注</label>
+<textarea class="w-full bg-surface-container-low border-none rounded-xl text-sm p-3 focus:ring-1 focus:ring-primary-container h-20 placeholder:text-outline" placeholder="对教练或配送有特殊要求？"></textarea>
+</div>
+</div>
+</section>
+<!-- Cost Breakdown Section -->
+<section class="bg-surface-container-lowest rounded-xl p-5 shadow-ambient space-y-3">
+<div class="flex justify-between text-sm">
+<span class="text-on-surface-variant">商品小计</span>
+<span class="text-on-surface font-medium font-['Lexend']">¥299.00</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-on-surface-variant">优惠金额</span>
+<span class="text-primary font-medium font-['Lexend']">-¥50.00</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-on-surface-variant">运费/服务费</span>
+<span class="text-on-surface font-medium font-['Lexend']">¥0.00</span>
+</div>
+</section>
+</main>
+<!-- Bottom Action Bar -->
+<footer class="fixed bottom-0 left-0 w-full bg-white/80 backdrop-blur-md px-6 py-4 pb-safe z-50 flex items-center justify-between shadow-[0_-12px_24px_rgba(44,47,48,0.06)]">
+<div class="flex flex-col">
+<span class="text-on-surface-variant text-[10px] font-bold tracking-wider uppercase">TOTAL AMOUNT</span>
+<div class="flex items-baseline gap-1">
+<span class="text-primary font-['Lexend'] text-sm font-bold">¥</span>
+<span class="text-primary font-['Lexend'] text-2xl font-black">249.00</span>
+</div>
+</div>
+<button class="bg-gradient-to-r from-primary to-primary-container text-white px-10 py-3.5 rounded-xl font-bold text-sm shadow-lg shadow-primary-container/20 active:scale-95 transition-all">
+            提交订单
+        </button>
+</footer>
+<!-- Bottom Navigation Component (Suppressed as per focused task rule) -->
+<!-- The user is in a focused Transactional screen (Confirm Order), so BottomNavBar is hidden -->
+</body></html>

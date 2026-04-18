@@ -1,0 +1,19 @@
+server:
+  port: 8086
+
+spring:
+  application:
+    name: kinetic-sports-api
+  profiles:
+    active: dev
+
+ai:
+  model:
+    enabled: true
+    provider: kimi
+    base-url: https://api.moonshot.cn/v1
+    api-key: sk-FqCFzS6ASYx3mYAHPieDqEbvnFMqskkNjCuJlbNqPlSMbLQE
+    model-name: kimi-k2.5
+    temperature: 1
+    timeout-seconds: 60
+    retry-count: 1

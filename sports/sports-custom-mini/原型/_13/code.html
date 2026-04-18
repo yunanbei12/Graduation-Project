@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KINETIC - Door-to-Door Sports Training</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#626262",
+                        "on-error-container": "#520c00",
+                        "outline": "#757778",
+                        "surface-container-high": "#e0e3e4",
+                        "outline-variant": "#abadae",
+                        "on-tertiary-fixed": "#505050",
+                        "error": "#b02500",
+                        "background": "#f5f6f7",
+                        "secondary": "#5a5c5e",
+                        "on-tertiary": "#f4f2f2",
+                        "primary": "#9c3f00",
+                        "inverse-on-surface": "#9b9d9e",
+                        "surface-variant": "#dadddf",
+                        "secondary-fixed-dim": "#d4d4d7",
+                        "primary-dim": "#893600",
+                        "on-secondary-fixed": "#3e3f42",
+                        "tertiary": "#5c5b5b",
+                        "surface-container-highest": "#dadddf",
+                        "secondary-dim": "#4e5052",
+                        "secondary-fixed": "#e2e2e5",
+                        "tertiary-fixed-dim": "#f2f0f0",
+                        "on-surface": "#2c2f30",
+                        "on-primary-fixed-variant": "#4f1c00",
+                        "on-primary-fixed": "#000000",
+                        "tertiary-dim": "#504f4f",
+                        "surface-tint": "#9c3f00",
+                        "on-surface-variant": "#595c5d",
+                        "primary-fixed-dim": "#f66700",
+                        "surface-bright": "#f5f6f7",
+                        "on-background": "#2c2f30",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-dim": "#d1d5d7",
+                        "on-secondary-fixed-variant": "#5a5c5e",
+                        "on-error": "#ffefec",
+                        "on-primary": "#fff0ea",
+                        "secondary-container": "#e2e2e5",
+                        "on-tertiary-fixed-variant": "#6d6d6d",
+                        "error-dim": "#b92902",
+                        "inverse-surface": "#0c0f10",
+                        "surface": "#f5f6f7",
+                        "tertiary-container": "#ffffff",
+                        "inverse-primary": "#fe6b00",
+                        "on-secondary-container": "#505254",
+                        "on-primary-container": "#401500",
+                        "primary-container": "#ff7a2f",
+                        "tertiary-fixed": "#ffffff",
+                        "surface-container": "#e6e8ea",
+                        "error-container": "#f95630",
+                        "surface-container-low": "#eff1f2",
+                        "primary-fixed": "#ff7a2f",
+                        "on-secondary": "#f2f2f5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Lexend"],
+                        "body": ["Plus Jakarta Sans"],
+                        "label": ["Plus Jakarta Sans"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .lexend { font-family: 'Lexend', sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen pb-24">
+<!-- TopAppBar -->
+<header class="bg-[#f5f6f7] dark:bg-slate-900 sticky top-0 z-50 transition-all">
+<div class="flex justify-between items-center w-full px-6 py-4">
+<div class="flex items-center gap-3">
+<span class="text-2xl font-black italic text-[#9c3f00] dark:text-[#ff7a2f] lexend">KINETIC</span>
+</div>
+<div class="flex-1 max-w-xs mx-4">
+<div class="bg-surface-container-low rounded-xl flex items-center px-3 py-2 gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-xl" data-icon="search">search</span>
+<span class="text-sm opacity-60">搜索课程或教练</span>
+</div>
+</div>
+<div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container-high border-2 border-primary-container">
+<img class="w-full h-full object-cover" data-alt="professional male profile avatar for user dashboard" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrU35684O6RfNUdoaL2lCr3haTI5a_meV8YKaslAshaCBhSEIFCiVibmXSvZKfAjgwOig9a-MjbCWiWytmPKLhLLj2XhrRrtKDpZyRwVqYWdFTzubpQKMVDrF14HID44PokwTa9_oT-EbsBQ7QKI3fOiqH2FrhWD0LkAmmQGVljL1KeILXfcNzgajPBGtl89TkLRKc7KDDUwP2krOWOOK8iKMJJVopZ_W2X4PB5zlgzNtCgNt75_2F80YGAX4yOmdcYrM83vKqNuU"/>
+</div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-4 md:px-6">
+<!-- Hero Section: High-Impact Banner -->
+<section class="mt-4 mb-8">
+<div class="relative w-full aspect-[21/9] md:aspect-[24/7] rounded-xl overflow-hidden group">
+<img class="w-full h-full object-cover" data-alt="energetic youth athletes training on a sunny grass field with professional coaching gear, summer intensive camp theme" src="https://lh3.googleusercontent.com/aida-public/AB6AXuByJXDpZ2Tlxb7YPCoCePZhCpEL0cq-ubIdgrsH9TYD_MJDGOmR-N1rUaWqRiMg7W-VDMNZ9ll-VwkRdVTPXw96cA5hj_pTOg1lZ762OUhCLawVSHvIQDHvy_M47_GlxiwMEPCSMDR2LvuLriFNuwHSXqvOjJZsjd_VggHThoBWvYs-TmpFkjF1PtKP0FP4HLVayoq7xvWq0KjV0YSbSogiVlc2Gazaqv-NCPoRPVw5PtCrpyP_cAWl0gB3Qo2zStNY9hyLVYiGXw4"/>
+<div class="absolute inset-0 bg-gradient-to-r from-on-surface/80 via-on-surface/20 to-transparent flex flex-col justify-center px-8 md:px-12">
+<span class="text-primary-container font-bold tracking-widest text-sm mb-2 lexend">SUMMER 2024</span>
+<h1 class="text-surface-container-lowest text-3xl md:text-5xl font-black lexend leading-tight mb-4 max-w-md">
+                        青少年暑期<br/>强化训练营
+                    </h1>
+<div>
+<button class="bg-primary hover:bg-primary-dim text-on-primary px-6 py-3 rounded-xl font-bold transition-all transform active:scale-95 lexend">
+                            立即报名
+                        </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Quick Actions Grid -->
+<section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+<button class="bg-surface-container-lowest p-6 rounded-xl flex flex-col items-center justify-center gap-3 transition-all hover:bg-primary/5 group shadow-sm">
+<div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-3xl" data-icon="fitness_center">fitness_center</span>
+</div>
+<span class="font-bold text-sm">私教课包</span>
+</button>
+<button class="bg-surface-container-lowest p-6 rounded-xl flex flex-col items-center justify-center gap-3 transition-all hover:bg-primary/5 group shadow-sm">
+<div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-3xl" data-icon="groups">groups</span>
+</div>
+<span class="font-bold text-sm">上门团课</span>
+</button>
+<button class="bg-surface-container-lowest p-6 rounded-xl flex flex-col items-center justify-center gap-3 transition-all hover:bg-primary/5 group shadow-sm">
+<div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-3xl" data-icon="support_agent">support_agent</span>
+</div>
+<span class="font-bold text-sm">咨询顾问</span>
+</button>
+<button class="bg-surface-container-lowest p-6 rounded-xl flex flex-col items-center justify-center gap-3 transition-all hover:bg-primary/5 group shadow-sm">
+<div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-3xl" data-icon="star">star</span>
+</div>
+<span class="font-bold text-sm">热门教练</span>
+</button>
+</section>
+<!-- Nearby Group Classes -->
+<section class="mb-10">
+<div class="flex justify-between items-end mb-6">
+<div>
+<h2 class="text-2xl font-black lexend">周边团课</h2>
+<p class="text-on-surface-variant text-sm mt-1">发现您家门口的高品质课程</p>
+</div>
+<button class="text-primary font-bold text-sm flex items-center gap-1">
+                    查看全部 <span class="material-symbols-outlined text-sm">arrow_forward_ios</span>
+</button>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6">
+<!-- Course Card 1 -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm group">
+<div class="relative aspect-[4/3]">
+<img class="w-full h-full object-cover" data-alt="group yoga session in a bright modern community center room with large windows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBjIwGzTOcFBFYrzXzgy7NonzKua-8k_a44lNPmceCchx3CYu5N3looVt3OGXqoBCgFjF0abEjJ8MIAaIyDmTohnVDMDzPqC60Fld-YhdyO-E3wjKXyjCmZGj5SX7L3KG_N66aH6LNQcjEI33o1pzo-1dgP9ARRHFVYxbrrNQtfKja7SAnQAolYTXVFoyoIVi-m_qiLqqemEy0W07lVVNKK8zsyft5-vbeFEzC6svsUD9prmVPCenw1931IWaP2AZNQysgAnVFGV3I"/>
+<div class="absolute top-2 left-2 bg-surface-container-lowest/90 backdrop-blur-md px-2 py-0.5 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[10px] text-primary" data-icon="location_on">location_on</span>
+<span class="text-[9px] font-bold">幸福小区</span>
+</div>
+</div>
+<div class="p-3">
+<h3 class="font-bold text-sm line-clamp-1">塑形流瑜伽课程</h3>
+<div class="flex justify-between items-center mt-1">
+<span class="text-primary font-black text-sm lexend">¥128</span>
+<span class="text-[10px] text-on-surface-variant">余3席</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant text-[10px] mt-2">
+<span class="material-symbols-outlined text-[12px]" data-icon="schedule">schedule</span>
+<span>今天 18:30</span>
+</div>
+<button class="w-full mt-3 bg-surface-container-low py-2 rounded-lg font-bold text-[11px] transition-all hover:bg-primary-container hover:text-on-primary-container">立即预约</button>
+</div>
+</div>
+<!-- Course Card 2 -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm group">
+<div class="relative aspect-[4/3]">
+<img class="w-full h-full object-cover" data-alt="high intensity interval training session with kettlebells and battle ropes" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBP189LltKEp985sfJgMXFN2AHBIje69Q-hKLb_9ax9dAQGwCItEhGDQJ6j2Xep20MAV8yEWK8IYtMU93yikkqZxE8dv11YdQlNeSJMN03wN-3_wPH1jTh4SyFKTfIT13jeY3HAKBywKP9Sx4nEGgBeCsnqIxxqzIbaAURmzyrJmg4zm2YOGLdpeXFIzF9PR5J2N3q18p7DN797rEEAdSM8EHNiJJeUbVWunKBjk3FiumiJqO1AVpWxj-i59fBNSFQiODtTUh6-DnQ"/>
+<div class="absolute top-2 left-2 bg-surface-container-lowest/90 backdrop-blur-md px-2 py-0.5 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[10px] text-primary" data-icon="location_on">location_on</span>
+<span class="text-[9px] font-bold">枫丹丽舍</span>
+</div>
+</div>
+<div class="p-3">
+<h3 class="font-bold text-sm line-clamp-1">户外燃脂 HIIT 营</h3>
+<div class="flex justify-between items-center mt-1">
+<span class="text-primary font-black text-sm lexend">¥99</span>
+<span class="text-[10px] text-on-surface-variant">余8席</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant text-[10px] mt-2">
+<span class="material-symbols-outlined text-[12px]" data-icon="schedule">schedule</span>
+<span>明天 07:00</span>
+</div>
+<button class="w-full mt-3 bg-surface-container-low py-2 rounded-lg font-bold text-[11px] transition-all hover:bg-primary-container hover:text-on-primary-container">立即预约</button>
+</div>
+</div>
+<!-- Course Card 3 -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm group">
+<div class="relative aspect-[4/3]">
+<img class="w-full h-full object-cover" data-alt="kettlebell strength training class in a private gym setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7g3P74bfupeHgOCIt-mZkI4n3Tx6oAhtb3b45dcQ2PTTduG_PLBqZtoF4Wg6MTIOPyCGYjFCajGT1KDtTcbYnJCkcyJo2qo-RBeM0qyrh8N7-DLocrvaxVHVCR9aIp2ADSuKvb9qqIaxS5k5gVdA3MEREegudJd-oAdd43WSmZQ52_KUCliFdBrQDaRnKV-FapqovW4Jd24VDhRiRV8FB9wcc51acZEj-l5_qQuptR2BacyLuS3JZwtoQb3dIlxRbZFzIIMk1W3Q"/>
+<div class="absolute top-2 left-2 bg-surface-container-lowest/90 backdrop-blur-md px-2 py-0.5 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[10px] text-primary" data-icon="location_on">location_on</span>
+<span class="text-[9px] font-bold">华润橡树湾</span>
+</div>
+</div>
+<div class="p-3">
+<h3 class="font-bold text-sm line-clamp-1">核心力量突破训练</h3>
+<div class="flex justify-between items-center mt-1">
+<span class="text-primary font-black text-sm lexend">¥158</span>
+<span class="text-[10px] text-on-surface-variant">余2席</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant text-[10px] mt-2">
+<span class="material-symbols-outlined text-[12px]" data-icon="schedule">schedule</span>
+<span>明天 19:00</span>
+</div>
+<button class="w-full mt-3 bg-surface-container-low py-2 rounded-lg font-bold text-[11px] transition-all hover:bg-primary-container hover:text-on-primary-container">立即预约</button>
+</div>
+</div>
+<!-- Course Card 4 (Placeholder to balance grid) -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm group">
+<div class="relative aspect-[4/3]">
+<img class="w-full h-full object-cover" data-alt="boxing class training" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtv3lH8n5D5-R_7T7rA8u_n4S7A9pG8wzXWfK7-9u-l9p6Y9j8E3w-m9O-f9G-r9v-r9s-l9p6Y9j8E3w-m9O-f9G-r9v-r9s"/>
+<div class="absolute top-2 left-2 bg-surface-container-lowest/90 backdrop-blur-md px-2 py-0.5 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[10px] text-primary" data-icon="location_on">location_on</span>
+<span class="text-[9px] font-bold">万科金域</span>
+</div>
+</div>
+<div class="p-3">
+<h3 class="font-bold text-sm line-clamp-1">拳击有氧初体验</h3>
+<div class="flex justify-between items-center mt-1">
+<span class="text-primary font-black text-sm lexend">¥149</span>
+<span class="text-[10px] text-on-surface-variant">余5席</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant text-[10px] mt-2">
+<span class="material-symbols-outlined text-[12px]" data-icon="schedule">schedule</span>
+<span>周六 10:00</span>
+</div>
+<button class="w-full mt-3 bg-surface-container-low py-2 rounded-lg font-bold text-[11px] transition-all hover:bg-primary-container hover:text-on-primary-container">立即预约</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Star Coaches -->
+<section class="mb-10 overflow-hidden">
+<div class="flex justify-between items-end mb-6">
+<div>
+<h2 class="text-2xl font-black lexend">明星教练</h2>
+<p class="text-on-surface-variant text-sm mt-1">每一位都是行业顶级专家</p>
+</div>
+</div>
+<div class="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
+<!-- Coach 1 -->
+<div class="min-w-[200px] bg-surface-container-lowest p-5 rounded-xl text-center shadow-sm border border-transparent hover:border-primary-container transition-all cursor-pointer">
+<div class="w-24 h-24 mx-auto rounded-full overflow-hidden mb-4 ring-4 ring-primary-container/10">
+<img class="w-full h-full object-cover" data-alt="professional female fitness coach profile photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7d9J4FGzIBYP31keJpQw_xWrCQFwTbU6SxXZI4CawiVgaBh_I-NkhC3PgaPH9wynyDUJvl-LOnNqSs1wD9vKqElzUuNdY7xLEPtYPMQZtj85KwU-EMkf1t0ORSLFnqRr_XWsDqf-6n4QPV9Z5DzFdudrnvjz85pA00tB_MUpY4JTiOQIZ3o_AZemfRpgRKdw72uf0AHFudBiHOsnMJ2cvItGUaFsLb7gMnQMi7av9ZAcCas4AUGJcvNPeo6Ap3F4ZaLTbsWBMkCA"/>
+</div>
+<h4 class="font-bold">Coach Lisa</h4>
+<p class="text-primary text-[10px] font-black tracking-widest uppercase mt-1 lexend">10年教龄</p>
+<div class="mt-3 flex flex-wrap justify-center gap-1">
+<span class="bg-surface-container px-2 py-0.5 rounded text-[10px] text-on-surface-variant">产后康复</span>
+<span class="bg-surface-container px-2 py-0.5 rounded text-[10px] text-on-surface-variant">普拉提</span>
+</div>
+</div>
+<!-- Coach 2 -->
+<div class="min-w-[200px] bg-surface-container-lowest p-5 rounded-xl text-center shadow-sm border border-transparent hover:border-primary-container transition-all cursor-pointer">
+<div class="w-24 h-24 mx-auto rounded-full overflow-hidden mb-4 ring-4 ring-primary-container/10">
+<img class="w-full h-full object-cover" data-alt="professional male athletic trainer profile photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLE93v0KOBFywHcuQqikL7UUgI8XyoKqoIau0BjRu7zWMLssgrOr3iusGxJQT_f2gQQKaQWPxMXmo0CFyyT4spj29zp-nV2WhDk6VkXq6gutPNb8MmMOO4EaaLisrxeQfEiLOIW-_hTke7-SNZFcKNoGtj8m8gkMpLJyzxtp14sHyDXTOKoaACSGdN1MY--mJMVdgDkUid7clJsX0EWSeuJomH1qrprE4B0Z0Dnohjak838ZFJX5gGAsSVlQstQ0_K6qsrP9X20bU"/>
+</div>
+<h4 class="font-bold">Coach David</h4>
+<p class="text-primary text-[10px] font-black tracking-widest uppercase mt-1 lexend">8年教龄</p>
+<div class="mt-3 flex flex-wrap justify-center gap-1">
+<span class="bg-surface-container px-2 py-0.5 rounded text-[10px] text-on-surface-variant">力量举</span>
+<span class="bg-surface-container px-2 py-0.5 rounded text-[10px] text-on-surface-variant">减脂控重</span>
+</div>
+</div>
+<!-- Coach 3 -->
+<div class="min-w-[200px] bg-surface-container-lowest p-5 rounded-xl text-center shadow-sm border border-transparent hover:border-primary-container transition-all cursor-pointer">
+<div class="w-24 h-24 mx-auto rounded-full overflow-hidden mb-4 ring-4 ring-primary-container/10">
+<img class="w-full h-full object-cover" data-alt="professional sports performance coach profile photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBwU05VyrLunT8zqO1GRCjXed3zG3Uq4jGg-NYC23hrmgaXeq8xsKGtDfEmQ8KH-g6boqQmWtEFcbuGxcjwwy7wujO-V3vB276v6Sf3eapKfY5U3B2svRX603G3YmsN5ugpus8blZY0TxOXK9qRfYvSCGRReLK1TUK_vFS5QCQoyCJJRoJF32NjaKzUX2k941ofmQqlxLoDg5xaMGSD9SzPpAtJg9E4Bq8ewGQg3djHA0uQGl_4BcMCJePC3dY86gWpRqEfF644Zw"/>
+</div>
+<h4 class="font-bold">Coach Mike</h4>
+<p class="text-primary text-[10px] font-black tracking-widest uppercase mt-1 lexend">12年教龄</p>
+<div class="mt-3 flex flex-wrap justify-center gap-1">
+<span class="bg-surface-container px-2 py-0.5 rounded text-[10px] text-on-surface-variant">少儿体能</span>
+<span class="bg-surface-container px-2 py-0.5 rounded text-[10px] text-on-surface-variant">篮球专项</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Latest Insights -->
+<section class="mb-12">
+<h2 class="text-2xl font-black lexend mb-6">社区动态</h2>
+<div class="space-y-4">
+<div class="bg-surface-container-lowest p-4 rounded-xl flex gap-4 shadow-sm hover:translate-x-1 transition-transform cursor-pointer">
+<div class="w-24 h-24 rounded-lg overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="healthy meal prep on a wooden table with fresh ingredients" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-pFZds5fVqI0Ua0pfM_TzYk5sJ2l-J1NL6l4U4jBi8FG_abLAp4fVIFhoWpsseNWHDe-rJ7hdP6O1JYkyWqvtKgAOZm_TOUuqbufAMTMQoFBd1J8ptNMvr4JXpDtBucS9P0nRKzipQoJk3ie7ruoxB3rYovEUTnvYPXFlDV5tbPLtEzQtA9lDMiTgFFZOXWN2auP3yxXJFPnJ-EDcQLD8mZEY-H1J2oKyxS3fTBUe8n68rmsJkVoSaW5JG-wFgBzNlVwPTX2s9R0"/>
+</div>
+<div class="flex flex-col justify-between py-1">
+<div>
+<span class="bg-primary/10 text-primary text-[10px] font-bold px-2 py-0.5 rounded uppercase">营养指南</span>
+<h4 class="font-bold mt-2 text-on-surface line-clamp-1">夏日减脂期如何正确补充水分？</h4>
+<p class="text-on-surface-variant text-xs mt-1 line-clamp-2">不仅是喝水那么简单，电解质的平衡决定了你的训练效果...</p>
+</div>
+<span class="text-[10px] text-on-surface-variant opacity-60">2小时前 · 3.2k 阅读</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-xl flex gap-4 shadow-sm hover:translate-x-1 transition-transform cursor-pointer">
+<div class="w-24 h-24 rounded-lg overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="running shoes and stopwatch on an athletic track" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbQWHFl3zFagtgOpVmnTWuecIrgyFRlVCIt10--LMkTAZTBoVYwJqEagaDbgf-UqQp2XlzbE5BYidjN8frmk5xDZ_-SaVyQnvjSk4u5ahd_CBEjMSj1_uoWqMTw6Gr82FoWf2k1f-mGHGtLXNdO5cg6u9uWhxQ72MDkvxu7c2X5h3A4T9d1ANDVUpBoDD60uFhORG6opAXpSDbm8jk_U2LtW7UkuxJRYyt3oCDgTGl5aTxkNXm90ffDjDBZwzujp4du3DNlCc6pM0"/>
+</div>
+<div class="flex flex-col justify-between py-1">
+<div>
+<span class="bg-primary/10 text-primary text-[10px] font-bold px-2 py-0.5 rounded uppercase">社区公告</span>
+<h4 class="font-bold mt-2 text-on-surface line-clamp-1">KINETIC 华东区教练招募计划正式启动</h4>
+<p class="text-on-surface-variant text-xs mt-1 line-clamp-2">加入我们，将高品质运动带入千万家庭，成就更好的自己。</p>
+</div>
+<span class="text-[10px] text-on-surface-variant opacity-60">昨天 · 1.5k 阅读</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg shadow-[0_-12px_24px_0_rgba(44,47,48,0.06)] rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-[#9c3f00] dark:text-[#ff7a2f] font-bold bg-[#ff7a2f]/10 rounded-xl px-4 py-1 transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="home_app_logo" style="font-variation-settings: 'FILL' 1;">home_app_logo</span>
+<span class="font-['PingFang_SC'] text-[11px] font-medium mt-1">首页</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#2c2f30] dark:text-slate-400 opacity-60 hover:text-[#ff7a2f] transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="fitness_center">fitness_center</span>
+<span class="font-['PingFang_SC'] text-[11px] font-medium mt-1">课程</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#2c2f30] dark:text-slate-400 opacity-60 hover:text-[#ff7a2f] transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+<span class="font-['PingFang_SC'] text-[11px] font-medium mt-1">商城</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#2c2f30] dark:text-slate-400 opacity-60 hover:text-[#ff7a2f] transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-['PingFang_SC'] text-[11px] font-medium mt-1">我的</span>
+</a>
+</nav>
+<!-- FAB -->
+<button class="fixed right-6 bottom-28 w-14 h-14 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-full shadow-lg flex items-center justify-center transform active:scale-90 transition-all z-40">
+<span class="material-symbols-outlined text-2xl" data-icon="add">add</span>
+</button>
+</body></html>

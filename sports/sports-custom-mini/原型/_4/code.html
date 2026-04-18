@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KINETIC - 课程中心</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-container": "#e2e2e5",
+                    "surface-container-highest": "#dadddf",
+                    "on-secondary": "#f2f2f5",
+                    "on-error-container": "#520c00",
+                    "on-secondary-container": "#505254",
+                    "on-background": "#2c2f30",
+                    "primary-dim": "#893600",
+                    "on-tertiary": "#f4f2f2",
+                    "error-container": "#f95630",
+                    "secondary-fixed": "#e2e2e5",
+                    "surface-tint": "#9c3f00",
+                    "on-surface": "#2c2f30",
+                    "error-dim": "#b92902",
+                    "on-primary-fixed": "#000000",
+                    "tertiary": "#5c5b5b",
+                    "tertiary-fixed": "#ffffff",
+                    "secondary-fixed-dim": "#d4d4d7",
+                    "surface": "#f5f6f7",
+                    "on-tertiary-container": "#626262",
+                    "outline": "#757778",
+                    "surface-bright": "#f5f6f7",
+                    "primary-fixed-dim": "#f66700",
+                    "tertiary-fixed-dim": "#f2f0f0",
+                    "secondary": "#5a5c5e",
+                    "surface-container-low": "#eff1f2",
+                    "on-tertiary-fixed": "#505050",
+                    "inverse-surface": "#0c0f10",
+                    "secondary-dim": "#4e5052",
+                    "on-primary-container": "#401500",
+                    "on-error": "#ffefec",
+                    "tertiary-container": "#ffffff",
+                    "primary": "#9c3f00",
+                    "surface-container-high": "#e0e3e4",
+                    "tertiary-dim": "#504f4f",
+                    "surface-container": "#e6e8ea",
+                    "background": "#f5f6f7",
+                    "primary-fixed": "#ff7a2f",
+                    "on-primary-fixed-variant": "#4f1c00",
+                    "outline-variant": "#abadae",
+                    "error": "#b02500",
+                    "primary-container": "#ff7a2f",
+                    "on-secondary-fixed-variant": "#5a5c5e",
+                    "on-tertiary-fixed-variant": "#6d6d6d",
+                    "surface-dim": "#d1d5d7",
+                    "inverse-primary": "#fe6b00",
+                    "surface-variant": "#dadddf",
+                    "on-surface-variant": "#595c5d",
+                    "on-secondary-fixed": "#3e3f42",
+                    "inverse-on-surface": "#9b9d9e",
+                    "on-primary": "#fff0ea"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Lexend"],
+                    "body": ["PingFang SC", "Plus Jakarta Sans"],
+                    "label": ["PingFang SC", "Plus Jakarta Sans"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'PingFang SC', sans-serif; }
+        .font-lexend { font-family: 'Lexend', sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-surface-container-low dark:bg-zinc-900 shadow-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-orange-700 dark:text-orange-500" data-icon="bolt">bolt</span>
+<h1 class="text-xl font-black italic text-orange-700 dark:text-orange-500 font-lexend tracking-tighter uppercase">KINETIC</h1>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-zinc-500 dark:text-zinc-400 hover:opacity-80 transition-opacity active:scale-95 duration-200">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</button>
+<button class="text-zinc-500 dark:text-zinc-400 hover:opacity-80 transition-opacity active:scale-95 duration-200">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+</div>
+</header>
+<main class="pt-16 pb-24">
+<!-- Main Tabs: Private vs Group -->
+<section class="sticky top-16 z-40 bg-surface/90 backdrop-blur-md px-6 pt-4 pb-2">
+<div class="flex bg-surface-container-high p-1 rounded-xl">
+<button class="flex-1 py-2 text-sm font-bold rounded-lg transition-all duration-300 bg-primary-container text-on-primary-container shadow-sm" id="privateTab" onclick="toggleView('private')">
+                私教课
+            </button>
+<button class="flex-1 py-2 text-sm font-bold rounded-lg transition-all duration-300 text-on-surface-variant" id="groupTab" onclick="toggleView('group')">
+                团课
+            </button>
+</div>
+<!-- Category Tabs (Conditional rendering based on active view, or simplified for consistency) -->
+<div class="flex gap-4 overflow-x-auto no-scrollbar py-4">
+<button class="px-6 py-1.5 rounded-full bg-surface-container-lowest border border-outline-variant/30 text-primary font-bold whitespace-nowrap text-sm">全部</button>
+<button class="px-6 py-1.5 rounded-full bg-transparent text-on-surface-variant font-medium whitespace-nowrap text-sm">篮球</button>
+<button class="px-6 py-1.5 rounded-full bg-transparent text-on-surface-variant font-medium whitespace-nowrap text-sm">足球</button>
+<button class="px-6 py-1.5 rounded-full bg-transparent text-on-surface-variant font-medium whitespace-nowrap text-sm">羽毛球</button>
+<button class="px-6 py-1.5 rounded-full bg-transparent text-on-surface-variant font-medium whitespace-nowrap text-sm">体能</button>
+</div>
+</section>
+<!-- Content Sections -->
+<div class="px-6 space-y-6" id="privateLessons">
+<!-- Private Lesson Package Card 1 -->
+<div class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm border border-outline-variant/10">
+<div class="p-5">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="text-xl font-black text-on-surface">精英私教·12节课包</h3>
+<p class="text-xs text-on-surface-variant mt-1">适合有明确提优需求的用户</p>
+</div>
+<span class="bg-primary/10 text-primary text-[10px] font-bold px-2 py-1 rounded">HOT</span>
+</div>
+<div class="flex flex-wrap gap-2 mb-6">
+<div class="flex items-center gap-1 px-2 py-1 bg-surface-container-low rounded-lg text-[11px] text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px]" data-icon="star">star</span>
+<span>专业导师</span>
+</div>
+<div class="flex items-center gap-1 px-2 py-1 bg-surface-container-low rounded-lg text-[11px] text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px]" data-icon="schedule">schedule</span>
+<span>时间灵活</span>
+</div>
+<div class="flex items-center gap-1 px-2 py-1 bg-surface-container-low rounded-lg text-[11px] text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px]" data-icon="location_on">location_on</span>
+<span>上门授课</span>
+</div>
+</div>
+<div class="flex items-end justify-between">
+<div>
+<span class="text-2xl font-black text-primary font-lexend">¥1200</span>
+<span class="text-xs text-zinc-400 ml-1">/ 套餐</span>
+</div>
+<button class="px-6 py-2.5 bg-primary text-on-primary font-bold rounded-xl shadow-lg shadow-primary/20 active:scale-95 transition-transform">立即订购</button>
+</div>
+</div>
+</div>
+<!-- Private Lesson Package Card 2 -->
+<div class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm border border-outline-variant/10">
+<div class="p-5">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="text-xl font-black text-on-surface">零基础启蒙·5节课包</h3>
+<p class="text-xs text-on-surface-variant mt-1">建立兴趣，掌握核心基础</p>
+</div>
+</div>
+<div class="flex flex-wrap gap-2 mb-6">
+<div class="flex items-center gap-1 px-2 py-1 bg-surface-container-low rounded-lg text-[11px] text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px]" data-icon="school">school</span>
+<span>系统化教学</span>
+</div>
+<div class="flex items-center gap-1 px-2 py-1 bg-surface-container-low rounded-lg text-[11px] text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px]" data-icon="history">history</span>
+<span>可退换课</span>
+</div>
+</div>
+<div class="flex items-end justify-between">
+<div>
+<span class="text-2xl font-black text-primary font-lexend">¥599</span>
+<span class="text-xs text-zinc-400 ml-1">/ 套餐</span>
+</div>
+<button class="px-6 py-2.5 bg-surface-container-high text-on-surface font-bold rounded-xl active:scale-95 transition-transform">立即订购</button>
+</div>
+</div>
+</div>
+</div>
+<div class="hidden px-6 space-y-4" id="groupLessons">
+<!-- Group Lesson Card 1 -->
+<div class="bg-surface-container-lowest rounded-2xl p-4 shadow-sm border border-outline-variant/10">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2 bg-orange-50 px-2 py-1 rounded text-primary text-[10px] font-bold">
+<span class="material-symbols-outlined text-[14px]" data-icon="event">event</span>
+<span>今天 15:00 - 16:30</span>
+</div>
+<div class="text-xs font-bold text-on-surface-variant">
+                    已报 <span class="text-primary font-black">5</span>/10人
+                </div>
+</div>
+<h3 class="text-lg font-bold text-on-surface mb-1">青少年篮球基础团课</h3>
+<div class="flex items-center gap-1 text-on-surface-variant text-sm mb-4">
+<span class="material-symbols-outlined text-[16px] text-primary" data-icon="location_on">location_on</span>
+<span>幸福小区 - 1号篮球场</span>
+</div>
+<div class="flex items-center justify-between pt-3 border-t border-dashed border-outline-variant/30">
+<div class="flex items-baseline">
+<span class="text-xl font-black text-on-surface font-lexend">¥99</span>
+<span class="text-[10px] text-zinc-400 ml-0.5">/人</span>
+</div>
+<button class="px-5 py-2 bg-primary text-white text-sm font-bold rounded-lg shadow-md active:scale-95 transition-all">立即报名</button>
+</div>
+</div>
+<!-- Group Lesson Card 2 -->
+<div class="bg-surface-container-lowest rounded-2xl p-4 shadow-sm border border-outline-variant/10">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2 bg-surface-container-low px-2 py-1 rounded text-on-surface-variant text-[10px] font-bold">
+<span class="material-symbols-outlined text-[14px]" data-icon="event">event</span>
+<span>明天 09:30 - 11:00</span>
+</div>
+<div class="text-xs font-bold text-on-surface-variant">
+                    已报 <span class="text-primary font-black">8</span>/12人
+                </div>
+</div>
+<h3 class="text-lg font-bold text-on-surface mb-1">周末足球小将集训营</h3>
+<div class="flex items-center gap-1 text-on-surface-variant text-sm mb-4">
+<span class="material-symbols-outlined text-[16px] text-primary" data-icon="location_on">location_on</span>
+<span>阳光运动公园 - 足球场</span>
+</div>
+<div class="flex items-center justify-between pt-3 border-t border-dashed border-outline-variant/30">
+<div class="flex items-baseline">
+<span class="text-xl font-black text-on-surface font-lexend">¥120</span>
+<span class="text-[10px] text-zinc-400 ml-0.5">/人</span>
+</div>
+<button class="px-5 py-2 bg-primary text-white text-sm font-bold rounded-lg shadow-md active:scale-95 transition-all">立即报名</button>
+</div>
+</div>
+<!-- Group Lesson Card 3 -->
+<div class="bg-surface-container-lowest rounded-2xl p-4 shadow-sm border border-outline-variant/10">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2 bg-surface-container-low px-2 py-1 rounded text-on-surface-variant text-[10px] font-bold">
+<span class="material-symbols-outlined text-[14px]" data-icon="event">event</span>
+<span>明天 18:00 - 19:30</span>
+</div>
+<div class="text-xs font-bold text-on-surface-variant">
+                    已报 <span class="text-primary font-black">2</span>/8人
+                </div>
+</div>
+<h3 class="text-lg font-bold text-on-surface mb-1">羽毛球技巧专项训练</h3>
+<div class="flex items-center gap-1 text-on-surface-variant text-sm mb-4">
+<span class="material-symbols-outlined text-[16px] text-primary" data-icon="location_on">location_on</span>
+<span>天健运动馆 - 5号场地</span>
+</div>
+<div class="flex items-center justify-between pt-3 border-t border-dashed border-outline-variant/30">
+<div class="flex items-baseline">
+<span class="text-xl font-black text-on-surface font-lexend">¥150</span>
+<span class="text-[10px] text-zinc-400 ml-0.5">/人</span>
+</div>
+<button class="px-5 py-2 bg-primary text-white text-sm font-bold rounded-lg shadow-md active:scale-95 transition-all">立即报名</button>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pt-2 pb-6 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl z-50 rounded-t-xl shadow-[0_-12px_24px_rgba(0,0,0,0.06)]">
+<a class="flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-500 hover:text-orange-500 active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="text-[10px] tracking-wide font-medium">首页</span>
+</a>
+<a class="flex flex-col items-center justify-center text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-950/30 rounded-xl px-3 py-1 active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="fitness_center">fitness_center</span>
+<span class="text-[10px] tracking-wide font-bold">课程</span>
+</a>
+<a class="flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-500 hover:text-orange-500 active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+<span class="text-[10px] tracking-wide font-medium">商城</span>
+</a>
+<a class="flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-500 hover:text-orange-500 active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="text-[10px] tracking-wide font-medium">我的</span>
+</a>
+</nav>
+<script>
+    function toggleView(view) {
+        const privateLessons = document.getElementById('privateLessons');
+        const groupLessons = document.getElementById('groupLessons');
+        const privateTab = document.getElementById('privateTab');
+        const groupTab = document.getElementById('groupTab');
+
+        if (view === 'private') {
+            privateLessons.classList.remove('hidden');
+            groupLessons.classList.add('hidden');
+            
+            privateTab.classList.add('bg-primary-container', 'text-on-primary-container', 'shadow-sm');
+            privateTab.classList.remove('text-on-surface-variant');
+            
+            groupTab.classList.remove('bg-primary-container', 'text-on-primary-container', 'shadow-sm');
+            groupTab.classList.add('text-on-surface-variant');
+        } else {
+            privateLessons.classList.add('hidden');
+            groupLessons.classList.remove('hidden');
+            
+            groupTab.classList.add('bg-primary-container', 'text-on-primary-container', 'shadow-sm');
+            groupTab.classList.remove('text-on-surface-variant');
+            
+            privateTab.classList.remove('bg-primary-container', 'text-on-primary-container', 'shadow-sm');
+            privateTab.classList.add('text-on-surface-variant');
+        }
+    }
+</script>
+</body></html>

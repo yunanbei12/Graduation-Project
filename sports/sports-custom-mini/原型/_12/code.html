@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Product Specification Selection</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&amp;family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error": "#ffefec",
+                        "outline": "#757778",
+                        "primary-dim": "#893600",
+                        "on-secondary": "#f2f2f5",
+                        "primary-fixed-dim": "#f66700",
+                        "on-primary-container": "#401500",
+                        "surface-tint": "#9c3f00",
+                        "surface-dim": "#d1d5d7",
+                        "secondary-container": "#e2e2e5",
+                        "inverse-primary": "#fe6b00",
+                        "error": "#b02500",
+                        "on-surface-variant": "#595c5d",
+                        "tertiary-dim": "#504f4f",
+                        "on-background": "#2c2f30",
+                        "surface-container-low": "#eff1f2",
+                        "error-dim": "#b92902",
+                        "surface-container-high": "#e0e3e4",
+                        "on-tertiary-fixed": "#505050",
+                        "secondary-fixed": "#e2e2e5",
+                        "primary": "#9c3f00",
+                        "on-secondary-fixed": "#3e3f42",
+                        "on-secondary-container": "#505254",
+                        "tertiary-container": "#ffffff",
+                        "on-tertiary-fixed-variant": "#6d6d6d",
+                        "error-container": "#f95630",
+                        "on-primary": "#fff0ea",
+                        "on-surface": "#2c2f30",
+                        "on-primary-fixed": "#000000",
+                        "tertiary-fixed-dim": "#f2f0f0",
+                        "surface-container-highest": "#dadddf",
+                        "primary-fixed": "#ff7a2f",
+                        "primary-container": "#ff7a2f",
+                        "on-error-container": "#520c00",
+                        "tertiary-fixed": "#ffffff",
+                        "surface-bright": "#f5f6f7",
+                        "tertiary": "#5c5b5b",
+                        "surface-variant": "#dadddf",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed-variant": "#5a5c5e",
+                        "secondary": "#5a5c5e",
+                        "on-primary-fixed-variant": "#4f1c00",
+                        "inverse-on-surface": "#9b9d9e",
+                        "surface-container": "#e6e8ea",
+                        "surface": "#f5f6f7",
+                        "on-tertiary-container": "#626262",
+                        "inverse-surface": "#0c0f10",
+                        "secondary-fixed-dim": "#d4d4d7",
+                        "outline-variant": "#abadae",
+                        "on-tertiary": "#f4f2f2",
+                        "background": "#f5f6f7",
+                        "secondary-dim": "#4e5052"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Lexend"],
+                        "body": ["Plus Jakarta Sans"],
+                        "label": ["Plus Jakarta Sans"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Plus Jakarta Sans', 'PingFang SC', sans-serif; }
+        .font-lexend { font-family: 'Lexend', sans-serif; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen flex items-end justify-center">
+<!-- Mock Background for Context (Product Detail Page) -->
+<div class="fixed inset-0 z-0 overflow-hidden opacity-40 blur-sm pointer-events-none">
+<header class="h-16 flex items-center justify-between px-6 bg-[#f5f6f7]">
+<span class="material-symbols-outlined text-[#9c3f00]">arrow_back</span>
+<span class="font-lexend font-bold tracking-tight text-[#9c3f00]">PRODUCT DETAILS</span>
+<span class="material-symbols-outlined text-[#9c3f00]">share</span>
+</header>
+<div class="p-6">
+<div class="aspect-square rounded-xl bg-surface-container-highest mb-6"></div>
+<div class="h-8 w-3/4 bg-surface-container-high rounded mb-4"></div>
+<div class="h-4 w-1/2 bg-surface-container-high rounded mb-8"></div>
+<div class="space-y-4">
+<div class="h-20 bg-surface-container-high rounded"></div>
+<div class="h-20 bg-surface-container-high rounded"></div>
+</div>
+</div>
+</div>
+<!-- Semi-transparent Overlay -->
+<div class="fixed inset-0 bg-on-surface/20 backdrop-blur-sm z-10"></div>
+<!-- SKU Selector Bottom Sheet -->
+<div class="relative z-20 w-full max-w-md bg-surface-container-lowest rounded-t-[2rem] shadow-[0_-12px_40px_rgba(44,47,48,0.15)] flex flex-col overflow-hidden animate-slide-up">
+<!-- Pull Bar (Visual affordance) -->
+<div class="flex justify-center pt-3 pb-1">
+<div class="w-10 h-1 rounded-full bg-outline-variant/30"></div>
+</div>
+<!-- Header -->
+<div class="flex justify-end px-6 pt-2">
+<button class="p-2 rounded-full hover:bg-surface-container transition-colors active:scale-95">
+<span class="material-symbols-outlined text-on-surface-variant">close</span>
+</button>
+</div>
+<div class="px-6 pb-8 space-y-8">
+<!-- Product Summary Area -->
+<div class="flex gap-4">
+<div class="w-28 h-28 rounded-xl overflow-hidden bg-surface-container-low flex-shrink-0">
+<img alt="Pro Trainer Black" class="w-full h-full object-cover" data-alt="Close up of a professional black athletic sneaker with sleek orange accents on a clean white background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvPnz4tqnQXoam9NXVz7oLc8RIq2_0GIP1xlX06u1FIjAriTB4e9hXGUilLelmDC8AFNnTPjh_qSWZd52OS_TQURmT5WLTxvNCduhCCryz29tFgo81kctGMlweQTdQkiE_u7xVWIb2svlzONmpY2tK4-EsQKrDrgas1cK_-9lwieBwdjFOzdB-SIBmxbd1VnLNdSbJCwDnc3voh3QeFJDmExyq6-mXk4e0gZ9aq8_QLRyvWESpcYK5N9Z1FHZ5U4hfd6waZV2K6Eg"/>
+</div>
+<div class="flex flex-col justify-end pb-1">
+<div class="flex items-baseline gap-1">
+<span class="text-primary text-sm font-bold">¥</span>
+<span class="text-primary text-3xl font-extrabold font-lexend tracking-tight">899</span>
+</div>
+<p class="text-on-surface-variant text-sm mt-1">Stock: 128 units</p>
+<p class="text-on-surface-variant text-xs mt-2 font-medium">已选: <span class="text-on-surface">极昼白, 41</span></p>
+</div>
+</div>
+<!-- Color Selection -->
+<section class="space-y-4">
+<h3 class="text-sm font-bold tracking-wider text-on-surface/80 uppercase">颜色</h3>
+<div class="flex flex-wrap gap-3">
+<!-- Color Chip 1 -->
+<button class="group flex items-center gap-2 px-3 py-2 rounded-xl border border-outline-variant/30 hover:border-primary-fixed transition-all active:scale-95">
+<div class="w-8 h-8 rounded-lg overflow-hidden bg-surface-container">
+<img alt="Dynamic Orange" class="w-full h-full object-cover" data-alt="Minimalist macro shot of vibrant orange sneaker mesh fabric texture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbRN4Y5XURexKqzVigGgmWKXaidtGYimado3h6tPIJkXxgt_ecQyKl5VYGFNYWrDVlUZH9LKFQwHI94umIuJJay1C6q030B2oDIP9S-IXHJnIHNeHyje1FOyxfNhHDM2kjixn1AxxdD-dtxlo5gPaF5xqp3nlUStOdIDYyQYbtvh4IfatuLMhFYpiqWhmbTJ1C_OUOeiKWU_lnKQZPgDG7Z9LsRgdxdxhGW3_D62vKSglXGRd8z31mVkdqeVZHtA8BncTiGyRGd3M"/>
+</div>
+<span class="text-sm font-medium pr-1">动力橙</span>
+</button>
+<!-- Color Chip 2 (Active) -->
+<button class="group flex items-center gap-2 px-3 py-2 rounded-xl border-2 border-primary-fixed bg-primary-fixed/5 transition-all active:scale-95">
+<div class="w-8 h-8 rounded-lg overflow-hidden bg-surface-container">
+<img alt="Polar White" class="w-full h-full object-cover" data-alt="Minimalist macro shot of clean polar white synthetic sneaker material with subtle grain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBg-i9K2kUpu_QHs_-WuBjF_q1ZJ2elwnw_Fa9cRc59Rz4najk4CMD6S9LxyDhM_xxRM-oeEJldbWCtG8bB0mbm0MuObsH5tfI4KdQvuVlm3r8EVgRligz3bYlL8VbVcTKlJGjLtV6nvMwdF3TdCReukCaTN8CdOVb53kU3rJW6VSnkwEIF2QrLAxDTITOXqXwHv-XeXruf_jWsl-kblQdsSyHd5S8sSgnzoz0_wbBKaj0sIimd6rq1MZA599hSCDw5PmfRLrF97Ks"/>
+</div>
+<span class="text-sm font-bold pr-1 text-on-primary-fixed-variant">极昼白</span>
+</button>
+</div>
+</section>
+<!-- Size Selection -->
+<section class="space-y-4">
+<div class="flex justify-between items-center">
+<h3 class="text-sm font-bold tracking-wider text-on-surface/80 uppercase">选择尺码</h3>
+<button class="text-xs text-primary font-bold underline underline-offset-4">Size Guide</button>
+</div>
+<div class="grid grid-cols-4 gap-3">
+<button class="py-3 rounded-xl border border-outline-variant/20 text-on-surface-variant font-lexend hover:border-primary-fixed hover:text-primary transition-all active:scale-90">39</button>
+<button class="py-3 rounded-xl border border-outline-variant/20 text-on-surface-variant font-lexend hover:border-primary-fixed hover:text-primary transition-all active:scale-90">40</button>
+<!-- Active Size -->
+<button class="py-3 rounded-xl bg-gradient-to-br from-primary to-primary-container text-white font-lexend font-bold shadow-lg shadow-primary/20 active:scale-90">41</button>
+<button class="py-3 rounded-xl border border-outline-variant/20 text-on-surface-variant font-lexend hover:border-primary-fixed hover:text-primary transition-all active:scale-90">42</button>
+<button class="py-3 rounded-xl border border-outline-variant/20 text-on-surface-variant font-lexend hover:border-primary-fixed hover:text-primary transition-all active:scale-90">43</button>
+<button class="py-3 rounded-xl border border-outline-variant/20 text-on-surface-variant font-lexend hover:border-primary-fixed hover:text-primary transition-all active:scale-90">44</button>
+</div>
+</section>
+<!-- Quantity -->
+<section class="flex justify-between items-center pb-4">
+<h3 class="text-sm font-bold tracking-wider text-on-surface/80 uppercase">购买数量</h3>
+<div class="flex items-center bg-surface-container-low rounded-xl p-1">
+<button class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-surface-container-highest transition-colors text-on-surface/60">
+<span class="material-symbols-outlined text-lg">remove</span>
+</button>
+<span class="w-12 text-center font-lexend font-bold text-lg">1</span>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-surface-container-highest transition-colors text-on-surface">
+<span class="material-symbols-outlined text-lg font-bold">add</span>
+</button>
+</div>
+</section>
+<!-- Bottom Action -->
+<div class="pt-2">
+<button class="w-full h-16 bg-gradient-to-r from-primary to-primary-container text-white rounded-xl font-bold text-lg tracking-widest shadow-xl shadow-primary/30 active:scale-[0.98] transition-transform flex items-center justify-center gap-3">
+                    确认购买
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shopping_cart_checkout</span>
+</button>
+<p class="text-center text-[10px] text-on-surface-variant/50 uppercase tracking-[0.2em] mt-4 font-medium">Free Shipping &amp; Returns for Members</p>
+</div>
+</div>
+</div>
+</body></html>

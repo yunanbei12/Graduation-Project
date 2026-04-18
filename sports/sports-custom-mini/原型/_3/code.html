@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KINETIC - 体育商城</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;700;900&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-container": "#e2e2e5",
+                        "surface-container-highest": "#dadddf",
+                        "on-secondary": "#f2f2f5",
+                        "on-error-container": "#520c00",
+                        "on-secondary-container": "#505254",
+                        "on-background": "#2c2f30",
+                        "primary-dim": "#893600",
+                        "on-tertiary": "#f4f2f2",
+                        "error-container": "#f95630",
+                        "secondary-fixed": "#e2e2e5",
+                        "surface-tint": "#9c3f00",
+                        "on-surface": "#2c2f30",
+                        "error-dim": "#b92902",
+                        "on-primary-fixed": "#000000",
+                        "tertiary": "#5c5b5b",
+                        "tertiary-fixed": "#ffffff",
+                        "secondary-fixed-dim": "#d4d4d7",
+                        "surface": "#f5f6f7",
+                        "on-tertiary-container": "#626262",
+                        "outline": "#757778",
+                        "surface-bright": "#f5f6f7",
+                        "primary-fixed-dim": "#f66700",
+                        "tertiary-fixed-dim": "#f2f0f0",
+                        "secondary": "#5a5c5e",
+                        "surface-container-low": "#eff1f2",
+                        "on-tertiary-fixed": "#505050",
+                        "inverse-surface": "#0c0f10",
+                        "secondary-dim": "#4e5052",
+                        "on-primary-container": "#401500",
+                        "on-error": "#ffefec",
+                        "tertiary-container": "#ffffff",
+                        "primary": "#9c3f00",
+                        "surface-container-high": "#e0e3e4",
+                        "tertiary-dim": "#504f4f",
+                        "surface-container": "#e6e8ea",
+                        "background": "#f5f6f7",
+                        "primary-fixed": "#ff7a2f",
+                        "on-primary-fixed-variant": "#4f1c00",
+                        "outline-variant": "#abadae",
+                        "error": "#b02500",
+                        "primary-container": "#ff7a2f",
+                        "on-secondary-fixed-variant": "#5a5c5e",
+                        "on-tertiary-fixed-variant": "#6d6d6d",
+                        "surface-dim": "#d1d5d7",
+                        "inverse-primary": "#fe6b00",
+                        "surface-variant": "#dadddf",
+                        "on-surface-variant": "#595c5d",
+                        "on-secondary-fixed": "#3e3f42",
+                        "inverse-on-surface": "#9b9d9e",
+                        "on-primary": "#fff0ea"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Lexend"],
+                        "body": ["Plus Jakarta Sans"],
+                        "label": ["Plus Jakarta Sans"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body { font-family: 'Plus Jakarta Sans', 'PingFang SC', sans-serif; }
+        .font-lexend { font-family: 'Lexend', sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface">
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 w-full z-50 bg-surface flex justify-between items-center px-6 h-16 w-full">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-orange-700" data-icon="bolt">bolt</span>
+<span class="font-lexend tracking-tighter uppercase text-xl font-black italic text-orange-700">KINETIC</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-zinc-500 hover:opacity-80 transition-opacity active:scale-95 duration-200" data-icon="notifications">notifications</span>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-20 pb-24 px-4 max-w-2xl mx-auto">
+<!-- Search Bar Section -->
+<section class="mb-8">
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-4 text-outline" data-icon="search">search</span>
+<input class="w-full h-12 pl-12 pr-4 bg-surface-container-lowest border-none rounded-xl text-body-md focus:ring-2 focus:ring-primary shadow-sm" placeholder="搜索训练装备或补剂..." type="text"/>
+</div>
+</section>
+<!-- Category Bento Tabs -->
+<section class="mb-8">
+<div class="grid grid-cols-4 gap-3">
+<div class="flex flex-col items-center gap-2 group cursor-pointer">
+<div class="w-14 h-14 rounded-xl bg-primary-container flex items-center justify-center text-on-primary-container group-active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-2xl" data-icon="apparel">apparel</span>
+</div>
+<span class="text-[12px] font-medium">服装</span>
+</div>
+<div class="flex flex-col items-center gap-2 group cursor-pointer">
+<div class="w-14 h-14 rounded-xl bg-surface-container-high flex items-center justify-center text-on-surface group-active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-2xl" data-icon="fitness_center">fitness_center</span>
+</div>
+<span class="text-[12px] font-medium">器械</span>
+</div>
+<div class="flex flex-col items-center gap-2 group cursor-pointer">
+<div class="w-14 h-14 rounded-xl bg-surface-container-high flex items-center justify-center text-on-surface group-active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-2xl" data-icon="vaping_rooms">vaping_rooms</span>
+</div>
+<span class="text-[12px] font-medium">护具</span>
+</div>
+<div class="flex flex-col items-center gap-2 group cursor-pointer">
+<div class="w-14 h-14 rounded-xl bg-surface-container-high flex items-center justify-center text-on-surface group-active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-2xl" data-icon="nutrition">nutrition</span>
+</div>
+<span class="text-[12px] font-medium">补剂</span>
+</div>
+</div>
+</section>
+<!-- Promotional Hero Card -->
+<div class="mb-8 relative h-40 rounded-xl overflow-hidden bg-primary shadow-xl">
+<img class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-60" data-alt="dramatic wide shot of a professional gym athlete lifting weights with cinematic lighting and deep shadows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5hFCJPU1lOdh6hp1iuBlVnmdPqSMhqMNG8j6C-b5VaP2en2vF3Vk3onmqslYe1J6PLyvDaYortXXSyEvgIAZQkPzU9lm9nXRzOg4K23WYmru3z-dnyNJjC6MEmJN5i13ArKRguUXMSOcq39WI060M8lFf3k5EbjDhdnvtti0GSCl_drRUGewZBEVBk3bujAEra-6QlYqyi0qSVdOP-FotTmmBGtbNGCpbJnW-oymADSAIyiWHHo8eNMb9nraRlGzbxuatMd85HgU"/>
+<div class="absolute inset-0 p-6 flex flex-col justify-center">
+<h2 class="text-on-primary font-black text-2xl tracking-tight leading-tight italic uppercase font-lexend">Performance<br/>Redefined</h2>
+<p class="text-on-primary/80 text-sm mt-1">夏季训练营装备限时 8.5 折</p>
+</div>
+</div>
+<!-- Product Grid -->
+<div class="grid grid-cols-2 gap-4">
+<!-- Product Item 1 -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm group">
+<div class="aspect-square bg-surface-container-low relative">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="minimalist studio product shot of premium black running shoes on a clean grey background with soft shadows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZhuFPjhbhWXTQtpbaVqk1DeTVecfNjmzkTkJFcpncloKm-ELv07qF87CM89GK8cqyZ4ZxxYDvX_m2jYR9Ud93frQoiGnrBiPrSFH208TQz1pvWo09MYE0A6uDX-ED-tUiUv_WYROWlMB5iYMZVHm5wuPPfSfjlsL2_GmVa4rV1IeYSC2RFAmM-mvynyEdiQuPPGPDdX0WbbS944fHHbTGj10wCuJ6BEHsQCAebLhlqCLe2mVgvoHC4dQI8T0jmt1_xHBMewfuuc0"/>
+<span class="absolute top-2 left-2 bg-primary text-on-primary text-[10px] px-2 py-0.5 rounded-full font-bold">HOT</span>
+</div>
+<div class="p-3">
+<h3 class="text-on-surface font-bold text-sm line-clamp-1">KINETIC 暴风系列运动鞋</h3>
+<div class="flex items-center justify-between mt-1">
+<span class="text-outline text-[10px]">销量 1.2k+</span>
+</div>
+<div class="flex items-end justify-between mt-2">
+<span class="text-primary font-black text-lg">¥599</span>
+<div class="w-8 h-8 rounded-lg bg-primary-container/20 flex items-center justify-center text-primary active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-sm" data-icon="add_shopping_cart">add_shopping_cart</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Product Item 2 -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm group">
+<div class="aspect-square bg-surface-container-low relative">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="aesthetic close-up of high-quality adjustable dumbbells with metallic finish in a modern home gym setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCpbJQrFwVkj2Sq1lQM22aMjTwFHZoIrNmrgDWl2o-CuzYF3UDqPUSlnbq0-QgbaD-YNBc-W9Oc4flB4ODAMp4gTkoZBMv2D3mJM2nlLGYkKaIK6Vbm2KFv3kb4YmtW9Xce3amb7be3lXd8aTwfwzQeR31C91gwhy0v6VB3L2YiWVbFmVH_nd7LCQeXXPudAiFs9H4M0o0lFuGJ8KOUYinwT5l4QVq6mZ5UEYtaYPtFaAyUynB7HduuHtUs0mjz67FyQRkLfUwg4JU"/>
+</div>
+<div class="p-3">
+<h3 class="text-on-surface font-bold text-sm line-clamp-1">ProLift 竞技型可调哑铃</h3>
+<div class="flex items-center justify-between mt-1">
+<span class="text-outline text-[10px]">销量 800+</span>
+</div>
+<div class="flex items-end justify-between mt-2">
+<span class="text-primary font-black text-lg">¥1280</span>
+<div class="w-8 h-8 rounded-lg bg-primary-container/20 flex items-center justify-center text-primary active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-sm" data-icon="add_shopping_cart">add_shopping_cart</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Product Item 3 -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm group">
+<div class="aspect-square bg-surface-container-low relative">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="studio shot of professional grade weightlifting belt made of thick leather on a neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuALuVELWOq-lqKOLo93MT-07e4klufo5Een0_U7H-IJSOMlvZBG1VIaYoelKi2Mh4TBlYrp96OVv5a3YKOq5KCBwupWAM283JL_IuxwOsz_JQVUsrVPdOgyzgUIpwHo30JitiY5aDW6QR37VTyQMNjNhwKYnVuQRylnbIgVM2_qi2-sFWxVa0JXpn0Q3Wbaj2vUcP9gWig_M_6ogRsbyUAl-CeIxIXWLRahV7PI63xmlAo7V7lE3RKLtUYWALMaeFBoR73daruaU10"/>
+</div>
+<div class="p-3">
+<h3 class="text-on-surface font-bold text-sm line-clamp-1">Titan 核心防护牛皮腰带</h3>
+<div class="flex items-center justify-between mt-1">
+<span class="text-outline text-[10px]">销量 450</span>
+</div>
+<div class="flex items-end justify-between mt-2">
+<span class="text-primary font-black text-lg">¥329</span>
+<div class="w-8 h-8 rounded-lg bg-primary-container/20 flex items-center justify-center text-primary active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-sm" data-icon="add_shopping_cart">add_shopping_cart</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Product Item 4 -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm group">
+<div class="aspect-square bg-surface-container-low relative">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="premium protein powder container and a shaker bottle on a clean kitchen counter with morning sunlight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgIzuOeAWQ8VGXBL36q4IS94PPjVd4TcCGWYWeeUYXYpQDFyorPGIF-2aTHsI29jy9YEhrTfQQ5YJA4_xRKZY19E9QcHeN5C1NFnUTRI-6pmyZAbF7tDi6FjlyFq_TOYWpdZYbTxXPFbAFyOwinMv81zzOff1GdwDQbTaggi8Y7KPqs4UXrmmgtw4BZpt7yl_CoWC3sEyQEPQpyrXuIFqWfq6u9osm_yl6yUyRSaLf4obpW3kC-Hzxd9upVf5xS8RhZdXueP74L_M"/>
+</div>
+<div class="p-3">
+<h3 class="text-on-surface font-bold text-sm line-clamp-1">BioFuel 纯净隔离乳清蛋白</h3>
+<div class="flex items-center justify-between mt-1">
+<span class="text-outline text-[10px]">销量 3.5k</span>
+</div>
+<div class="flex items-end justify-between mt-2">
+<span class="text-primary font-black text-lg">¥428</span>
+<div class="w-8 h-8 rounded-lg bg-primary-container/20 flex items-center justify-center text-primary active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-sm" data-icon="add_shopping_cart">add_shopping_cart</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Shopping Cart -->
+<div class="fixed right-6 bottom-24 z-40">
+<div class="relative w-14 h-14 bg-primary rounded-full flex items-center justify-center text-on-primary shadow-[0_12px_24px_rgba(156,63,0,0.3)] active:scale-90 transition-transform duration-200">
+<span class="material-symbols-outlined text-2xl" data-icon="shopping_cart">shopping_cart</span>
+<span class="absolute -top-1 -right-1 w-5 h-5 bg-orange-400 text-black text-[10px] font-black rounded-full flex items-center justify-center ring-2 ring-surface">3</span>
+</div>
+</div>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pt-2 pb-6 bg-white/80 backdrop-blur-xl rounded-t-xl shadow-[0_-12px_24px_rgba(0,0,0,0.06)] z-50">
+<a class="flex flex-col items-center justify-center text-zinc-400 hover:text-orange-500 active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-pingfang text-[10px] tracking-wide">首页</span>
+</a>
+<a class="flex flex-col items-center justify-center text-zinc-400 hover:text-orange-500 active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="fitness_center">fitness_center</span>
+<span class="font-pingfang text-[10px] tracking-wide">课程</span>
+</a>
+<a class="flex flex-col items-center justify-center text-orange-600 bg-orange-50 rounded-xl px-3 py-1 active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_bag" style="font-variation-settings: 'FILL' 1;">shopping_bag</span>
+<span class="font-pingfang text-[10px] tracking-wide">商城</span>
+</a>
+<a class="flex flex-col items-center justify-center text-zinc-400 hover:text-orange-500 active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-pingfang text-[10px] tracking-wide">我的</span>
+</a>
+</nav>
+</body></html>

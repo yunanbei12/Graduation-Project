@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>教练详情 - 动力美学</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'PingFang SC', sans-serif;
+            background-color: #f5f6f7;
+        }
+        .font-lexend {
+            font-family: 'Lexend', sans-serif;
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+        .text-gradient {
+            background: linear-gradient(45deg, #9c3f00, #ff7a2f);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed-variant": "#5a5c5e",
+                        "surface-bright": "#f5f6f7",
+                        "surface-container-high": "#e0e3e4",
+                        "tertiary-container": "#ffffff",
+                        "error": "#b02500",
+                        "surface-container-low": "#eff1f2",
+                        "inverse-surface": "#0c0f10",
+                        "on-surface-variant": "#595c5d",
+                        "on-tertiary-container": "#626262",
+                        "surface-dim": "#d1d5d7",
+                        "tertiary-fixed-dim": "#f2f0f0",
+                        "secondary-fixed-dim": "#d4d4d7",
+                        "error-container": "#f95630",
+                        "secondary-fixed": "#e2e2e5",
+                        "background": "#f5f6f7",
+                        "error-dim": "#b92902",
+                        "on-secondary": "#f2f2f5",
+                        "inverse-primary": "#fe6b00",
+                        "surface-container-highest": "#dadddf",
+                        "primary-dim": "#893600",
+                        "tertiary-dim": "#504f4f",
+                        "on-primary-fixed": "#000000",
+                        "on-tertiary-fixed": "#505050",
+                        "secondary-dim": "#4e5052",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed-dim": "#f66700",
+                        "on-tertiary": "#f4f2f2",
+                        "inverse-on-surface": "#9b9d9e",
+                        "on-secondary-container": "#505254",
+                        "surface-variant": "#dadddf",
+                        "on-primary-fixed-variant": "#4f1c00",
+                        "surface-tint": "#9c3f00",
+                        "outline": "#757778",
+                        "on-error-container": "#520c00",
+                        "on-background": "#2c2f30",
+                        "on-surface": "#2c2f30",
+                        "secondary-container": "#e2e2e5",
+                        "primary": "#9c3f00",
+                        "on-tertiary-fixed-variant": "#6d6d6d",
+                        "on-error": "#ffefec",
+                        "tertiary": "#5c5b5b",
+                        "surface": "#f5f6f7",
+                        "primary-fixed": "#ff7a2f",
+                        "secondary": "#5a5c5e",
+                        "surface-container": "#e6e8ea",
+                        "primary-container": "#ff7a2f",
+                        "outline-variant": "#abadae",
+                        "on-primary": "#fff0ea",
+                        "tertiary-fixed": "#ffffff",
+                        "on-secondary-fixed": "#3e3f42",
+                        "on-primary-container": "#401500"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex items-center justify-between px-6 h-16 w-full bg-gradient-to-b from-zinc-900/60 to-transparent">
+<div class="flex items-center gap-4">
+<button class="active:scale-95 transition-transform hover:opacity-80 text-white">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">arrow_back</span>
+</button>
+<span class="font-['Lexend'] font-bold tracking-tight text-white opacity-0 transition-opacity duration-300" id="headerTitle">专业教练</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="active:scale-95 transition-transform hover:opacity-80 text-white">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">share</span>
+</button>
+</div>
+</header>
+<main class="pb-44">
+<!-- Hero Section -->
+<section class="relative h-[751px] w-full overflow-hidden">
+<img alt="Coach Hero" class="absolute inset-0 w-full h-full object-cover" data-alt="A professional fitness coach in a high-intensity workout pose, cinematic low-angle shot, dramatic gym lighting, focused expression" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_av6DlviFHZJ9GjEQ-YUR2Y8c2a8W4MHyjLfRz6g53BR2TwwiDq5_qOCupJO-5wIpYntJ7_yPuLu8CorAJQcCVPSYghhG8v1VLmD4D6Hi3k5sXCveIC5-c6HobwfKXve_YZbhiCNEmwJa82mE9SwyjRSQDeGr-vAZkgcdj5hXXUbGLlDIzVe6Liy02JQWjDwpKLyYCbKGkAzw6v1J-0fd1PF9a-p3_6JmoyTRtYwWhLi6MnP2fSeU2JWNlEk3uV2US7EmXOf1464"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface via-surface/20 to-transparent"></div>
+<div class="absolute bottom-0 left-0 w-full px-6 pb-12">
+<div class="flex flex-col gap-2">
+<span class="inline-flex items-center px-3 py-1 rounded-lg bg-primary text-white text-[10px] font-bold tracking-widest uppercase w-max">
+                        精英教练
+                    </span>
+<h1 class="text-5xl font-black font-lexend tracking-tighter text-on-surface">Alex Chen</h1>
+<div class="flex items-center gap-4 mt-2">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-lexend font-bold text-on-surface">4.9</span>
+</div>
+<div class="h-3 w-[1px] bg-outline-variant/30"></div>
+<div class="flex items-center gap-1">
+<span class="text-sm font-semibold text-on-surface-variant">1,280 关注者</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Core Stats Area (Bento Grid Style) -->
+<section class="px-6 -mt-6 relative z-10">
+<div class="grid grid-cols-3 gap-3">
+<div class="bg-surface-container-lowest p-5 rounded-xl flex flex-col items-center justify-center shadow-sm">
+<span class="text-2xl font-black font-lexend text-primary">8</span>
+<span class="text-[10px] font-bold text-on-surface-variant mt-1">教龄 (年)</span>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-xl flex flex-col items-center justify-center shadow-sm border-x border-surface-container">
+<span class="text-2xl font-black font-lexend text-primary">4.5k</span>
+<span class="text-[10px] font-bold text-on-surface-variant mt-1">授课人次</span>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-xl flex flex-col items-center justify-center shadow-sm">
+<span class="text-2xl font-black font-lexend text-primary">99%</span>
+<span class="text-[10px] font-bold text-on-surface-variant mt-1">好评率</span>
+</div>
+</div>
+</section>
+<!-- Bio Section -->
+<section class="mt-10 px-6">
+<div class="flex flex-col gap-4">
+<h2 class="text-xl font-bold font-lexend tracking-tight flex items-center gap-2">
+<span class="w-1 h-6 bg-primary rounded-full"></span>
+                    个人简介
+                </h2>
+<div class="bg-surface-container-low p-6 rounded-xl relative overflow-hidden">
+<div class="absolute -right-4 -top-4 opacity-5">
+<span class="material-symbols-outlined text-8xl" style="font-variation-settings: 'FILL' 1;">format_quote</span>
+</div>
+<p class="text-sm leading-relaxed text-on-surface font-medium">
+                        专注高强度间歇训练（HIIT）与功能性力量开发。我的教学理念是“Kinetic Balance”——在爆发力与身体稳定性之间寻找极致的平衡点。
+                    </p>
+<p class="text-sm leading-relaxed text-on-surface-variant mt-3 italic">
+                        曾任国家级田径队体能顾问，现致力于将专业竞技的训练方法普适化，帮助每一位学员觉醒体内的动力引擎。
+                    </p>
+</div>
+</div>
+</section>
+<!-- Expertise Section -->
+<section class="mt-10 px-6">
+<h2 class="text-xl font-bold font-lexend tracking-tight mb-4 flex items-center gap-2">
+<span class="w-1 h-6 bg-primary rounded-full"></span>
+                擅长项目
+            </h2>
+<div class="flex flex-wrap gap-3">
+<div class="flex items-center gap-2 px-4 py-3 bg-surface-container-lowest rounded-xl border border-surface-container shadow-sm">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">fitness_center</span>
+<span class="text-sm font-bold">力量塑形</span>
+</div>
+<div class="flex items-center gap-2 px-4 py-3 bg-surface-container-lowest rounded-xl border border-surface-container shadow-sm">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<span class="text-sm font-bold">高强度HIIT</span>
+</div>
+<div class="flex items-center gap-2 px-4 py-3 bg-surface-container-lowest rounded-xl border border-surface-container shadow-sm">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">sports_kabaddi</span>
+<span class="text-sm font-bold">综合格斗</span>
+</div>
+<div class="flex items-center gap-2 px-4 py-3 bg-surface-container-lowest rounded-xl border border-surface-container shadow-sm">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">monitor_heart</span>
+<span class="text-sm font-bold">体能康复</span>
+</div>
+</div>
+</section>
+<!-- Courses Section -->
+<section class="mt-10 px-6">
+<div class="flex justify-between items-end mb-4">
+<h2 class="text-xl font-bold font-lexend tracking-tight flex items-center gap-2">
+<span class="w-1 h-6 bg-primary rounded-full"></span>
+                    所授课程
+                </h2>
+<span class="text-xs font-bold text-primary-fixed-dim">查看全部课程</span>
+</div>
+<div class="space-y-3">
+<div class="group bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-transparent hover:border-primary-container/20 transition-all flex gap-4">
+<div class="w-20 h-20 rounded-lg overflow-hidden shrink-0">
+<img alt="Course 1" class="w-full h-full object-cover" data-alt="Dynamic fitness gym scene with dumbbells and warm ambient lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDRXwg59MtP_38sLiGWMyMGLSL-pqlMPLTu-0GNi8y4wDt7QKzKM1BsggrEo4E3-1zZKs0ARL2etpNwXy5o8oIyD4xOLEZe9iJefYbMYOMBJ4AmQYTpHcGx1uwIyAhy7PflkEO3UmzXltsKqvtWFouIaQ215i5Agkl5OZOWemKqzCvwmT7iMjKgXO5k7Vjgr-wQRGJ_PBVY0H_yZuZMx6KSx1Ewag-V5lAQ8vmClupwyL7y0hsHZdWS4mzaZpLBIUmrOG_bayxcR8"/>
+</div>
+<div class="flex flex-col justify-between flex-grow py-1">
+<div>
+<h3 class="text-sm font-bold text-on-surface line-clamp-1">1对1 核心爆发力强化周</h3>
+<p class="text-[10px] text-on-surface-variant mt-1">5课时 | 针对核心肌群深度激活</p>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-sm font-black font-lexend text-primary">¥2,880</span>
+<span class="material-symbols-outlined text-on-surface-variant text-sm" style="font-variation-settings: 'FILL' 0;">arrow_forward_ios</span>
+</div>
+</div>
+</div>
+<div class="group bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-transparent hover:border-primary-container/20 transition-all flex gap-4">
+<div class="w-20 h-20 rounded-lg overflow-hidden shrink-0">
+<img alt="Course 2" class="w-full h-full object-cover" data-alt="Person jumping with heavy rope in industrial gym setting, motion blur effect" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrJ4ugZVI-grws98H7eanrPvG-ip8H_0vLdO3Pb_CwfHzrvsg4mR8Xvw8baHO0X72tenM4SN1jhlNEEJg2Irpm0G2i7AoOMMm-kJzpc5-ybTq8bRYEbZ52viYkCLSADhYEfpfoOZO9pBmE3TvJs3MpQZxRfmjpOJ8oTW_HtfVJFM0M30YcKAcVFUWNXoOBmYUlY__1c4zB2V3o5zrzEzB9Qy28PZhxDfD7bU8kJ1vKJKFvCW3q556iF-N3d0w1t5xg9vyZ4qD79tA"/>
+</div>
+<div class="flex flex-col justify-between flex-grow py-1">
+<div>
+<h3 class="text-sm font-bold text-on-surface line-clamp-1">巅峰燃脂·功能性团课</h3>
+<p class="text-[10px] text-on-surface-variant mt-1">12人小班 | 极限体能挑战</p>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-sm font-black font-lexend text-primary">¥199 / 课</span>
+<span class="material-symbols-outlined text-on-surface-variant text-sm" style="font-variation-settings: 'FILL' 0;">arrow_forward_ios</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Reviews Section -->
+<section class="mt-10 px-6">
+<h2 class="text-xl font-bold font-lexend tracking-tight mb-4 flex items-center gap-2">
+<span class="w-1 h-6 bg-primary rounded-full"></span>
+                学员评价
+            </h2>
+<div class="space-y-4">
+<div class="p-4 bg-surface-container-lowest rounded-xl border border-surface-container-low shadow-sm">
+<div class="flex justify-between items-center mb-3">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-variant">
+<img alt="User Avatar" data-alt="Professional studio portrait of a young woman smiling, clean lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBo3e6l4RJYXCXrGkIWUSaB7lDTlZDdpJ9EiHkhwAuzSKD3jOlnehjdaTqwlP2D5f6pBZ8-jYsgg2zfc_uFhC5_fKaMd-cstTAmnLPPqU7fsFUIgd7Vl_xp8-hfuAzah0zHbQ9Np76QIbr3GKv8L57lMCGvceKRgeJ5HF1BL59MCs4n1DpgnCXfZJjC3yB3q28KcyhDuRtiYpXTYtvcWzjihJX51tQv4tVU4DPCrgSzZRcEukohyu-XK-gcSZ8zncbKox2x15CaCcw"/>
+</div>
+<div>
+<p class="text-xs font-bold">李微拉</p>
+<div class="flex text-[8px] text-primary">
+<span class="material-symbols-outlined text-[10px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[10px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[10px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[10px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[10px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+</div>
+</div>
+<span class="text-[10px] text-on-surface-variant">2023.10.15</span>
+</div>
+<p class="text-xs leading-relaxed text-on-surface-variant">
+                        Alex教练非常专业，对动作的细节要求很高，能精准指出我的发力点问题。虽然训练很累，但效果非常明显！
+                    </p>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar / Action Bar -->
+<div class="fixed bottom-[88px] left-0 w-full px-6 z-40">
+<div class="bg-primary/5 border border-primary/10 rounded-lg p-3 flex items-start gap-2">
+<span class="material-symbols-outlined text-primary text-base shrink-0" style="font-variation-settings: 'FILL' 1;">info</span>
+<p class="text-[10px] text-on-surface-variant leading-tight">
+            购买私教课后，将由专人邀请进微信群安排上课
+        </p>
+</div>
+</div><nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-3 pb-safe bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl border-t border-zinc-200/15 dark:border-zinc-800/15 shadow-[0_-12px_24px_rgba(44,47,48,0.06)] z-50 rounded-t-2xl">
+<button class="flex flex-col items-center justify-center text-[#2c2f30] dark:text-zinc-400 px-6 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 active:scale-98 duration-200">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">chat_bubble</span>
+<span class="font-['PingFang_SC'] text-[10px] font-semibold">立即咨询</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-gradient-to-br from-[#9c3f00] to-[#ff7a2f] text-white rounded-xl px-12 py-3 active:scale-98 duration-200 shadow-lg shadow-primary/20">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">event_available</span>
+<span class="font-['PingFang_SC'] text-sm font-bold tracking-wide">预约课程</span>
+</div>
+</button>
+</nav>
+<script>
+        // Optional: Simple scroll listener for header title visibility
+        window.addEventListener('scroll', () => {
+            const title = document.getElementById('headerTitle');
+            const scrollPos = window.scrollY;
+            if (scrollPos > 300) {
+                title.classList.remove('opacity-0');
+            } else {
+                title.classList.add('opacity-0');
+            }
+        });
+    </script>
+</body></html>

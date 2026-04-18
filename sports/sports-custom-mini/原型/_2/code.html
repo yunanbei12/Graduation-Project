@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&amp;family=Plus+Jakarta+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-container": "#e2e2e5",
+                    "surface-container-highest": "#dadddf",
+                    "on-secondary": "#f2f2f5",
+                    "on-error-container": "#520c00",
+                    "on-secondary-container": "#505254",
+                    "on-background": "#2c2f30",
+                    "primary-dim": "#893600",
+                    "on-tertiary": "#f4f2f2",
+                    "error-container": "#f95630",
+                    "secondary-fixed": "#e2e2e5",
+                    "surface-tint": "#9c3f00",
+                    "on-surface": "#2c2f30",
+                    "error-dim": "#b92902",
+                    "on-primary-fixed": "#000000",
+                    "tertiary": "#5c5b5b",
+                    "tertiary-fixed": "#ffffff",
+                    "secondary-fixed-dim": "#d4d4d7",
+                    "surface": "#f5f6f7",
+                    "on-tertiary-container": "#626262",
+                    "outline": "#757778",
+                    "surface-bright": "#f5f6f7",
+                    "primary-fixed-dim": "#f66700",
+                    "tertiary-fixed-dim": "#f2f0f0",
+                    "secondary": "#5a5c5e",
+                    "surface-container-low": "#eff1f2",
+                    "on-tertiary-fixed": "#505050",
+                    "inverse-surface": "#0c0f10",
+                    "secondary-dim": "#4e5052",
+                    "on-primary-container": "#401500",
+                    "on-error": "#ffefec",
+                    "tertiary-container": "#ffffff",
+                    "primary": "#9c3f00",
+                    "surface-container-high": "#e0e3e4",
+                    "tertiary-dim": "#504f4f",
+                    "surface-container": "#e6e8ea",
+                    "background": "#f5f6f7",
+                    "primary-fixed": "#ff7a2f",
+                    "on-primary-fixed-variant": "#4f1c00",
+                    "outline-variant": "#abadae",
+                    "error": "#b02500",
+                    "primary-container": "#ff7a2f",
+                    "on-secondary-fixed-variant": "#5a5c5e",
+                    "on-tertiary-fixed-variant": "#6d6d6d",
+                    "surface-dim": "#d1d5d7",
+                    "inverse-primary": "#fe6b00",
+                    "surface-variant": "#dadddf",
+                    "on-surface-variant": "#595c5d",
+                    "on-secondary-fixed": "#3e3f42",
+                    "inverse-on-surface": "#9b9d9e",
+                    "on-primary": "#fff0ea"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Lexend"],
+                    "body": ["Plus Jakarta Sans"],
+                    "label": ["Plus Jakarta Sans"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-kinetic-gradient {
+            background: linear-gradient(135deg, #9c3f00 0%, #ff7a2f 100%);
+        }
+        body {
+            background-color: #f5f6f7;
+            color: #2c2f30;
+            font-family: 'Plus Jakarta Sans', 'PingFang SC', sans-serif;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="min-h-screen pb-24">
+<!-- Top App Bar -->
+<header class="fixed top-0 w-full z-50 bg-surface flex justify-between items-center px-6 h-16 w-full">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-orange-700 dark:text-orange-500">bolt</span>
+<h1 class="font-lexend tracking-tighter uppercase text-xl font-black italic text-orange-700 dark:text-orange-500">KINETIC</h1>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-zinc-500 hover:opacity-80 transition-opacity active:scale-95 duration-200">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</div>
+</header>
+<main class="pt-20 px-4 space-y-6">
+<!-- User Profile Hero Section -->
+<section class="relative overflow-hidden rounded-xl p-6 bg-kinetic-gradient text-white shadow-xl">
+<div class="absolute top-0 right-0 -mr-8 -mt-8 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
+<div class="relative flex items-center gap-5">
+<div class="w-20 h-20 rounded-full border-4 border-white/20 overflow-hidden shadow-inner">
+<img class="w-full h-full object-cover" data-alt="professional athletic young woman portrait with confident expression in high-key studio lighting with warm tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmxPnFdrxYrXEyM7OkxJF3VBGxckQHGDXmyDDkLuqxdTGI72jBK1shCmVF73M8msT1c9BI3DVpMvPs9ALFfUdhQ5bGIXDHlK5Tw_x1CECJ5SRVNHYuo994rBhAbVnD-utJ8wpRMRsL3YoOWfXj3rD_amShjrQli35XsDWVCk0V2RsNEExgZCcCC18KbEoIL-vGsL0CpBXrQOASHX5fuhLy-zECKK_fcP6OyypwGdYp82qysor3lXx8mc68wQ207hsqUVLcHZF0VXU"/>
+</div>
+<div class="flex-1">
+<div class="flex items-center gap-2">
+<h2 class="text-2xl font-bold tracking-tight font-headline">李木子 Kimi</h2>
+<span class="px-2 py-0.5 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-bold uppercase tracking-wider border border-white/30">Lvl 4 Elite</span>
+</div>
+<p class="text-white/80 text-sm mt-1">自律即自由，挑战永无止境。</p>
+</div>
+<button class="w-10 h-10 flex items-center justify-center bg-white/10 rounded-xl backdrop-blur-sm border border-white/10 active:scale-95 transition-transform">
+<span class="material-symbols-outlined">edit_note</span>
+</button>
+</div>
+<!-- Statistics Bento Sub-grid -->
+<div class="mt-8 grid grid-cols-2 gap-4">
+<div class="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/10">
+<span class="text-white/60 text-xs font-medium block mb-1">本月课时 (节)</span>
+<span class="text-3xl font-black font-headline tracking-tighter">24</span>
+<div class="mt-2 w-full bg-white/20 h-1 rounded-full overflow-hidden">
+<div class="bg-white h-full w-[75%]"></div>
+</div>
+</div>
+<div class="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/10">
+<span class="text-white/60 text-xs font-medium block mb-1">累计时长 (分钟)</span>
+<span class="text-3xl font-black font-headline tracking-tighter">1,280</span>
+<div class="mt-2 flex items-center gap-1 text-[10px] text-white/80">
+<span class="material-symbols-outlined text-[12px]">trending_up</span>
+<span>超过 88% 的学员</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Quick Navigation Cards -->
+<section class="grid grid-cols-2 gap-4">
+<div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm border border-surface-container-low flex flex-col items-center text-center active:scale-95 transition-transform">
+<div class="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-orange-600">receipt_long</span>
+</div>
+<span class="text-sm font-bold text-on-background">我的订单</span>
+<span class="text-[10px] text-zinc-400 mt-1">查看购买记录</span>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm border border-surface-container-low flex flex-col items-center text-center active:scale-95 transition-transform">
+<div class="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-orange-600">calendar_month</span>
+</div>
+<span class="text-sm font-bold text-on-background">我的课程</span>
+<span class="text-[10px] text-zinc-400 mt-1">预约与课程表</span>
+</div>
+</section>
+<!-- Functional List -->
+<section class="bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container-low overflow-hidden">
+<div class="px-5 py-4 border-b border-surface-container-low flex justify-between items-center">
+<h3 class="font-bold text-on-background">常用功能</h3>
+<span class="text-xs text-zinc-400">服务与设置</span>
+</div>
+<div class="divide-y divide-surface-container-low">
+<!-- List Item -->
+<a class="flex items-center justify-between p-5 hover:bg-surface transition-colors" href="#">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-zinc-400">favorite</span>
+<span class="text-sm font-medium text-on-background">我的收藏</span>
+</div>
+<span class="material-symbols-outlined text-zinc-300 text-lg">chevron_right</span>
+</a>
+<!-- List Item -->
+<a class="flex items-center justify-between p-5 hover:bg-surface transition-colors" href="#">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-zinc-400">location_on</span>
+<span class="text-sm font-medium text-on-background">地址管理</span>
+</div>
+<span class="material-symbols-outlined text-zinc-300 text-lg">chevron_right</span>
+</a>
+<!-- List Item -->
+<a class="flex items-center justify-between p-5 hover:bg-surface transition-colors" href="#">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-zinc-400">support_agent</span>
+<span class="text-sm font-medium text-on-background">在线客服</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="text-[10px] bg-orange-50 text-orange-600 px-1.5 py-0.5 rounded">咨询中</span>
+<span class="material-symbols-outlined text-zinc-300 text-lg">chevron_right</span>
+</div>
+</a>
+<!-- List Item -->
+<a class="flex items-center justify-between p-5 hover:bg-surface transition-colors" href="#">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-zinc-400">settings</span>
+<span class="text-sm font-medium text-on-background">系统设置</span>
+</div>
+<span class="material-symbols-outlined text-zinc-300 text-lg">chevron_right</span>
+</a>
+</div>
+</section>
+<!-- Promotion Card (Asymmetric Layout) -->
+<section class="bg-zinc-900 rounded-xl overflow-hidden flex relative group cursor-pointer active:scale-[0.98] transition-all">
+<div class="flex-1 p-6 z-10">
+<span class="text-orange-400 text-[10px] font-bold tracking-[0.2em] uppercase mb-2 block">Premium Membership</span>
+<h4 class="text-white text-xl font-bold leading-tight">开通超级会员<br/>解锁更多专属特权</h4>
+<p class="text-zinc-500 text-xs mt-3">课程 8.8 折 · 专属教练 · 免费体测</p>
+<button class="mt-5 px-5 py-2.5 bg-orange-600 text-white text-xs font-bold rounded-lg hover:bg-orange-500 transition-colors">立即开启</button>
+</div>
+<div class="w-1/3 relative overflow-hidden">
+<img class="absolute inset-0 w-full h-full object-cover opacity-60 grayscale group-hover:grayscale-0 transition-all duration-700" data-alt="dynamic close-up of heavy dumbbells in a dark moody gym setting with orange rim lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6p0gew4Wp3NiWc0h_UkvDzh47ILzpHKABQ9BDvporu7HDQOEEuoSin20jfi5h2mgSSh6Pv2NhwKVHtdMDDlh2P-p7QP2KXxJI_WH9tDkN42aaUCCoEnd7gbULcwYfnRdb5Ig5hnKv8UJyn9nQIS8GiGXfpOUlKkwDTjG1WPNE6gq5pSP8971r8zrc_5x-nmki8qqUfpMhY-2kHKB2l5xHX1MCPgIxJG9gf5J3bvWT60Z3hA2NuUtZlBJO3eYBDCQijjCPsuBZ8x4"/>
+<div class="absolute inset-0 bg-gradient-to-r from-zinc-900 via-transparent to-transparent"></div>
+</div>
+</section>
+<div class="py-4 text-center">
+<p class="text-[10px] text-zinc-400 uppercase tracking-widest font-headline">Version 2.4.0 • Kinetic Sports Tech</p>
+</div>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pt-2 pb-6 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl z-50 rounded-t-xl shadow-[0_-12px_24px_rgba(0,0,0,0.06)]">
+<a class="flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-500 hover:text-orange-500 transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-pingfang text-[10px] tracking-wide mt-1">首页</span>
+</a>
+<a class="flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-500 hover:text-orange-500 transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">fitness_center</span>
+<span class="font-pingfang text-[10px] tracking-wide mt-1">课程</span>
+</a>
+<a class="flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-500 hover:text-orange-500 transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">shopping_bag</span>
+<span class="font-pingfang text-[10px] tracking-wide mt-1">商城</span>
+</a>
+<a class="flex flex-col items-center justify-center text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-950/30 rounded-xl px-3 py-1 transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-pingfang text-[10px] tracking-wide mt-1">我的</span>
+</a>
+</nav>
+</body></html>

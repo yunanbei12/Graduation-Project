@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>我的订单 - 商品类</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-container": "#e2e2e5",
+                    "secondary-dim": "#4e5052",
+                    "on-background": "#2c2f30",
+                    "on-primary-container": "#401500",
+                    "tertiary": "#5c5b5b",
+                    "surface-dim": "#d1d5d7",
+                    "inverse-primary": "#fe6b00",
+                    "on-secondary-container": "#505254",
+                    "on-tertiary-fixed-variant": "#6d6d6d",
+                    "primary-fixed": "#ff7a2f",
+                    "on-tertiary-container": "#626262",
+                    "tertiary-container": "#ffffff",
+                    "secondary": "#5a5c5e",
+                    "tertiary-dim": "#504f4f",
+                    "surface": "#f5f6f7",
+                    "on-tertiary-fixed": "#505050",
+                    "inverse-surface": "#0c0f10",
+                    "error-container": "#f95630",
+                    "surface-tint": "#9c3f00",
+                    "secondary-fixed-dim": "#d4d4d7",
+                    "surface-variant": "#dadddf",
+                    "primary-container": "#ff7a2f",
+                    "on-secondary": "#f2f2f5",
+                    "on-tertiary": "#f4f2f2",
+                    "on-secondary-fixed": "#3e3f42",
+                    "surface-container": "#e6e8ea",
+                    "on-surface": "#2c2f30",
+                    "tertiary-fixed-dim": "#f2f0f0",
+                    "on-error-container": "#520c00",
+                    "surface-container-highest": "#dadddf",
+                    "on-secondary-fixed-variant": "#5a5c5e",
+                    "outline-variant": "#abadae",
+                    "primary": "#9c3f00",
+                    "inverse-on-surface": "#9b9d9e",
+                    "surface-container-low": "#eff1f2",
+                    "error": "#b02500",
+                    "on-primary-fixed-variant": "#4f1c00",
+                    "outline": "#757778",
+                    "surface-container-high": "#e0e3e4",
+                    "tertiary-fixed": "#ffffff",
+                    "on-primary-fixed": "#000000",
+                    "error-dim": "#b92902",
+                    "background": "#f5f6f7",
+                    "surface-bright": "#f5f6f7",
+                    "on-primary": "#fff0ea",
+                    "on-surface-variant": "#595c5d",
+                    "secondary-fixed": "#e2e2e5",
+                    "on-error": "#ffefec",
+                    "primary-fixed-dim": "#f66700",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-dim": "#893600"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Lexend"],
+                    "body": ["Plus Jakarta Sans"],
+                    "label": ["Plus Jakarta Sans"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'PingFang SC', 'Plus Jakarta Sans', sans-serif; background-color: #f5f6f7; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-effect { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); }
+        .kinetic-gradient { background: linear-gradient(45deg, #9c3f00, #ff7a2f); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="text-on-surface antialiased pb-24">
+<!-- Top Navigation Anchor (Shared Component Mapping) -->
+<header class="flex justify-between items-center px-4 h-16 w-full fixed top-0 z-50 bg-white dark:bg-zinc-950 shadow-sm">
+<div class="flex items-center gap-4">
+<button class="active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[#9c3f00] dark:text-[#ff7a2f]">arrow_back</span>
+</button>
+<h1 class="font-lexend font-bold text-lg tracking-tight text-zinc-900 dark:text-zinc-50">我的订单</h1>
+</div>
+<div class="flex items-center gap-2">
+<button class="active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[#9c3f00] dark:text-[#ff7a2f]">shopping_cart</span>
+</button>
+</div>
+</header>
+<!-- Content Canvas -->
+<main class="mt-16 px-4 pt-6 max-w-2xl mx-auto">
+<!-- Segmented Control: Order Type -->
+<div class="bg-surface-container-low p-1.5 rounded-xl flex items-center mb-8">
+<button class="flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all text-zinc-500 hover:opacity-80">
+                课程订单
+            </button>
+<button class="flex-1 py-2.5 px-4 rounded-lg text-sm font-bold kinetic-gradient text-white shadow-md">
+                商品订单
+            </button>
+</div>
+<!-- Filter Tabs: Status -->
+<nav class="flex justify-between items-center mb-8 border-none overflow-x-auto no-scrollbar">
+<div class="flex gap-8 min-w-max">
+<a class="relative pb-2 text-sm font-medium text-zinc-500 hover:text-primary transition-colors" href="#">
+                    全部
+                </a>
+<a class="relative pb-2 text-sm font-medium text-zinc-500 hover:text-primary transition-colors" href="#">
+                    待付款
+</a>
+<a class="relative pb-2 text-sm font-medium text-zinc-500 hover:text-primary transition-colors" href="#">
+                    待发货
+                </a>
+<a class="relative pb-2 text-sm font-bold text-[#9c3f00]" href="#">
+                    待收货
+                    <span class="absolute bottom-0 left-0 w-full h-0.5 bg-[#9c3f00] rounded-full"></span>
+</a>
+<a class="relative pb-2 text-sm font-medium text-zinc-500 hover:text-primary transition-colors" href="#">
+                    已完成
+                </a>
+</div>
+</nav>
+<!-- Order List -->
+<div class="space-y-4">
+<!-- Order Card: Pending Receipt (New) -->
+<div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm border border-outline-variant/10">
+<div class="flex justify-between items-center mb-4">
+<span class="text-xs font-headline font-medium text-zinc-400">订单号: 202405211024</span>
+<span class="text-sm font-bold text-primary-fixed">待收货</span>
+</div>
+<div class="flex gap-4 mb-6">
+<div class="w-24 h-24 rounded-xl overflow-hidden bg-surface-container shrink-0">
+<img alt="Product" class="w-full h-full object-cover" data-alt="Ergonomic orange and black adjustable kettlebell set on a minimalist platform" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYF_H9Rj8eY_vKj6_Y6_P6G_Q8_P7_P8_P9_P0_P1_P2_P3_P4_P5_P6_P7_P8_P9_P0"/>
+</div>
+<div class="flex flex-col justify-between py-1 flex-1">
+<div>
+<h3 class="font-bold text-base leading-tight mb-1 text-on-surface">KINETIC 智能可调哑铃</h3>
+<p class="text-xs text-zinc-400">规格: 动力橙 / 24KG套装</p>
+</div>
+<div class="flex justify-between items-end">
+<span class="font-headline font-bold text-lg">¥1,280.00</span>
+<span class="text-xs text-zinc-400">x 1</span>
+</div>
+</div>
+</div>
+<div class="flex justify-between items-center">
+<button class="text-xs text-zinc-400 hover:text-primary transition-colors">申请退款</button>
+<div class="flex gap-3">
+<button class="px-6 py-2 rounded-lg text-sm font-medium border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container transition-colors">
+                        查看物流
+                    </button>
+<button class="px-6 py-2 rounded-lg text-sm font-bold kinetic-gradient text-white shadow-sm active:scale-95 transition-transform">
+                        确认收货
+                    </button>
+</div>
+</div>
+</div>
+<!-- Order Card 1: Pending Shipment -->
+<div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm border border-outline-variant/10">
+<div class="flex justify-between items-center mb-4">
+<span class="text-xs font-headline font-medium text-zinc-400">订单号: 202405208891</span>
+<span class="text-sm font-bold text-primary-fixed">待发货</span>
+</div>
+<div class="flex gap-4 mb-6">
+<div class="w-24 h-24 rounded-xl overflow-hidden bg-surface-container shrink-0">
+<img alt="Product" class="w-full h-full object-cover" data-alt="Close-up of a sleek orange professional running shoe with athletic textures and dramatic studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA94ZKMPL7TS32UqlnvYfZOrbu0vWnnOBRzleYOEm6LmuVvk1KGsLfMWsd7PHDkl9veYerG4dPgG_285J3jo9uNzRTBKED5Wp6n7xX5qw9B9ip6SeMrLnfVbbbKcNCH-C9WzdWDSjVjN8-M0C6_WHP8HryifYjbpDqxKLatCCq8FYG941YLVWjbpU1Zahj7QVu9OsmcCUS9V8Cggz22sdIbJdggAIVzoNWiSSqxOt7A3smQfB1jIAfdieBQ9eK7ZROS2aJoRa5rMRk"/>
+</div>
+<div class="flex flex-col justify-between py-1 flex-1">
+<div>
+<h3 class="font-bold text-base leading-tight mb-1 text-on-surface">KINETIC 专业训练鞋 V1</h3>
+<p class="text-xs text-zinc-400">规格: 曜石黑 / 42码</p>
+</div>
+<div class="flex justify-between items-end">
+<span class="font-headline font-bold text-lg">¥899.00</span>
+<span class="text-xs text-zinc-400">x 1</span>
+</div>
+</div>
+</div>
+<div class="flex justify-between items-center">
+<button class="text-xs text-zinc-400 hover:text-primary transition-colors">申请退款</button>
+<div class="flex gap-3">
+<button class="px-6 py-2 rounded-lg text-sm font-medium border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container transition-colors">
+                        修改地址
+                    </button>
+<button class="px-6 py-2 rounded-lg text-sm font-bold kinetic-gradient text-white shadow-sm active:scale-95 transition-transform">
+                        催促发货
+                    </button>
+</div>
+</div>
+</div>
+<!-- Order Card 2: Completed -->
+<div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm border border-outline-variant/10">
+<div class="flex justify-between items-center mb-4">
+<span class="text-xs font-headline font-medium text-zinc-400">订单号: 202405186623</span>
+<span class="text-sm font-bold text-zinc-400">已完成</span>
+</div>
+<div class="flex gap-4 mb-6">
+<div class="w-24 h-24 rounded-xl overflow-hidden bg-surface-container shrink-0">
+<img alt="Product" class="w-full h-full object-cover" data-alt="High-quality black gym accessories including lifting straps and a shaker bottle on a clean minimalist surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoWDwtggnZqTmygYocrsqCgIQeCwAQF1MMZ6ysNKT_P9UfCllbjNk-CojXv4cgRzUVWUH-ogLhg6gKr8IZOcFuZvnvC1q83-oETmTzR537u7r-SXHi4mCqcayzcQW8wSGUtsLT2UkswAcgA4brxTmysXjRKL1oT-45o4Zw2Nj1ctc2YBUfpQA0MlOgCutrWjd-RKt5qXBe7FwrfwGkd12welV4nC2hxv3UsekVQ48UWsjFJ4EFaxfSDt96nV9I8M9DzABUktfovK8"/>
+</div>
+<div class="flex flex-col justify-between py-1 flex-1">
+<div>
+<h3 class="font-bold text-base leading-tight mb-1 text-on-surface">KINETIC 智能计数绳</h3>
+<p class="text-xs text-zinc-400">规格: 动力橙 / 标准款</p>
+</div>
+<div class="flex justify-between items-end">
+<span class="font-headline font-bold text-lg">¥129.00</span>
+<span class="text-xs text-zinc-400">x 1</span>
+</div>
+</div>
+</div>
+<div class="flex justify-between items-center">
+<button class="text-xs text-zinc-400 hover:text-primary transition-colors">申请售后</button>
+<div class="flex gap-3">
+<button class="px-6 py-2 rounded-lg text-sm font-medium border border-outline-variant/30 text-on-surface-variant">
+                        查看详情
+                    </button>
+<button class="px-6 py-2 rounded-lg text-sm font-bold border-2 border-primary text-primary active:scale-95 transition-transform">
+                        评价商品
+                    </button>
+</div>
+</div>
+</div>
+<!-- Order Card 3: Multi-item Example -->
+<div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm border border-outline-variant/10">
+<div class="flex justify-between items-center mb-4">
+<span class="text-xs font-headline font-medium text-zinc-400">订单号: 202405151109</span>
+<span class="text-sm font-bold text-zinc-400">已完成</span>
+</div>
+<div class="flex gap-2 overflow-x-auto no-scrollbar mb-6">
+<div class="w-20 h-20 rounded-lg overflow-hidden shrink-0 border border-surface-container">
+<img alt="Item" class="w-full h-full object-cover" data-alt="Folded compression athletic wear in neutral gray color on a clean gym locker bench" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBve6X29bxv5CLc7ZWiCbeGaSJCnEjH9cqeudbPwgLKF3CMCPz1lwDkRMgHCb7bndtI9zp91BFqT8G3JdW3KFrX-C93fO3VE9aUATBaQQiQkt2VrqJOoLgLgjczNu-uHbo4CAQvU7hpNl3n-ng60dPWx8S46zfcw03m8gR8mo_bXYgEqNpYvMRnv92j2V4kMP8nPmCaf8fsN9RkGqi1x0JEd_tlZajo4qKj8L9ghbYW8TlP2lOiS4G2s16oRu3KzzFLuDHgD3XHXJk"/>
+</div>
+<div class="w-20 h-20 rounded-lg overflow-hidden shrink-0 border border-surface-container">
+<img alt="Item" class="w-full h-full object-cover" data-alt="Durable sports water bottle with a matte finish and ergonomic design" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgLRF2aD7sRLhpMfUyuKs8ZJOSZp6FQRh0zd1wdC7Gqs0JUTkpGis9jwF-mfMEKfSDurkRsCG6rI2gtVdq-lXTmC8UzXgIr8O-vEeW-F6LiPSchD_jkmlo92s7h29kbzmwAMTAnpuepqGWwin-tVSphj_uOm6aB39ApEb316-zLAQV7pll8Wjlv90SnVLd5sIPX4lD6rZsPbAMKFAKopU8BDcdkeI5oBKBA4QHPaK8w-hMP8HRSrhrOnvOU0964J7R5bdG8qRDm64"/>
+</div>
+<div class="w-20 h-20 rounded-lg overflow-hidden shrink-0 border border-surface-container">
+<img alt="Item" class="w-full h-full object-cover" data-alt="Resistance bands in various colors coiled neatly on a light wood floor" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFH_bLT51X15V1Hi-n508mCeJSfFXYbtnCb_6qp6tmpJxFjOb0D47MW3nK_fLR0ScWLDR0M8DAvMmT2mc-tXKL1vojEXpVNj0s4xzcpoLT9qGaTo7KuovWHQS8jOLjxh2SDJctXO9uQVjVVi_0pdbe5WTQo6kyI6bCnKJhZUjv4YDe-cGxdNIzjBKZI9bG3ej-p0zs07ZNDSF3Z_o7Q9gFu572o-mOTnIzRS-7p6oIo8WFH-WtImP1atPcGWS0pHYx_GGdyY6yXGM"/>
+</div>
+<div class="w-20 h-20 rounded-lg bg-surface-container-low flex items-center justify-center shrink-0">
+<span class="text-zinc-400 font-bold">+2</span>
+</div>
+</div>
+<div class="flex justify-between items-center">
+<div class="flex flex-col">
+<p class="text-sm text-on-surface-variant">共 5 件商品，实付 <span class="font-bold text-base text-on-surface">¥1,492.00</span></p>
+<button class="text-left text-xs text-zinc-400 hover:text-primary transition-colors mt-1">申请售后</button>
+</div>
+<button class="px-6 py-2 rounded-lg text-sm font-bold border border-outline-variant/30 text-on-surface-variant">
+                        再次购买
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Shell (Shared Component Mapping) -->
+<footer class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-safe h-20 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md shadow-[0_-12px_24px_rgba(0,0,0,0.06)] rounded-t-xl">
+<button class="flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-600 hover:text-[#ff7a2f] transition-all">
+<span class="material-symbols-outlined mb-1">home</span>
+<span class="font-pingfang text-[10px] tracking-wide">首页</span>
+</button>
+<button class="flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-600 hover:text-[#ff7a2f] transition-all">
+<span class="material-symbols-outlined mb-1">fitness_center</span>
+<span class="font-pingfang text-[10px] tracking-wide">课程</span>
+</button>
+<button class="flex flex-col items-center justify-center text-[#9c3f00] dark:text-[#ff7a2f] scale-110 transition-all">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">receipt_long</span>
+<span class="font-pingfang text-[10px] tracking-wide font-bold">订单</span>
+</button>
+<button class="flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-600 hover:text-[#ff7a2f] transition-all">
+<span class="material-symbols-outlined mb-1">person</span>
+<span class="font-pingfang text-[10px] tracking-wide">我的</span>
+</button>
+</footer>
+</body></html>

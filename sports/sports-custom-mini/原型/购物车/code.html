@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700;800;900&amp;family=Plus+Jakarta+Sans:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#d1d5d7",
+                        "on-tertiary-container": "#626262",
+                        "on-surface-variant": "#595c5d",
+                        "surface-container-low": "#eff1f2",
+                        "inverse-surface": "#0c0f10",
+                        "secondary-fixed": "#e2e2e5",
+                        "background": "#f5f6f7",
+                        "tertiary-fixed-dim": "#f2f0f0",
+                        "secondary-fixed-dim": "#d4d4d7",
+                        "error-container": "#f95630",
+                        "surface-container-high": "#e0e3e4",
+                        "surface-bright": "#f5f6f7",
+                        "on-secondary-fixed-variant": "#5a5c5e",
+                        "error": "#b02500",
+                        "tertiary-container": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed-dim": "#f66700",
+                        "secondary-dim": "#4e5052",
+                        "on-tertiary-fixed": "#505050",
+                        "on-secondary-container": "#505254",
+                        "on-tertiary": "#f4f2f2",
+                        "inverse-on-surface": "#9b9d9e",
+                        "inverse-primary": "#fe6b00",
+                        "on-secondary": "#f2f2f5",
+                        "error-dim": "#b92902",
+                        "tertiary-dim": "#504f4f",
+                        "on-primary-fixed": "#000000",
+                        "surface-container-highest": "#dadddf",
+                        "primary-dim": "#893600",
+                        "tertiary": "#5c5b5b",
+                        "on-error": "#ffefec",
+                        "primary": "#9c3f00",
+                        "on-tertiary-fixed-variant": "#6d6d6d",
+                        "secondary-container": "#e2e2e5",
+                        "on-surface": "#2c2f30",
+                        "secondary": "#5a5c5e",
+                        "primary-fixed": "#ff7a2f",
+                        "surface": "#f5f6f7",
+                        "on-primary-fixed-variant": "#4f1c00",
+                        "surface-variant": "#dadddf",
+                        "on-background": "#2c2f30",
+                        "on-error-container": "#520c00",
+                        "outline": "#757778",
+                        "surface-tint": "#9c3f00",
+                        "tertiary-fixed": "#ffffff",
+                        "on-primary": "#fff0ea",
+                        "on-primary-container": "#401500",
+                        "on-secondary-fixed": "#3e3f42",
+                        "surface-container": "#e6e8ea",
+                        "outline-variant": "#abadae",
+                        "primary-container": "#ff7a2f"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Lexend"],
+                        "body": ["PingFang SC", "Plus Jakarta Sans"],
+                        "label": ["PingFang SC", "Plus Jakarta Sans"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        body { font-family: 'PingFang SC', sans-serif; }
+        .font-lexend { font-family: 'Lexend', sans-serif; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen pb-40">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-6 h-16 bg-[#f5f6f7] dark:bg-gray-900 tonal-shift-surface-container-low">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-[#9c3f00] cursor-pointer active:scale-95 duration-200" data-icon="arrow_back">arrow_back</span>
+<h1 class="font-['Lexend'] font-bold text-lg tracking-tight text-[#2c2f30] dark:text-white">购物车</h1>
+</div>
+<button class="text-[#9c3f00] font-bold hover:opacity-80 transition-opacity active:scale-95 duration-200">编辑</button>
+</header>
+<main class="pt-20 px-4 space-y-4 max-w-2xl mx-auto">
+<!-- Item Card 1 -->
+<div class="bg-surface-container-lowest rounded-xl p-4 flex gap-4 items-center group transition-all duration-300">
+<div class="flex-shrink-0">
+<div class="w-6 h-6 rounded-full border-2 border-primary-container flex items-center justify-center cursor-pointer">
+<div class="w-3 h-3 bg-primary-container rounded-full"></div>
+</div>
+</div>
+<div class="w-24 h-24 rounded-xl overflow-hidden bg-surface-container-low flex-shrink-0">
+<img alt="KINETIC 专业训练鞋 V1" class="w-full h-full object-cover" data-alt="Close-up of a vibrant orange professional running shoe on a clean white background with dynamic studio lighting and sharp details" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDwXrO5VokBUoYUEY2s1D2DBhcFpec_4KZR6S8vic3zbLw5U-j96zjYHpFMIo-_5chTK0tzZSalNMWTFQiPElw-ckNnGHSphxSFoyXiJjZxI9xHCP-20CkFWKZfHb4a5wu9MpmYqQMpRMfiIUxYg9QJ_Cv73F7n0TnvF2J4R8WG_sUWyghO2uw8i7WS8oFIJjAcKJLejmK829O7ERas27-a7lNcjBMnzg40HFNft0clZnEaV8o3FJ-jMrpoLCB1ZWK0zvo6pJymsG8"/>
+</div>
+<div class="flex-grow space-y-1">
+<h3 class="font-bold text-on-surface text-base leading-tight">KINETIC 专业训练鞋 V1</h3>
+<p class="text-on-surface-variant text-xs font-medium">规格：曜石黑 / 42码</p>
+<div class="flex items-end justify-between pt-2">
+<span class="font-lexend font-bold text-primary text-lg">¥899.00</span>
+<div class="flex items-center bg-surface-container-low rounded-lg p-1 gap-3">
+<button class="w-6 h-6 flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="remove">remove</span>
+</button>
+<span class="font-lexend font-semibold text-sm w-4 text-center">1</span>
+<button class="w-6 h-6 flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Item Card 2 -->
+<div class="bg-surface-container-lowest rounded-xl p-4 flex gap-4 items-center group">
+<div class="flex-shrink-0">
+<div class="w-6 h-6 rounded-full border-2 border-outline-variant flex items-center justify-center cursor-pointer"></div>
+</div>
+<div class="w-24 h-24 rounded-xl overflow-hidden bg-surface-container-low flex-shrink-0">
+<img alt="工业设计哑铃" class="w-full h-full object-cover" data-alt="Professional grade hexagonal dumbbells on a gym floor with dramatic top lighting and deep shadows showcasing texture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyDAgrWjdZSTxAOn6vBs2hBMxZCg7UJIaqBOO8Kqrh1MI3NUbDLEgQAKptqyBH2SoTFwvynDOok2vVRK7khlQQYFORdhsyvuV9egiCkHQez9BWtFTfrS8Igpu6e0Xnx-gNXfNT2jf-oKBAI5kF6HUOMi1RVN9KqNXlhgEDoS5rJQ3L1syx66uMveUiqWJEAycU1BkVnlizwciTTKAjE5Mcryr1l6pYkoXIcPqUnLgt6uk0gbOHzy2mDhBwAI6z_cG8tkouq6QmVlA"/>
+</div>
+<div class="flex-grow space-y-1">
+<h3 class="font-bold text-on-surface text-base leading-tight">HEX-FORCE 竞技级哑铃组</h3>
+<p class="text-on-surface-variant text-xs font-medium">规格：15KG / 单只</p>
+<div class="flex items-end justify-between pt-2">
+<span class="font-lexend font-bold text-primary text-lg">¥1,280.00</span>
+<div class="flex items-center bg-surface-container-low rounded-lg p-1 gap-3">
+<button class="w-6 h-6 flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="remove">remove</span>
+</button>
+<span class="font-lexend font-semibold text-sm w-4 text-center">1</span>
+<button class="w-6 h-6 flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Item Card 3 -->
+<div class="bg-surface-container-lowest rounded-xl p-4 flex gap-4 items-center group">
+<div class="flex-shrink-0">
+<div class="w-6 h-6 rounded-full border-2 border-outline-variant flex items-center justify-center cursor-pointer"></div>
+</div>
+<div class="w-24 h-24 rounded-xl overflow-hidden bg-surface-container-low flex-shrink-0">
+<img alt="紧身训练衣" class="w-full h-full object-cover" data-alt="Sleek black high-performance compression shirt with breathable mesh texture on a minimalist display" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTWVD16H30-MEMF0z1IG28bYTiTEnamYHKEL0qnLQOZmniL_V8Ao50ZUQbeoCptUrxsYF-JqIlH1w32z9H3R2onEjMw1FbJtstOr3F2RL-YJt2hulE9GqOYaPBlebQjC8evs18Ihr_C1c5pNml4m-UaAjZ23OdgarNB_nIe6m20HBoK_b6ZNjyDCYr45KUnX6qWRR-FCXj9Eiz6DpBB17MxC_ezgHGkONORMXuyCD27edxEG5pi_I97WWVsss2VLXJ58nxKyoo8Vg"/>
+</div>
+<div class="flex-grow space-y-1">
+<h3 class="font-bold text-on-surface text-base leading-tight">CORE-TECH 压力训练上衣</h3>
+<p class="text-on-surface-variant text-xs font-medium">规格：极速灰 / L码</p>
+<div class="flex items-end justify-between pt-2">
+<span class="font-lexend font-bold text-primary text-lg">¥299.00</span>
+<div class="flex items-center bg-surface-container-low rounded-lg p-1 gap-3">
+<button class="w-6 h-6 flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="remove">remove</span>
+</button>
+<span class="font-lexend font-semibold text-sm w-4 text-center">2</span>
+<button class="w-6 h-6 flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Checkout Bar -->
+<div class="fixed bottom-20 left-0 w-full px-4 z-40">
+<div class="max-w-2xl mx-auto bg-surface-container-lowest/90 backdrop-blur-xl rounded-2xl p-4 flex items-center justify-between shadow-[0_-12px_24px_rgba(44,47,48,0.06)] border border-outline-variant/10">
+<div class="flex items-center gap-3">
+<div class="w-6 h-6 rounded-full border-2 border-outline-variant flex items-center justify-center cursor-pointer"></div>
+<span class="text-sm font-medium text-on-surface">全选</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="text-right">
+<p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest">TOTAL</p>
+<p class="font-lexend font-black text-xl text-on-surface leading-none">¥2,179.00</p>
+</div>
+<button class="bg-gradient-to-br from-primary to-primary-container text-on-primary font-lexend font-extrabold px-8 py-3 rounded-xl shadow-lg shadow-primary/20 active:scale-95 transition-transform">
+                    结算(2)
+                </button>
+</div>
+</div>
+</div>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pt-2 pb-safe h-20 bg-white/80 dark:bg-gray-950/80 backdrop-blur-xl rounded-t-xl shadow-[0_-12px_24px_rgba(44,47,48,0.06)]">
+<div class="flex flex-col items-center justify-center text-gray-400 hover:text-[#ff7a2f] transition-colors active:scale-90 duration-200 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-['PingFang_SC'] text-[10px] font-medium mt-1">首页</span>
+</div>
+<div class="flex flex-col items-center justify-center text-gray-400 hover:text-[#ff7a2f] transition-colors active:scale-90 duration-200 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="grid_view">grid_view</span>
+<span class="font-['PingFang_SC'] text-[10px] font-medium mt-1">分类</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#9c3f00] dark:text-[#ff7a2f] scale-110 active:scale-90 duration-200 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="shopping_cart" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
+<span class="font-['PingFang_SC'] text-[10px] font-medium mt-1">购物车</span>
+</div>
+<div class="flex flex-col items-center justify-center text-gray-400 hover:text-[#ff7a2f] transition-colors active:scale-90 duration-200 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-['PingFang_SC'] text-[10px] font-medium mt-1">我的</span>
+</div>
+</nav>
+</body></html>
