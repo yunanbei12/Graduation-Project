@@ -126,7 +126,8 @@
 
 <script>
 import { trackDetailView, trackRecommendClick } from '../../api/behavior'
-import { getCourseDetail } from '../../api/course'
+import { getCoachDetail } from '../../api/coach'
+import { getCourseCategoryList, getCourseDetail } from '../../api/course'
 import { getRelatedCourseRecommend } from '../../api/recommend'
 import config from '../../utils/config'
 
@@ -150,30 +151,55 @@ export default {
 				return []
 			}
 		}
-	},
-	onLoad(options) {
-		this.courseId = options.id
-		this.loadDetail()
-	},
-	methods: {
-		getImageUrl: config.getImageUrl,
-		async loadDetail() {
-			try {
-				const data = await getCourseDetail(this.courseId)
-				this.course = data
-				this.trackView()
-				this.loadRelatedCourses()
-			} catch(e) {
-				console.error('加载课程详情失败', e)
-				uni.showToast({ title: '加载失败', icon: 'none' })
-			}
 		},
-		async loadRelatedCourses() {
-			try {
-				this.relatedCourses = await getRelatedCourseRecommend(this.courseId, { limit: 4 }) || []
-			} catch (e) {
-				this.relatedCourses = []
-			}
+		onLoad(options) {
+			this.courseId = options.id
+			this.loadDetail()
+		},
+		methods: {
+			getImageUrl: config.getImageUrl,
+			async loadDetail() {
+				try {
+					const data = await getCourseDetail(this.courseId)
+					this.course = data
+					await this.loadMeta()
+					this.trackView()
+					this.loadRelatedCourses()
+				} catch(e) {
+					console.error('加载课程详情失败', e)
+					uni.showToast({ title: '加载失败', icon: 'none' })
+				}
+			},
+			async loadMeta() {
+				if (!this.course) return
+				const [categoryRes, coachRes] = await Promise.allSettled([
+					this.course.categoryId ? getCourseCategoryList() : Promise.resolve([]),
+					this.course.coachId ? getCoachDetail(this.course.coachId) : Promise.resolve(null)
+				])
+				const categoryList = categoryRes.status === 'fulfilled' ? categoryRes.value : []
+				const coach = coachRes.status === 'fulfilled' ? coachRes.value : null
+				if (Array.isArray(categoryList)) {
+					const category = categoryList.find(item => String(item.id) === String(this.course.categoryId))
+					this.categoryName = category ? category.name : ''
+				}
+				if (coach) {
+					const expParts = []
+					if (coach.years) expParts.push(`${coach.years}年教学经验`)
+					if (coach.rating) expParts.push(`评分${coach.rating}`)
+					this.coachInfo = {
+						...coach,
+						exp: expParts.join(' · ') || coach.bio || ''
+					}
+				} else {
+					this.coachInfo = null
+				}
+			},
+			async loadRelatedCourses() {
+				try {
+					this.relatedCourses = await getRelatedCourseRecommend(this.courseId, { limit: 4 }) || []
+				} catch (e) {
+					this.relatedCourses = []
+				}
 		},
 		openRelatedCourse(item) {
 			if (uni.getStorageSync('token')) {

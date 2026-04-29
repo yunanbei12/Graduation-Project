@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -76,64 +77,100 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             throw new IllegalArgumentException("课程不存在或已下架");
         }
 
-        Order order = new Order();
-        order.setUserId(userId);
-        order.setCourseId(course.getId());
-        order.setOrderType(1);
-        order.setStatus(ORDER_PENDING);
-        order.setOrderNumber(generateOrderNumber());
-        order.setRemark(params.getRemark());
+        RLock userScheduleLock = null;
+        try {
+            Order order = new Order();
+            order.setUserId(userId);
+            order.setCourseId(course.getId());
+            order.setOrderType(1);
+            order.setStatus(ORDER_PENDING);
+            order.setOrderNumber(generateOrderNumber());
+            order.setRemark(params.getRemark());
 
-        if (course.getType() == 2) {
-            if (params.getScheduleId() == null) {
-                throw new IllegalArgumentException("请选择上课时间");
+            if (course.getType() == 2) {
+                if (params.getScheduleId() == null) {
+                    throw new IllegalArgumentException("请选择上课时间");
+                }
+                userScheduleLock = redissonClient.getLock("order:user:schedule:create:" + userId + ":" + params.getScheduleId());
+                userScheduleLock.lock();
+                CourseSchedule schedule = courseScheduleService.getById(params.getScheduleId());
+                validateScheduleForSignup(course, schedule);
+                long existCount = this.count(new LambdaQueryWrapper<Order>()
+                        .eq(Order::getUserId, userId)
+                        .eq(Order::getScheduleId, params.getScheduleId())
+                        .in(Order::getStatus, ORDER_PENDING, ORDER_PAID, ORDER_PROCESSING, ORDER_FINISHED, ORDER_REFUNDING));
+                if (existCount > 0) {
+                    throw new IllegalArgumentException("您已报名该场次，请勿重复购买");
+                }
+                order.setScheduleId(params.getScheduleId());
             }
-            CourseSchedule schedule = courseScheduleService.getById(params.getScheduleId());
-            if (schedule == null || schedule.getStatus() != 0) {
-                throw new IllegalArgumentException("所选排课不存在或已无法报名");
+
+            BigDecimal totalAmount = course.getPrice();
+            CouponPricing pricing = calculateCouponPricing(userId, params.getCouponId(), totalAmount, 1);
+            order.setCouponId(pricing.userCouponId());
+            order.setTotalAmount(totalAmount);
+            order.setCouponAmount(pricing.couponAmount());
+            order.setActualAmount(totalAmount.subtract(pricing.couponAmount()));
+            this.save(order);
+
+            OrderItem item = new OrderItem();
+            item.setOrderId(order.getId());
+            item.setItemType(1);
+            item.setItemId(course.getId());
+            item.setItemName(course.getName());
+            item.setItemPic(course.getPic());
+            item.setPrice(course.getPrice());
+            item.setQty(1);
+            orderItemService.save(item);
+
+            lockCouponForOrder(pricing.userCouponId(), userId, order.getId());
+            txEventHelper.afterCommit(() -> orderEventPublisher.publishOrderCloseDelay(order.getId()));
+            return order;
+        } finally {
+            if (userScheduleLock != null && userScheduleLock.isHeldByCurrentThread()) {
+                userScheduleLock.unlock();
             }
-            if (schedule.getStartTime() != null && !schedule.getStartTime().isAfter(LocalDateTime.now())) {
-                throw new IllegalArgumentException("该场次已开始，无法报名");
-            }
-            // 新逻辑：使用scheduleDate+课程时间段判断
-            LocalDateTime scheduleStart = resolveStartTime(schedule, course);
-            if (scheduleStart != null && !scheduleStart.isAfter(LocalDateTime.now())) {
-                throw new IllegalArgumentException("该场次已开始，无法报名");
-            }
-            if (schedule.getEnrolledSeats() >= schedule.getTotalSeats()) {
-                throw new IllegalArgumentException("该排课名额已满");
-            }
-            long existCount = this.count(new LambdaQueryWrapper<Order>()
-                    .eq(Order::getUserId, userId)
-                    .eq(Order::getScheduleId, params.getScheduleId())
-                    .in(Order::getStatus, ORDER_PENDING, ORDER_PAID, ORDER_PROCESSING, ORDER_FINISHED, ORDER_REFUNDING));
-            if (existCount > 0) {
-                throw new IllegalArgumentException("您已报名该场次，请勿重复购买");
-            }
-            order.setScheduleId(params.getScheduleId());
+        }
+    }
+
+    private void validateScheduleForSignup(Course course, CourseSchedule schedule) {
+        if (schedule == null) {
+            throw new IllegalArgumentException("所选排课不存在或已无法报名");
+        }
+        if (course == null || !Objects.equals(schedule.getCourseId(), course.getId())) {
+            throw new IllegalArgumentException("排课与课程不匹配，请重新选择");
+        }
+        if (schedule.getStatus() == null || (schedule.getStatus() != 0 && schedule.getStatus() != 1)) {
+            throw new IllegalArgumentException("所选排课不存在或已无法报名");
+        }
+        LocalDateTime scheduleStart = resolveStartTime(schedule, course);
+        if (scheduleStart != null && !scheduleStart.isAfter(LocalDateTime.now())) {
+            throw new IllegalArgumentException("该场次已开始，无法报名");
+        }
+        if (defaultInt(schedule.getEnrolledSeats()) >= defaultInt(schedule.getTotalSeats())) {
+            throw new IllegalArgumentException("该排课名额已满");
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public List<Order> createBatchCourseOrders(Long userId, Order params) {
+        if (params.getScheduleIds() == null || params.getScheduleIds().isEmpty()) {
+            throw new IllegalArgumentException("请选择至少一个上课时间");
+        }
+        if (params.getCouponId() != null) {
+            throw new IllegalArgumentException("多场次报名暂不支持使用优惠券");
         }
 
-        BigDecimal totalAmount = course.getPrice();
-        CouponPricing pricing = calculateCouponPricing(userId, params.getCouponId(), totalAmount, 1);
-        order.setCouponId(pricing.userCouponId());
-        order.setTotalAmount(totalAmount);
-        order.setCouponAmount(pricing.couponAmount());
-        order.setActualAmount(totalAmount.subtract(pricing.couponAmount()));
-        this.save(order);
-
-        OrderItem item = new OrderItem();
-        item.setOrderId(order.getId());
-        item.setItemType(1);
-        item.setItemId(course.getId());
-        item.setItemName(course.getName());
-        item.setItemPic(course.getPic());
-        item.setPrice(course.getPrice());
-        item.setQty(1);
-        orderItemService.save(item);
-
-        lockCouponForOrder(pricing.userCouponId(), userId, order.getId());
-        txEventHelper.afterCommit(() -> orderEventPublisher.publishOrderCloseDelay(order.getId()));
-        return order;
+        List<Order> orders = new ArrayList<>();
+        for (Long scheduleId : params.getScheduleIds()) {
+            Order single = new Order();
+            single.setCourseId(params.getCourseId());
+            single.setScheduleId(scheduleId);
+            single.setRemark(params.getRemark());
+            orders.add(createCourseOrder(userId, single));
+        }
+        return orders;
     }
 
     @Override
@@ -226,6 +263,18 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     public void payOrder(Long userId, Long orderId) {
         Order order = requireOwnedOrder(userId, orderId);
         doPay(order);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void payBatchOrders(Long userId, List<Long> orderIds) {
+        if (orderIds == null || orderIds.isEmpty()) {
+            throw new IllegalArgumentException("请选择要支付的订单");
+        }
+        for (Long orderId : orderIds) {
+            Order order = requireOwnedOrder(userId, orderId);
+            doPay(order);
+        }
     }
 
     @Override
@@ -380,11 +429,22 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             result.put("enrolledCount", enrolledCount);
             result.put("minGroupSize", minGroupSize);
 
+            if (schedule.getStatus() == 2) {
+                result.put("grouped", enrolledCount >= minGroupSize);
+                result.put("message", "排课已结课");
+                return result;
+            }
             if (schedule.getStatus() == 3) {
                 result.put("grouped", false);
                 result.put("message", "排课已取消");
                 return result;
             }
+
+            LocalDateTime scheduleStart = resolveStartTime(schedule, course);
+            LocalDateTime checkTime = scheduleStart == null
+                    ? null
+                    : scheduleStart.minusMinutes(orderBizProperties.getGroupCheckBeforeMinutes());
+            boolean canFinalizeGroup = checkTime == null || !LocalDateTime.now().isBefore(checkTime);
 
             if (enrolledCount >= minGroupSize) {
                 if (schedule.getStatus() == 0) {
@@ -392,11 +452,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     courseScheduleService.updateById(schedule);
                 }
                 result.put("grouped", true);
-                result.put("message", "已成团，共 " + enrolledCount + " 人报名");
+                result.put("message", canFinalizeGroup
+                        ? "已成团，共 " + enrolledCount + " 人报名"
+                        : "当前已达到成团人数，共 " + enrolledCount + " 人报名");
                 return result;
             }
 
-            if (schedule.getStatus() == 0) {
+            if (!canFinalizeGroup) {
+                result.put("grouped", false);
+                result.put("message", "未到成团判断时间，当前 " + enrolledCount + " 人，需 " + minGroupSize + " 人");
+                return result;
+            }
+
+            if (schedule.getStatus() != 3) {
                 schedule.setStatus(3);
                 courseScheduleService.updateById(schedule);
             }
@@ -716,16 +784,16 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         scheduleLock.lock();
         try {
             CourseSchedule schedule = courseScheduleService.getById(order.getScheduleId());
-            if (schedule == null || schedule.getStatus() != 0) {
-                throw new IllegalArgumentException("该排课当前无法支付");
+            validateScheduleForSignup(course, schedule);
+            long duplicatePaidCount = this.count(new LambdaQueryWrapper<Order>()
+                    .eq(Order::getUserId, order.getUserId())
+                    .eq(Order::getScheduleId, order.getScheduleId())
+                    .ne(Order::getId, order.getId())
+                    .in(Order::getStatus, ORDER_PAID, ORDER_PROCESSING, ORDER_FINISHED, ORDER_REFUNDING));
+            if (duplicatePaidCount > 0) {
+                throw new IllegalArgumentException("您已报名该场次，请勿重复支付");
             }
-            if (schedule.getStartTime() != null && !schedule.getStartTime().isAfter(LocalDateTime.now())) {
-                throw new IllegalArgumentException("该场次已开始，无法支付");
-            }
-            if (schedule.getEnrolledSeats() >= schedule.getTotalSeats()) {
-                throw new IllegalArgumentException("该排课名额已满");
-            }
-            schedule.setEnrolledSeats(schedule.getEnrolledSeats() + 1);
+            schedule.setEnrolledSeats(defaultInt(schedule.getEnrolledSeats()) + 1);
             courseScheduleService.updateById(schedule);
         } finally {
             scheduleLock.unlock();
@@ -798,8 +866,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 }
             } else if (latest.getScheduleId() != null) {
                 CourseSchedule schedule = courseScheduleService.getById(latest.getScheduleId());
-                if (schedule != null && schedule.getStartTime() != null) {
-                    long minutes = Duration.between(LocalDateTime.now(), schedule.getStartTime()).toMinutes();
+                LocalDateTime scheduleStart = resolveStartTime(schedule, course);
+                if (scheduleStart != null) {
+                    long minutes = Duration.between(LocalDateTime.now(), scheduleStart).toMinutes();
                     if (minutes > 120 && minutes <= 480) {
                         refundAmount = latest.getActualAmount()
                                 .multiply(BigDecimal.valueOf(0.8))

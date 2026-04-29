@@ -17,13 +17,15 @@ public interface AiCustomerService {
 
     AiSessionDetailVO getUserSessionDetail(Long sessionId, Long userId);
 
+    AiSessionDetailVO getClientSessionDetail(Long sessionId, Long userId, String guestToken);
+
     AiSessionDetailVO getSessionDetail(Long sessionId);
 
     List<AiSessionItemVO> getAdminSessionHistory(Long sessionId);
 
     void submitFeedback(Long sessionId, Long messageId, Integer rating, String comment, Long userId);
 
-    void createHandover(Long sessionId, Long userId, String remark);
+    void createHandover(Long sessionId, Long userId, String guestToken, String remark);
 
     void adminReply(Long sessionId, String replyText, String adminName, boolean resolveAfterReply, boolean terminateAfterReply);
 

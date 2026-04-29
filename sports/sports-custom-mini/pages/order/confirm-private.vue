@@ -96,7 +96,7 @@
 
 <script>
 import { getCourseDetail } from '../../api/course'
-import { createCourseOrder, payOrder } from '../../api/order'
+import { createCourseOrder } from '../../api/order'
 import { getUsableCoupons } from '../../api/coupon'
 import { checkLogin } from '../../utils/auth'
 
@@ -124,25 +124,25 @@ export default {
 		if (!checkLogin()) return
 		this.courseId = options.courseId
 		this.loadCourse()
-		this.loadCoupons()
 	},
-	methods: {
-		async loadCourse() {
-			try {
-				this.course = await getCourseDetail(this.courseId)
-			} catch(e) {
-				uni.showToast({ title: '加载失败', icon: 'none' })
-			}
-		},
-		async loadCoupons() {
-			try {
-				const price = this.course ? this.course.price : 99999
-				this.usableCoupons = await getUsableCoupons(1, price)
-			} catch(e) {
-				this.usableCoupons = []
-			}
-		},
-		pickCoupon(uc) {
+		methods: {
+			async loadCourse() {
+				try {
+					this.course = await getCourseDetail(this.courseId)
+					await this.loadCoupons()
+				} catch(e) {
+					uni.showToast({ title: '加载失败', icon: 'none' })
+				}
+			},
+			async loadCoupons() {
+				try {
+					const price = this.course ? this.course.price : 0
+					this.usableCoupons = await getUsableCoupons(1, price)
+				} catch(e) {
+					this.usableCoupons = []
+				}
+			},
+			pickCoupon(uc) {
 			if (this.selectedCoupon && this.selectedCoupon.id === uc.id) {
 				this.selectedCoupon = null
 				this.couponAmount = 0

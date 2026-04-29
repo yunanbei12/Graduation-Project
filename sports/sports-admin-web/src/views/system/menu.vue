@@ -83,6 +83,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { getSysMenuList, addSysMenu, updateSysMenu, deleteSysMenu } from '../../api/system'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { filterCommerceMenus } from '../../config/demo-mode'
 
 const loading = ref(false)
 const menuTree = ref([])
@@ -97,7 +98,7 @@ const loadData = async () => {
   loading.value = true
   try {
     const res = await getSysMenuList()
-    const menus = res.data
+    const menus = filterCommerceMenus(res.data || [])
     const map = {}
     const tree = []
     menus.forEach(m => {

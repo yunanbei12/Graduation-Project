@@ -25,7 +25,10 @@ public class SaTokenConfig implements WebMvcConfigurer {
                         "/favicon.ico",
                         "/course/list",
                         "/course/detail/**",
+                        "/course/location/list",
+                        "/course/location/options",
                         "/course/schedule/list",
+                        "/course/schedule/upcoming",
                         "/course/category/list",
                         "/coach/list",
                         "/coach/detail/**",
@@ -40,7 +43,7 @@ public class SaTokenConfig implements WebMvcConfigurer {
                         "/recommend/prod/related/**",
                         "/banner/list",
                         "/ai/chat",
-                        "/ai/session/**/handover",
+                        "/ai/session/**",
                         "/uploads/**",
                         "/sms/send"
                 );

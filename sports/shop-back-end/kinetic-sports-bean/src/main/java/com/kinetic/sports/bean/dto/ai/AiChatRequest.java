@@ -7,5 +7,7 @@ public class AiChatRequest {
 
     private Long sessionId;
 
+    private String guestToken;
+
     private String message;
 }

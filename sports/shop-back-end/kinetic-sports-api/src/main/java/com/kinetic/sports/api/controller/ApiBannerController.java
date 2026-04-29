@@ -3,11 +3,13 @@ package com.kinetic.sports.api.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.kinetic.sports.bean.model.Banner;
 import com.kinetic.sports.common.response.ServerResponseEntity;
+import com.kinetic.sports.common.util.ContentSecurityUtils;
 import com.kinetic.sports.service.BannerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/banner")
@@ -26,6 +28,20 @@ public class ApiBannerController {
         wrapper.eq(Banner::getStatus, 1);
         wrapper.eq(Banner::getPosition, position);
         wrapper.orderByAsc(Banner::getSort).orderByDesc(Banner::getCreateTime);
-        return ServerResponseEntity.success(bannerService.list(wrapper));
+        return ServerResponseEntity.success(bannerService.list(wrapper).stream()
+                .map(this::sanitizeBanner)
+                .collect(Collectors.toList()));
+    }
+
+    private Banner sanitizeBanner(Banner banner) {
+        if (banner == null) {
+            return null;
+        }
+        if (banner.getLinkType() != null && banner.getLinkType() == 1) {
+            banner.setLinkUrl(ContentSecurityUtils.normalizeMiniPagePath(banner.getLinkUrl()));
+        } else if (banner.getLinkType() != null && banner.getLinkType() == 3) {
+            banner.setLinkUrl(ContentSecurityUtils.normalizeExternalUrl(banner.getLinkUrl()));
+        }
+        return banner;
     }
 }

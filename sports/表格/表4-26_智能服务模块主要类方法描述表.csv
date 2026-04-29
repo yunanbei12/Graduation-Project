@@ -1,0 +1,32 @@
+﻿类名称,方法名称,方法描述,返回值类型
+ApiBehaviorController,view(UserBehavior),记录用户课程或商品详情浏览行为,Void
+ApiBehaviorController,recommendClick(UserBehavior),记录用户推荐位点击行为,Void
+ApiRecommendController,"home(Integer,Integer)",获取首页推荐结果,RecommendHomeVO
+ApiRecommendController,"course(Integer,Long,Integer)",获取课程推荐列表,List
+ApiRecommendController,"relatedCourse(Long,Integer)",获取课程关联推荐列表,List
+RecommendAdminController,statsSummary(),获取推荐统计概览,"Map<String, Object>"
+RecommendAdminController,"behaviorList(Integer,Integer,Integer,String,String)",分页查询用户行为记录,"Page<Map<String, Object>>"
+UserBehaviorServiceImpl,"trackBehavior(Long,UserBehavior)",校验并保存用户行为数据,void
+UserBehaviorServiceImpl,getRecommendStatsSummary(),统计浏览、点击与来源分布数据,"Map<String, Object>"
+UserBehaviorServiceImpl,"getBehaviorPage(Page,Integer,String,String)",分页组装行为明细数据,"Page<Map<String, Object>>"
+RecommendServiceImpl,"recommendHome(Long,Integer,Integer)",生成首页推荐结果,RecommendHomeVO
+RecommendServiceImpl,"recommendCourses(Long,Integer,Long,Long,Integer)",按照用户画像与课程特征生成课程推荐结果,List<RecommendItemVO>
+ApiAiController,chat(AiChatRequest),提交咨询消息并返回客服回复,AiChatResponse
+ApiAiController,"sessionDetail(Long,String)",查询用户侧会话详情,AiSessionDetailVO
+ApiAiController,"feedback(Long,Map<String,Object>)",提交会话反馈评价,Void
+ApiAiController,"handover(Long,Map<String,Object>)",发起人工接管申请,Void
+AiAdminController,"sessionList(Integer,Integer,String,String,Integer,Integer)",分页查询客服会话列表,"Page<Map<String, Object>>"
+AiAdminController,sessionDetail(Long),查询后台会话详情,"Map<String, Object>"
+AiAdminController,"reply(Long,Map<String,Object>)",发送人工回复,Void
+AiAdminController,handoverList(Integer),查询转人工记录,"List<Map<String, Object>>"
+AiAdminController,"knowledgeList(Integer,Integer,String,String,Integer)",分页查询知识库内容,Page<AiKnowledge>
+AiAdminController,statsSummary(),获取智能客服统计概览,"Map<String, Object>"
+AiCustomerServiceImpl,"chat(AiChatRequest,Long)",完成会话创建、意图识别、回复生成与消息落库,AiChatResponse
+AiCustomerServiceImpl,"getAdminSessionPage(Page,String,String,Integer,Integer)",组装后台会话分页数据,"Page<Map<String, Object>>"
+AiCustomerServiceImpl,getSessionDetail(Long),组装会话消息详情,AiSessionDetailVO
+AiCustomerServiceImpl,"createHandover(Long,Long,String,String)",生成转人工记录并更新会话状态,void
+AiCustomerServiceImpl,"adminReply(Long,String,String,boolean,boolean)",处理人工回复并回写转人工记录,void
+AiCustomerServiceImpl,"resolveSession(Long,String,String)",将会话标记为已解决,void
+AiCustomerServiceImpl,"terminateSession(Long,String,String)",结束当前会话,void
+AiCustomerServiceImpl,getStatsSummary(),统计会话、知识库与反馈数据,"Map<String, Object>"
+AiModelClient,"generateReply(String,String,String,List<AiKnowledge>,List<AiCard>)",调用外部大模型接口生成润色回复,String

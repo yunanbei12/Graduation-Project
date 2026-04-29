@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { getInfo, login, logout } from '../api/auth'
 import { getUserMenus } from '../api/system'
+import { filterCommerceMenus } from '../config/demo-mode'
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -25,7 +26,7 @@ export const useUserStore = defineStore('user', {
 
     async getMenusAction() {
       const res = await getUserMenus()
-      this.menus = res.data || []
+      this.menus = filterCommerceMenus(res.data || [])
       return res
     },
 

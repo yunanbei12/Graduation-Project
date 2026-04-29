@@ -39,6 +39,7 @@ public class ApiUserController {
                         .eq(UserCoursePackage::getUserId, userId)
                         .orderByDesc(UserCoursePackage::getCreateTime)
         );
+        syncExpiredPackages(list);
         List<Map<String, Object>> result = new ArrayList<>();
         for (UserCoursePackage pkg : list) {
             Map<String, Object> item = new HashMap<>();
@@ -67,6 +68,7 @@ public class ApiUserController {
         if (pkg == null || !pkg.getUserId().equals(userId)) {
             return ServerResponseEntity.fail("课包不存在");
         }
+        syncExpiredPackage(pkg);
         Map<String, Object> result = new HashMap<>();
         result.put("id", pkg.getId());
         result.put("courseId", pkg.getCourseId());
@@ -256,5 +258,37 @@ public class ApiUserController {
         }
 
         return ServerResponseEntity.success(usable);
+    }
+
+    private void syncExpiredPackages(List<UserCoursePackage> packages) {
+        if (packages == null || packages.isEmpty()) {
+            return;
+        }
+        LocalDateTime now = LocalDateTime.now();
+        List<UserCoursePackage> expiredPackages = new ArrayList<>();
+        for (UserCoursePackage pkg : packages) {
+            if (isExpiredActivePackage(pkg, now)) {
+                pkg.setStatus(0);
+                expiredPackages.add(pkg);
+            }
+        }
+        if (!expiredPackages.isEmpty()) {
+            userCoursePackageService.updateBatchById(expiredPackages);
+        }
+    }
+
+    private void syncExpiredPackage(UserCoursePackage pkg) {
+        if (isExpiredActivePackage(pkg, LocalDateTime.now())) {
+            pkg.setStatus(0);
+            userCoursePackageService.updateById(pkg);
+        }
+    }
+
+    private boolean isExpiredActivePackage(UserCoursePackage pkg, LocalDateTime now) {
+        return pkg != null
+                && pkg.getStatus() != null
+                && pkg.getStatus() == 1
+                && pkg.getExpireTime() != null
+                && !pkg.getExpireTime().isAfter(now);
     }
 }

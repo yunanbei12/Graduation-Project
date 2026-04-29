@@ -78,6 +78,7 @@
               type="datetime"
               value-format="YYYY-MM-DD HH:mm:ss"
               placeholder="选择上课时间"
+              :disabled-date="disableFutureDate"
               style="width: 100%"
             />
           </div>
@@ -201,7 +202,7 @@ const privateCourseOptions = computed(() => {
     const totalLessons = Number(pkg.totalLessons || 0)
     const usedLessons = Number(pkg.usedLessons || 0)
     const remainingLessons = Math.max(totalLessons - usedLessons, 0)
-    if (pkg.status !== 1 || remainingLessons <= 0) return
+    if (pkg.status !== 1 || remainingLessons <= 0 || isPackageExpired(pkg)) return
 
     const courseName = courseNameMap.value[pkg.courseId] || `课程#${pkg.courseId}`
     const defaultCoachId = courseDefaultCoachMap.value[pkg.courseId] || null
@@ -288,6 +289,10 @@ const handleSubmit = async () => {
     ElMessage.warning('请完整选择学员、课程、教练和上课时间')
     return
   }
+  if (isFutureCheckinTime(checkinTime.value)) {
+    ElMessage.warning('上课时间不能晚于当前时间')
+    return
+  }
   submitting.value = true
   try {
     await privateCheckin({
@@ -361,6 +366,26 @@ const getDefaultCheckinTime = () => {
   const now = new Date()
   return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:00`
 }
+
+const parseDateTime = (value) => {
+  if (!value) return null
+  if (value instanceof Date) return value
+  const normalized = String(value).replace('T', ' ').replace(/-/g, '/')
+  const parsed = new Date(normalized)
+  return Number.isNaN(parsed.getTime()) ? null : parsed
+}
+
+const isPackageExpired = (pkg) => {
+  const expireTime = parseDateTime(pkg?.expireTime)
+  return !!expireTime && expireTime.getTime() <= Date.now()
+}
+
+const isFutureCheckinTime = (value) => {
+  const checkinDate = parseDateTime(value)
+  return !!checkinDate && checkinDate.getTime() > Date.now()
+}
+
+const disableFutureDate = (date) => date.getTime() > Date.now()
 
 const formatDate = (dt) => {
   if (!dt) return '-'

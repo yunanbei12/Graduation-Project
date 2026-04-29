@@ -7,7 +7,6 @@
           <el-select v-model="query.category" placeholder="分类" clearable style="width: 160px" @change="loadData">
             <el-option label="faq" value="faq" />
             <el-option label="course" value="course" />
-            <el-option label="product" value="product" />
             <el-option label="coupon" value="coupon" />
             <el-option label="refund" value="refund" />
             <el-option label="account" value="account" />
@@ -60,7 +59,6 @@
           <el-select v-model="form.category" style="width: 100%">
             <el-option label="faq" value="faq" />
             <el-option label="course" value="course" />
-            <el-option label="product" value="product" />
             <el-option label="coupon" value="coupon" />
             <el-option label="refund" value="refund" />
             <el-option label="account" value="account" />

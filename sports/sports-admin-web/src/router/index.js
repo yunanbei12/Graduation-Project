@@ -31,10 +31,22 @@ const routes = [
         meta: { title: '课程分类', icon: 'Menu' }
       },
       {
+        path: 'course/location',
+        name: 'CourseLocation',
+        component: () => import('../views/course/location.vue'),
+        meta: { title: '上课地点', icon: 'Grid' }
+      },
+      {
         path: 'schedule',
         name: 'Schedule',
         component: () => import('../views/course/schedule.vue'),
         meta: { title: '排课管理', icon: 'Calendar' }
+      },
+      {
+        path: 'schedule/board',
+        name: 'ScheduleBoard',
+        component: () => import('../views/course/coach-board.vue'),
+        meta: { title: '教练排课看板', icon: 'Calendar' }
       },
       {
         path: 'course/checkin',

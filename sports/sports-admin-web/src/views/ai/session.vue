@@ -147,15 +147,15 @@
                   <div :class="['message-bubble', item.role === 'user' ? 'user' : 'service']">
                     <div class="message-text">{{ item.role === 'user' ? item.content : item.replyText }}</div>
                     <div class="message-extra" v-if="item.role !== 'user' && item.intent">意图：{{ formatIntent(item.intent) }}</div>
-                    <div class="card-list" v-if="item.cards?.length">
-                      <div class="mini-card" v-for="card in item.cards" :key="card.id + card.title">
+                    <div class="card-list" v-if="visibleCards(item.cards).length">
+                      <div class="mini-card" v-for="card in visibleCards(item.cards)" :key="card.id + card.title">
                         <div class="mini-card-title">{{ card.title }}</div>
                         <div class="mini-card-sub">{{ card.subtitle }}</div>
                         <div class="mini-card-meta">{{ card.meta }}</div>
                       </div>
                     </div>
-                    <div class="action-list" v-if="item.actions?.length">
-                      <el-tag v-for="action in item.actions" :key="action.label + action.type" size="small">{{ action.label }}</el-tag>
+                    <div class="action-list" v-if="visibleActions(item.actions).length">
+                      <el-tag v-for="action in visibleActions(item.actions)" :key="action.label + action.type" size="small">{{ action.label }}</el-tag>
                     </div>
                   </div>
                 </div>
@@ -247,6 +247,7 @@ import {
   terminateAiSession,
   updateAiSessionStatus
 } from '../../api/ai'
+import { DEMO_MODE, isCommerceLabel, isCommercePath } from '../../config/demo-mode'
 
 const loading = ref(false)
 const detailLoading = ref(false)
@@ -289,7 +290,6 @@ const quickReplies = [
 const intentOptions = [
   { label: '课程推荐', value: 'course_recommend' },
   { label: '排课咨询', value: 'course_schedule_query' },
-  { label: '商品推荐', value: 'product_recommend' },
   { label: '订单查询', value: 'order_query' },
   { label: '退款咨询', value: 'refund_help' },
   { label: '课包查询', value: 'package_query' },
@@ -522,7 +522,20 @@ const stopResize = () => {
   window.removeEventListener('mouseup', stopResize)
 }
 
+const visibleCards = (cards = []) => {
+  if (!DEMO_MODE.hideCommerce) return cards || []
+  return (cards || []).filter(card => !isCommercePath(card.route || '') && !isCommerceLabel(card.title || ''))
+}
+
+const visibleActions = (actions = []) => {
+  if (!DEMO_MODE.hideCommerce) return actions || []
+  return (actions || []).filter(action => !isCommercePath(action.route || '') && !isCommerceLabel(action.label || ''))
+}
+
 const formatIntent = (value) => {
+  if (DEMO_MODE.hideCommerce && value === 'product_recommend') {
+    return '推荐咨询'
+  }
   const hit = intentOptions.find(item => item.value === value)
   return hit ? hit.label : (value || '-')
 }

@@ -28,6 +28,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -80,15 +81,17 @@ public class AiCustomerServiceImpl implements AiCustomerService {
         }
         message = message.trim();
 
-        AiSession session = prepareSession(request.getSessionId(), userId, message);
+        AiSession session = prepareSession(request == null ? null : request.getSessionId(), userId, request == null ? null : request.getGuestToken(), message);
         aiMessageService.save(buildUserMessage(session.getId(), userId, message));
 
         String intent = detectIntent(message);
         BigDecimal confidence = estimateConfidence(intent, message);
-        ChatDraft draft = buildReply(intent, message, userId, session.getId());
+        ChatDraft draft = buildReply(intent, message, userId, request == null ? null : request.getGuestToken(), session.getId());
 
         AiChatResponse response = new AiChatResponse();
         response.setSessionId(session.getId());
+        response.setGuestToken(session.getGuestToken());
+        response.setStatus(session.getStatus());
         response.setReplyText(draft.replyText);
         response.setIntent(intent);
         response.setConfidence(confidence);
@@ -121,6 +124,15 @@ public class AiCustomerServiceImpl implements AiCustomerService {
     public AiSessionDetailVO getUserSessionDetail(Long sessionId, Long userId) {
         AiSession session = aiSessionService.getById(sessionId);
         if (session == null || !Objects.equals(session.getUserId(), userId)) {
+            throw new KineticSportsBindException("会话不存在");
+        }
+        return buildSessionDetail(session);
+    }
+
+    @Override
+    public AiSessionDetailVO getClientSessionDetail(Long sessionId, Long userId, String guestToken) {
+        AiSession session = aiSessionService.getById(sessionId);
+        if (!hasSessionAccess(session, userId, guestToken)) {
             throw new KineticSportsBindException("会话不存在");
         }
         return buildSessionDetail(session);
@@ -164,25 +176,34 @@ public class AiCustomerServiceImpl implements AiCustomerService {
         if (message == null || !Objects.equals(message.getSessionId(), sessionId)) {
             throw new KineticSportsBindException("消息不存在");
         }
+        if (!"assistant".equals(message.getRole())
+                || "human".equals(message.getSourceType())
+                || "system".equals(message.getSourceType())) {
+            throw new KineticSportsBindException("当前消息不支持反馈");
+        }
 
-        AiFeedback feedback = new AiFeedback();
-        feedback.setSessionId(sessionId);
-        feedback.setMessageId(messageId);
-        feedback.setUserId(userId);
+        AiFeedback feedback = aiFeedbackService.getOne(new LambdaQueryWrapper<AiFeedback>()
+                .eq(AiFeedback::getSessionId, sessionId)
+                .eq(AiFeedback::getMessageId, messageId)
+                .eq(AiFeedback::getUserId, userId)
+                .last("limit 1"));
+        if (feedback == null) {
+            feedback = new AiFeedback();
+            feedback.setSessionId(sessionId);
+            feedback.setMessageId(messageId);
+            feedback.setUserId(userId);
+        }
         feedback.setRating(Objects.equals(rating, 1) ? 1 : 0);
         feedback.setComment(comment);
-        aiFeedbackService.save(feedback);
+        aiFeedbackService.saveOrUpdate(feedback);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void createHandover(Long sessionId, Long userId, String remark) {
+    public void createHandover(Long sessionId, Long userId, String guestToken, String remark) {
         AiSession session = aiSessionService.getById(sessionId);
-        if (session == null) {
+        if (!hasSessionAccess(session, userId, guestToken)) {
             throw new KineticSportsBindException("会话不存在");
-        }
-        if (userId != null && session.getUserId() != null && !Objects.equals(session.getUserId(), userId)) {
-            throw new KineticSportsBindException("无权操作该会话");
         }
 
         long pendingCount = aiHandoverService.count(
@@ -440,8 +461,16 @@ public class AiCustomerServiceImpl implements AiCustomerService {
         long resolvedSessions = aiSessionService.count(new LambdaQueryWrapper<AiSession>().eq(AiSession::getStatus, 1));
         long handoverSessions = aiSessionService.count(new LambdaQueryWrapper<AiSession>().eq(AiSession::getNeedHandover, 1));
         long knowledgeCount = aiKnowledgeService.count(new LambdaQueryWrapper<AiKnowledge>().eq(AiKnowledge::getStatus, 1));
-        long positiveFeedback = aiFeedbackService.count(new LambdaQueryWrapper<AiFeedback>().eq(AiFeedback::getRating, 1));
-        long negativeFeedback = aiFeedbackService.count(new LambdaQueryWrapper<AiFeedback>().eq(AiFeedback::getRating, 0));
+        Map<String, AiFeedback> latestFeedbackMap = aiFeedbackService.list().stream()
+                .collect(Collectors.toMap(
+                        this::buildFeedbackKey,
+                        Function.identity(),
+                        (left, right) -> Optional.ofNullable(left.getUpdateTime()).orElse(left.getCreateTime())
+                                        .isAfter(Optional.ofNullable(right.getUpdateTime()).orElse(right.getCreateTime()))
+                                ? left : right
+                ));
+        long positiveFeedback = latestFeedbackMap.values().stream().filter(item -> Objects.equals(item.getRating(), 1)).count();
+        long negativeFeedback = latestFeedbackMap.values().stream().filter(item -> Objects.equals(item.getRating(), 0)).count();
 
         List<Map<String, Object>> topIntents = aiSessionService.list().stream()
                 .filter(item -> StringUtils.hasText(item.getLastIntent()))
@@ -469,23 +498,24 @@ public class AiCustomerServiceImpl implements AiCustomerService {
         return summary;
     }
 
-    private AiSession prepareSession(Long sessionId, Long userId, String message) {
+    private AiSession prepareSession(Long sessionId, Long userId, String guestToken, String message) {
         AiSession session = sessionId == null ? null : aiSessionService.getById(sessionId);
         if (session != null) {
-            if (userId != null && session.getUserId() != null && !Objects.equals(session.getUserId(), userId)) {
+            if (!hasSessionAccess(session, userId, guestToken)) {
                 throw new KineticSportsBindException("会话不存在");
             }
             if (Objects.equals(session.getStatus(), SESSION_STATUS_RESOLVED) || Objects.equals(session.getStatus(), SESSION_STATUS_ENDED)) {
-                return createSession(userId, message);
+                return createSession(userId, guestToken, message);
             }
             if (session.getUserId() == null && userId != null) {
                 session.setUserId(userId);
+                session.setGuestToken(null);
                 aiSessionService.updateById(session);
             }
             return session;
         }
 
-        return createSession(userId, message);
+        return createSession(userId, guestToken, message);
     }
 
     private AiMessage buildUserMessage(Long sessionId, Long userId, String message) {
@@ -531,9 +561,10 @@ public class AiCustomerServiceImpl implements AiCustomerService {
         return aiMessage;
     }
 
-    private AiSession createSession(Long userId, String message) {
+    private AiSession createSession(Long userId, String guestToken, String message) {
         AiSession created = new AiSession();
         created.setUserId(userId);
+        created.setGuestToken(userId == null ? normalizeGuestToken(guestToken) : null);
         created.setTitle(truncate(message, 18));
         created.setStatus(SESSION_STATUS_PROCESSING);
         created.setNeedHandover(0);
@@ -551,9 +582,10 @@ public class AiCustomerServiceImpl implements AiCustomerService {
         session.setNeedHandover(Boolean.TRUE.equals(response.getNeedHandover()) ? 1 : session.getNeedHandover());
         session.setLastMessageTime(LocalDateTime.now());
         aiSessionService.updateById(session);
+        response.setStatus(session.getStatus());
     }
 
-    private ChatDraft buildReply(String intent, String message, Long userId, Long sessionId) {
+    private ChatDraft buildReply(String intent, String message, Long userId, String guestToken, Long sessionId) {
         return switch (intent) {
             case "course_recommend" -> buildCourseRecommendReply(message, userId);
             case "course_schedule_query" -> buildScheduleReply(message);
@@ -564,7 +596,7 @@ public class AiCustomerServiceImpl implements AiCustomerService {
             case "coupon_query" -> buildCouponReply(userId, message);
             case "checkin_query" -> buildCheckinReply(userId);
             case "account_help" -> buildAccountReply(userId);
-            case "manual_service" -> buildManualReply(userId, sessionId);
+            case "manual_service" -> buildManualReply(userId, guestToken, sessionId);
             default -> buildGeneralReply(message, userId);
         };
     }
@@ -801,8 +833,8 @@ public class AiCustomerServiceImpl implements AiCustomerService {
         return draft;
     }
 
-    private ChatDraft buildManualReply(Long userId, Long sessionId) {
-        createHandover(sessionId, userId, "用户请求人工客服");
+    private ChatDraft buildManualReply(Long userId, String guestToken, Long sessionId) {
+        createHandover(sessionId, userId, guestToken, "用户请求人工客服");
         ChatDraft draft = new ChatDraft();
         draft.replyText = "我已经帮你提交人工处理申请，后台客服台会看到这条会话并跟进。你也可以继续补充问题细节，方便后续处理。";
         draft.needHandover = true;
@@ -1069,6 +1101,29 @@ public class AiCustomerServiceImpl implements AiCustomerService {
         }
         return couponService.listByIds(ids).stream()
                 .collect(Collectors.toMap(Coupon::getId, Function.identity(), (left, right) -> left));
+    }
+
+    private boolean hasSessionAccess(AiSession session, Long userId, String guestToken) {
+        if (session == null) {
+            return false;
+        }
+        if (userId != null) {
+            return Objects.equals(session.getUserId(), userId);
+        }
+        return session.getUserId() == null
+                && StringUtils.hasText(session.getGuestToken())
+                && session.getGuestToken().equals(normalizeGuestToken(guestToken));
+    }
+
+    private String normalizeGuestToken(String guestToken) {
+        if (StringUtils.hasText(guestToken)) {
+            return guestToken.trim();
+        }
+        return UUID.randomUUID().toString().replace("-", "");
+    }
+
+    private String buildFeedbackKey(AiFeedback feedback) {
+        return String.valueOf(feedback.getSessionId()) + ":" + feedback.getMessageId() + ":" + feedback.getUserId();
     }
 
     private AiCard toCourseCard(Course course) {

@@ -1,22 +1,20 @@
+import { TAB_BAR_PAGES } from './demo-mode'
+
 /**
  * 登录校验工具
  */
 
 // 需要登录的页面列表
 const AUTH_PAGES = [
-  'pages/cart/cart',
   'pages/profile/my-packages',
   'pages/profile/package-detail',
   'pages/profile/my-coupons',
   'pages/profile/my-checkins',
   'pages/profile/edit-profile',
   'pages/profile/bind-phone',
-  'pages/order/confirm-product',
   'pages/order/confirm-private',
   'pages/order/confirm-group',
   'pages/order/my-orders-course',
-  'pages/order/my-orders-product',
-  'pages/order/order-detail-product',
   'pages/order/refund'
 ]
 
@@ -87,8 +85,7 @@ export function navigateBackAfterLogin(redirectPath) {
   if (redirectPath) {
     const path = decodeURIComponent(redirectPath)
     // 判断是否是 tabBar 页面
-    const tabBarPages = ['pages/index/index', 'pages/course/course', 'pages/mall/mall', 'pages/profile/profile']
-    const isTabBar = tabBarPages.some(p => path.startsWith(p))
+    const isTabBar = TAB_BAR_PAGES.some(p => path.startsWith(p.replace(/^\//, '')))
     
     if (isTabBar) {
       uni.switchTab({ url: path.split('?')[0] })

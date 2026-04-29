@@ -13,6 +13,8 @@ public class AiSession extends BaseEntity {
 
     private Long userId;
 
+    private String guestToken;
+
     private String title;
 
     private String lastQuestion;

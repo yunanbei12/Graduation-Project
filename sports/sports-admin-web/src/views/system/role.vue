@@ -78,6 +78,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { getSysRoleList, addSysRole, updateSysRole, deleteSysRole, getRoleMenuIds, assignRoleMenus, getSysMenuList } from '../../api/system'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { filterCommerceMenus } from '../../config/demo-mode'
 
 const loading = ref(false)
 const tableData = ref([])
@@ -108,7 +109,7 @@ const loadData = async () => {
 const loadMenus = async () => {
   const res = await getSysMenuList()
   // 构建树形结构
-  const menus = res.data
+  const menus = filterCommerceMenus(res.data || [])
   const map = {}
   const tree = []
   menus.forEach(m => {

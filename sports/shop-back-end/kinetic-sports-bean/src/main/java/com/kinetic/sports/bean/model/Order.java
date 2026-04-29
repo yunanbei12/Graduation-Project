@@ -68,6 +68,14 @@ public class Order extends BaseEntity {
     @TableField(exist = false)
     private List<Long> cartIds;
 
+    /** 非数据库字段：团课批量下单时选中的排课ID列表 */
+    @TableField(exist = false)
+    private List<Long> scheduleIds;
+
+    /** 非数据库字段：批量支付时选中的订单ID列表 */
+    @TableField(exist = false)
+    private List<Long> orderIds;
+
     /** 非数据库字段：商品立即购买时的商品 ID */
     @TableField(exist = false)
     private Long prodId;

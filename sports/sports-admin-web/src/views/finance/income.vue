@@ -2,21 +2,15 @@
   <div class="page-container">
     <el-row :gutter="16">
       <!-- 收入统计卡片 -->
-      <el-col :span="8">
+      <el-col :span="12">
         <el-card shadow="never" class="stat-card">
           <div class="stat-label">课程订单总收入</div>
           <div class="stat-value">¥{{ courseIncome }}</div>
         </el-card>
       </el-col>
-      <el-col :span="8">
+      <el-col :span="12">
         <el-card shadow="never" class="stat-card">
-          <div class="stat-label">商品订单总收入</div>
-          <div class="stat-value">¥{{ prodIncome }}</div>
-        </el-card>
-      </el-col>
-      <el-col :span="8">
-        <el-card shadow="never" class="stat-card">
-          <div class="stat-label">合计收入</div>
+          <div class="stat-label">课程累计收入</div>
           <div class="stat-value total">¥{{ totalIncome }}</div>
         </el-card>
       </el-col>
@@ -25,13 +19,9 @@
     <el-card shadow="never" style="margin-top: 16px;">
       <div class="toolbar">
         <div class="toolbar-left">
-          <el-select v-model="query.orderType" placeholder="订单类型" clearable style="width: 140px" @change="loadData">
-            <el-option label="课程订单" :value="1" />
-            <el-option label="商品订单" :value="2" />
-          </el-select>
           <el-select v-model="query.status" placeholder="订单状态" clearable style="width: 140px" @change="loadData">
             <el-option label="已支付" :value="2" />
-            <el-option label="待排课/待发货" :value="3" />
+            <el-option label="待排课" :value="3" />
             <el-option label="已完成" :value="4" />
             <el-option label="已取消" :value="5" />
             <el-option label="退款中" :value="6" />
@@ -52,9 +42,7 @@
       <el-table :data="tableData" v-loading="loading" stripe>
         <el-table-column prop="orderNumber" label="订单号" width="200" />
         <el-table-column prop="orderType" label="类型" width="100">
-          <template #default="{ row }">
-            <el-tag :type="row.orderType === 1 ? 'primary' : 'warning'">{{ row.orderType === 1 ? '课程' : '商品' }}</el-tag>
-          </template>
+          <template #default><el-tag type="primary">课程</el-tag></template>
         </el-table-column>
         <el-table-column prop="actualAmount" label="实付金额" width="120">
           <template #default="{ row }">¥{{ row.actualAmount }}</template>
@@ -92,16 +80,15 @@ const tableData = ref([])
 const total = ref(0)
 const dateRange = ref(null)
 const courseIncome = ref('0.00')
-const prodIncome = ref('0.00')
 
 // status 不限制，展示所有已支付订单（状态 2=已支付 3=待排课/待发货 4=已完成）
-const query = reactive({ pageNum: 1, pageSize: 10, orderType: null, status: null })
+const query = reactive({ pageNum: 1, pageSize: 10, orderType: 1, status: null })
 
 const totalIncome = computed(() => {
-  return (parseFloat(courseIncome.value) + parseFloat(prodIncome.value)).toFixed(2)
+  return parseFloat(courseIncome.value).toFixed(2)
 })
 
-const statusMap = { 1: '待付款', 2: '已支付', 3: '待排课/待发货', 4: '已完成', 5: '已取消', 6: '退款中', 7: '已退款', 8: '退款驳回' }
+const statusMap = { 1: '待付款', 2: '已支付', 3: '待排课', 4: '已完成', 5: '已取消', 6: '退款中', 7: '已退款', 8: '退款驳回' }
 const getStatusLabel = (status) => statusMap[status] || '未知'
 
 const loadData = async () => {
@@ -124,13 +111,6 @@ const loadIncomeStats = async () => {
     })
     const courseOrders = allCourseRes.data.records || []
     courseIncome.value = courseOrders.reduce((sum, o) => sum + parseFloat(o.actualAmount || 0), 0).toFixed(2)
-
-    // 商品收入 - 统计已完成的订单（status=4）
-    const allProdRes = await http.get('/order/list', { 
-      params: { pageNum: 1, pageSize: 999, orderType: 2, status: 4 } 
-    })
-    const prodOrders = allProdRes.data.records || []
-    prodIncome.value = prodOrders.reduce((sum, o) => sum + parseFloat(o.actualAmount || 0), 0).toFixed(2)
   } catch (e) {
     console.error('加载收入统计失败', e)
   }

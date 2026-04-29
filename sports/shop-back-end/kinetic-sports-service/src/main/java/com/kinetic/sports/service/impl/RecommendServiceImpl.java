@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalTime;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -25,11 +26,12 @@ public class RecommendServiceImpl implements RecommendService {
     private static final int PROD_ORDER_TYPE = 2;
     private static final String VIEW_DETAIL = "view_detail";
     private static final String RECOMMEND_CLICK = "recommend_click";
-    private static final Set<Integer> POSITIVE_ORDER_STATUS = Set.of(2, 3, 4, 6);
+    private static final Set<Integer> POSITIVE_ORDER_STATUS = Set.of(2, 3, 4);
     private static final DateTimeFormatter NEXT_SCHEDULE_FORMATTER = DateTimeFormatter.ofPattern("M/d HH:mm");
 
     private final CourseService courseService;
     private final ProdService prodService;
+    private final SkuService skuService;
     private final CartService cartService;
     private final OrderService orderService;
     private final OrderItemService orderItemService;
@@ -39,14 +41,19 @@ public class RecommendServiceImpl implements RecommendService {
 
     @Override
     public RecommendHomeVO recommendHome(Long userId, Integer courseLimit, Integer prodLimit) {
+        UserProfile profile = buildUserProfile(userId);
         RecommendHomeVO vo = new RecommendHomeVO();
-        vo.setCourseList(recommendCourses(userId, null, null, null, courseLimit));
-        vo.setProdList(recommendProducts(userId, null, null, prodLimit));
+        vo.setCourseList(recommendCourses(profile, null, null, null, courseLimit));
+        vo.setProdList(recommendProducts(profile, null, null, prodLimit));
         return vo;
     }
 
     @Override
     public List<RecommendItemVO> recommendCourses(Long userId, Integer type, Long categoryId, Long currentCourseId, Integer limit) {
+        return recommendCourses(buildUserProfile(userId), type, categoryId, currentCourseId, limit);
+    }
+
+    private List<RecommendItemVO> recommendCourses(UserProfile profile, Integer type, Long categoryId, Long currentCourseId, Integer limit) {
         int safeLimit = normalizeLimit(limit, 6);
         List<Course> courses = courseService.list(new LambdaQueryWrapper<Course>()
                 .eq(Course::getStatus, ACTIVE_STATUS)
@@ -57,16 +64,21 @@ public class RecommendServiceImpl implements RecommendService {
             return Collections.emptyList();
         }
 
-        UserProfile profile = buildUserProfile(userId);
         Course currentCourse = currentCourseId == null ? null : courseService.getById(currentCourseId);
-        Map<Long, CourseAvailability> availabilityMap = buildCourseAvailabilityMap(
-                courses.stream().map(Course::getId).collect(Collectors.toSet())
-        );
+        Map<Long, Course> courseMap = listToMap(courses, Course::getId);
+        Map<Long, CourseAvailability> availabilityMap = buildCourseAvailabilityMap(courseMap);
+        List<Course> availableCourses = courses.stream()
+                .filter(course -> !Objects.equals(course.getType(), 2)
+                        || hasAvailableGroupSchedule(availabilityMap.get(course.getId())))
+                .collect(Collectors.toList());
+        if (availableCourses.isEmpty()) {
+            return Collections.emptyList();
+        }
 
-        int maxSales = courses.stream().map(Course::getSales).filter(Objects::nonNull).max(Integer::compareTo).orElse(0);
+        int maxSales = availableCourses.stream().map(Course::getSales).filter(Objects::nonNull).max(Integer::compareTo).orElse(0);
         List<CandidateScore<Course>> scored = new ArrayList<>();
         double maxBehavior = 0D;
-        for (Course course : courses) {
+        for (Course course : availableCourses) {
             CandidateScore<Course> candidate = new CandidateScore<>();
             candidate.item = course;
             candidate.behaviorRaw = courseBehaviorRaw(course, profile);
@@ -80,10 +92,17 @@ public class RecommendServiceImpl implements RecommendService {
 
         for (CandidateScore<Course> candidate : scored) {
             double behaviorScore = maxBehavior <= 0 ? 0D : candidate.behaviorRaw / maxBehavior;
-            candidate.finalScore = 0.45D * behaviorScore
-                    + 0.25D * candidate.contentScore
-                    + 0.20D * candidate.popularityScore
-                    + 0.10D * candidate.availabilityScore;
+            if (currentCourse != null) {
+                candidate.finalScore = 0.20D * behaviorScore
+                        + 0.50D * candidate.contentScore
+                        + 0.15D * candidate.popularityScore
+                        + 0.15D * candidate.availabilityScore;
+            } else {
+                candidate.finalScore = 0.45D * behaviorScore
+                        + 0.25D * candidate.contentScore
+                        + 0.20D * candidate.popularityScore
+                        + 0.10D * candidate.availabilityScore;
+            }
         }
 
         scored.sort(Comparator
@@ -99,6 +118,10 @@ public class RecommendServiceImpl implements RecommendService {
 
     @Override
     public List<RecommendItemVO> recommendProducts(Long userId, Long categoryId, Long currentProdId, Integer limit) {
+        return recommendProducts(buildUserProfile(userId), categoryId, currentProdId, limit);
+    }
+
+    private List<RecommendItemVO> recommendProducts(UserProfile profile, Long categoryId, Long currentProdId, Integer limit) {
         int safeLimit = normalizeLimit(limit, 6);
         List<Prod> prods = prodService.list(new LambdaQueryWrapper<Prod>()
                 .eq(Prod::getStatus, ACTIVE_STATUS)
@@ -108,18 +131,29 @@ public class RecommendServiceImpl implements RecommendService {
             return Collections.emptyList();
         }
 
-        UserProfile profile = buildUserProfile(userId);
         Prod currentProd = currentProdId == null ? null : prodService.getById(currentProdId);
-        int maxSales = prods.stream().map(Prod::getSales).filter(Objects::nonNull).max(Integer::compareTo).orElse(0);
+        Map<Long, ProdAvailability> availabilityMap = buildProdAvailabilityMap(prods);
+        List<Prod> availableProds = prods.stream()
+                .filter(prod -> isProdAvailable(availabilityMap.get(prod.getId())))
+                .collect(Collectors.toList());
+        if (availableProds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        int maxSales = availableProds.stream().map(Prod::getSales).filter(Objects::nonNull).max(Integer::compareTo).orElse(0);
+        int maxStocks = availableProds.stream()
+                .map(prod -> Optional.ofNullable(availabilityMap.get(prod.getId())).map(it -> it.totalStocks).orElse(0))
+                .max(Integer::compareTo)
+                .orElse(0);
         List<CandidateScore<Prod>> scored = new ArrayList<>();
         double maxBehavior = 0D;
-        for (Prod prod : prods) {
+        for (Prod prod : availableProds) {
             CandidateScore<Prod> candidate = new CandidateScore<>();
             candidate.item = prod;
             candidate.behaviorRaw = prodBehaviorRaw(prod, profile);
             candidate.contentScore = clamp(prodContentScore(prod, currentProd, profile));
             candidate.popularityScore = normalizedSales(prod.getSales(), maxSales);
-            candidate.availabilityScore = 1D;
+            candidate.availabilityScore = clamp(prodAvailabilityScore(availabilityMap.get(prod.getId()), maxStocks));
             candidate.reason = buildProdReason(prod, currentProd, profile);
             maxBehavior = Math.max(maxBehavior, candidate.behaviorRaw);
             scored.add(candidate);
@@ -127,10 +161,17 @@ public class RecommendServiceImpl implements RecommendService {
 
         for (CandidateScore<Prod> candidate : scored) {
             double behaviorScore = maxBehavior <= 0 ? 0D : candidate.behaviorRaw / maxBehavior;
-            candidate.finalScore = 0.45D * behaviorScore
-                    + 0.25D * candidate.contentScore
-                    + 0.20D * candidate.popularityScore
-                    + 0.10D * candidate.availabilityScore;
+            if (currentProd != null) {
+                candidate.finalScore = 0.20D * behaviorScore
+                        + 0.55D * candidate.contentScore
+                        + 0.10D * candidate.popularityScore
+                        + 0.15D * candidate.availabilityScore;
+            } else {
+                candidate.finalScore = 0.40D * behaviorScore
+                        + 0.20D * candidate.contentScore
+                        + 0.20D * candidate.popularityScore
+                        + 0.20D * candidate.availabilityScore;
+            }
         }
 
         scored.sort(Comparator
@@ -301,20 +342,22 @@ public class RecommendServiceImpl implements RecommendService {
         return profile;
     }
 
-    private Map<Long, CourseAvailability> buildCourseAvailabilityMap(Set<Long> courseIds) {
-        if (courseIds == null || courseIds.isEmpty()) {
+    private Map<Long, CourseAvailability> buildCourseAvailabilityMap(Map<Long, Course> courseMap) {
+        if (courseMap == null || courseMap.isEmpty()) {
             return Collections.emptyMap();
         }
 
         LocalDateTime now = LocalDateTime.now();
         List<CourseSchedule> schedules = courseScheduleService.list(new LambdaQueryWrapper<CourseSchedule>()
-                .in(CourseSchedule::getCourseId, courseIds)
+                .in(CourseSchedule::getCourseId, courseMap.keySet())
                 .in(CourseSchedule::getStatus, 0, 1)
                 .orderByAsc(CourseSchedule::getStartTime));
 
         Map<Long, CourseAvailability> availabilityMap = new HashMap<>();
         for (CourseSchedule schedule : schedules) {
-            if (schedule.getStartTime() != null && !schedule.getStartTime().isAfter(now)) {
+            Course course = courseMap.get(schedule.getCourseId());
+            LocalDateTime scheduleStart = resolveScheduleStart(schedule, course);
+            if (scheduleStart == null || !scheduleStart.isAfter(now)) {
                 continue;
             }
 
@@ -328,9 +371,35 @@ public class RecommendServiceImpl implements RecommendService {
             CourseAvailability availability = availabilityMap.computeIfAbsent(schedule.getCourseId(), key -> new CourseAvailability());
             availability.availableCount++;
             availability.totalSeatRatio += (double) availableSeats / totalSeats;
-            if (availability.nextStartTime == null || schedule.getStartTime().isBefore(availability.nextStartTime)) {
-                availability.nextStartTime = schedule.getStartTime();
+            if (availability.nextStartTime == null || scheduleStart.isBefore(availability.nextStartTime)) {
+                availability.nextStartTime = scheduleStart;
             }
+        }
+        return availabilityMap;
+    }
+
+    private Map<Long, ProdAvailability> buildProdAvailabilityMap(List<Prod> prods) {
+        if (prods == null || prods.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        List<Long> prodIds = prods.stream().map(Prod::getId).filter(Objects::nonNull).distinct().collect(Collectors.toList());
+        if (prodIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        List<Sku> skus = skuService.list(new LambdaQueryWrapper<Sku>().in(Sku::getProdId, prodIds));
+        if (skus.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        Map<Long, ProdAvailability> availabilityMap = new HashMap<>();
+        for (Sku sku : skus) {
+            if (sku.getProdId() == null) {
+                continue;
+            }
+            ProdAvailability availability = availabilityMap.computeIfAbsent(sku.getProdId(), key -> new ProdAvailability());
+            availability.hasSku = true;
+            availability.totalStocks += Math.max(Optional.ofNullable(sku.getStocks()).orElse(0), 0);
         }
         return availabilityMap;
     }
@@ -351,6 +420,19 @@ public class RecommendServiceImpl implements RecommendService {
         raw += profile.prodCategoryWeights.getOrDefault(prod.getCategoryId(), 0D) * 0.8D;
         raw += priceAffinity(profile.avgProdPrice(), prod.getPrice()) * 1.2D;
         return raw;
+    }
+
+    private double prodAvailabilityScore(ProdAvailability availability, int maxStocks) {
+        if (availability == null || !availability.hasSku) {
+            return 1D;
+        }
+        if (availability.totalStocks <= 0) {
+            return 0D;
+        }
+        if (maxStocks <= 0) {
+            return 0.7D;
+        }
+        return 0.6D + 0.4D * clamp((double) availability.totalStocks / maxStocks);
     }
 
     private double courseContentScore(Course course, Course currentCourse, UserProfile profile) {
@@ -449,6 +531,14 @@ public class RecommendServiceImpl implements RecommendService {
         return "当前热门商品";
     }
 
+    private boolean hasAvailableGroupSchedule(CourseAvailability availability) {
+        return availability != null && availability.availableCount > 0;
+    }
+
+    private boolean isProdAvailable(ProdAvailability availability) {
+        return availability == null || !availability.hasSku || availability.totalStocks > 0;
+    }
+
     private RecommendItemVO toCourseVO(Course course, String reason, CourseAvailability availability) {
         RecommendItemVO vo = new RecommendItemVO();
         vo.setId(course.getId());
@@ -537,6 +627,21 @@ public class RecommendServiceImpl implements RecommendService {
         return Math.min(value, 1D);
     }
 
+    private LocalDateTime resolveScheduleStart(CourseSchedule schedule, Course course) {
+        if (schedule == null) {
+            return null;
+        }
+        if (schedule.getScheduleDate() != null && course != null
+                && course.getStartHour() != null && !course.getStartHour().isBlank()) {
+            try {
+                return LocalDateTime.of(schedule.getScheduleDate(), LocalTime.parse(course.getStartHour()));
+            } catch (Exception ignored) {
+                return schedule.getStartTime();
+            }
+        }
+        return schedule.getStartTime();
+    }
+
     private List<Course> safeListCoursesByIds(Collection<Long> ids) {
         if (ids == null || ids.isEmpty()) {
             return Collections.emptyList();
@@ -572,6 +677,11 @@ public class RecommendServiceImpl implements RecommendService {
         private int availableCount;
         private double totalSeatRatio;
         private LocalDateTime nextStartTime;
+    }
+
+    private static final class ProdAvailability {
+        private boolean hasSku;
+        private int totalStocks;
     }
 
     private static final class UserProfile {

@@ -83,9 +83,7 @@
         </el-form-item>
         <el-form-item label="适用范围" prop="scope">
           <el-radio-group v-model="form.scope">
-            <el-radio :value="1">全场</el-radio>
-            <el-radio :value="2">仅课程</el-radio>
-            <el-radio :value="3">仅商品</el-radio>
+            <el-radio v-for="item in scopeOptions" :key="item.value" :value="item.value">{{ item.label }}</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="发放总量">
@@ -163,6 +161,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import http from '../../utils/http'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { DEMO_MODE } from '../../config/demo-mode'
 
 const loading = ref(false)
 const tableData = ref([])
@@ -194,12 +193,26 @@ const rules = {
   endTime: [{ required: true, message: '请选择过期时间', trigger: 'change' }]
 }
 
+const scopeOptions = DEMO_MODE.hideCommerce
+  ? [
+      { value: 1, label: '通用优惠券' },
+      { value: 2, label: '课程优惠券' }
+    ]
+  : [
+      { value: 1, label: '全场' },
+      { value: 2, label: '仅课程' },
+      { value: 3, label: '仅商品' }
+    ]
+
 const loadData = async () => {
   loading.value = true
   try {
     const res = await http.get('/coupon/list', { params: query })
-    tableData.value = res.data.records
-    total.value = res.data.total
+    const records = res.data.records || []
+    tableData.value = DEMO_MODE.hideCommerce
+      ? records.filter(item => item.scope !== 3)
+      : records
+    total.value = DEMO_MODE.hideCommerce ? tableData.value.length : res.data.total
   } finally {
     loading.value = false
   }

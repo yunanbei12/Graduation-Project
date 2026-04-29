@@ -1,0 +1,86 @@
+# ===========================
+# macOS
+# ===========================
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# ===========================
+# IDE - IntelliJ IDEA / JetBrains
+# ===========================
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# ===========================
+# IDE - VS Code
+# ===========================
+.vscode/*
+!.vscode/extensions.json
+
+# ===========================
+# Java / Maven (shop-back-end)
+# ===========================
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+*.zip
+*.tar.gz
+*.rar
+hs_err_pid*
+replay_pid*
+
+# Maven wrapper
+.mvn/wrapper/maven-wrapper.jar
+
+# ===========================
+# Node.js / Vue / Vite (sports-admin-web)
+# ===========================
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ===========================
+# uni-app / 小程序 (sports-custom-mini)
+# ===========================
+unpackage/
+
+# ===========================
+# 上传文件目录
+# ===========================
+uploads/
+
+# ===========================
+# 环境配置（含敏感信息）
+# ===========================
+*.env
+*.env.local
+*.env.*.local
+application-dev.yml
+application-prod.yml
+application-local.yml
+
+# ===========================
+# 其他
+# ===========================
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

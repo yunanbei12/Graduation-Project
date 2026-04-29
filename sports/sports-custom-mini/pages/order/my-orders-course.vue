@@ -3,16 +3,7 @@
     <view class="nav-bar">
       <text class="nav-back" @click="goBack">←</text>
       <text class="nav-title">我的订单</text>
-      <text class="nav-cart">🛒</text>
-    </view>
-
-    <view class="type-switch">
-      <view class="switch-item" @click="goProductOrders">
-        <text class="switch-text">商品订单</text>
-      </view>
-      <view class="switch-item active">
-        <text class="switch-text active">课程订单</text>
-      </view>
+      <view class="nav-placeholder"></view>
     </view>
 
     <view class="sub-tabs">
@@ -184,7 +175,6 @@ function goDetail(order) {
 }
 
 function goBack() { uni.navigateBack() }
-function goProductOrders() { uni.redirectTo({ url: '/pages/order/my-orders-product' }) }
 </script>
 
 <style scoped lang="scss">
@@ -206,42 +196,14 @@ function goProductOrders() { uni.redirectTo({ url: '/pages/order/my-orders-produ
 }
 .nav-back { font-size: 40rpx; color: #2c2f30; width: 60rpx; }
 .nav-title { font-size: 34rpx; font-weight: 700; color: #2c2f30; }
-.nav-cart { font-size: 36rpx; width: 60rpx; text-align: right; }
-
-.type-switch {
-  display: flex;
-  margin: calc(88rpx + env(safe-area-inset-top) + 24rpx) 32rpx 0;
-  background: #f5f6f7;
-  border-radius: 48rpx;
-  padding: 6rpx;
-}
-.switch-item {
-  flex: 1;
-  height: 76rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 40rpx;
-}
-.switch-item.active {
-  background: #9c3f00;
-}
-.switch-text {
-  font-size: 28rpx;
-  color: #666;
-  font-weight: 500;
-}
-.switch-text.active {
-  color: #fff;
-  font-weight: 700;
-}
+.nav-placeholder { width: 60rpx; }
 
 .sub-tabs {
   display: flex;
   padding: 24rpx 32rpx 0;
   gap: 40rpx;
   background: #fff;
-  margin-top: 16rpx;
+  margin-top: calc(88rpx + env(safe-area-inset-top) + 16rpx);
 }
 .sub-tab {
   display: flex;

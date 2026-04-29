@@ -3,11 +3,24 @@
     <el-card shadow="never">
       <div class="toolbar">
         <div class="toolbar-left">
-          <el-select v-model="query.courseId" placeholder="筛选团课" clearable style="width: 220px" @change="loadData">
-            <el-option v-for="c in courseList" :key="c.id" :label="c.name" :value="c.id" />
+          <el-select v-model="query.locationId" placeholder="筛选地点" clearable style="width: 220px" @change="handleQueryLocationChange">
+            <el-option v-for="loc in locationList" :key="loc.id" :label="loc.name" :value="loc.id" />
+          </el-select>
+          <el-select
+            v-model="query.courseId"
+            placeholder="筛选团课"
+            clearable
+            style="width: 220px"
+            :disabled="!!query.locationId && !queryCourseList.length"
+            @change="handleQueryCourseChange"
+          >
+            <el-option v-for="c in queryCourseList" :key="c.id" :label="c.name" :value="c.id" />
           </el-select>
         </div>
-        <el-button type="primary" @click="handleAdd">新增排课</el-button>
+        <div class="toolbar-actions">
+          <el-button @click="$router.push('/schedule/board')">教练排课看板</el-button>
+          <el-button type="primary" @click="handleAdd">新增排课</el-button>
+        </div>
       </div>
 
       <el-table :data="tableData" v-loading="loading" stripe>
@@ -39,7 +52,11 @@
           </template>
         </el-table-column>
         <el-table-column prop="totalSeats" label="总座位" width="80" />
-        <el-table-column prop="enrolledSeats" label="已报人数" width="90" />
+        <el-table-column label="已报/成团" width="110">
+          <template #default="{ row }">
+            {{ row.enrolledSeats || 0 }} / {{ getCourseInfo(row.courseId)?.minGroupSize || 1 }}
+          </template>
+        </el-table-column>
         <el-table-column label="状态" width="110">
           <template #default="{ row }">
             <el-tag :type="statusTag(row.status).type" size="small">{{ statusTag(row.status).label }}</el-tag>
@@ -69,9 +86,20 @@
     <!-- 新增/编辑排课弹窗 -->
     <el-dialog v-model="dialogVisible" :title="editingId ? '编辑排课' : '新增排课'" width="500px">
       <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
+        <el-form-item label="上课地点" prop="locationId">
+          <el-select v-model="form.locationId" placeholder="选择上课地点" style="width: 100%" @change="handleFormLocationChange">
+            <el-option v-for="loc in locationList" :key="loc.id" :label="loc.name" :value="loc.id" />
+          </el-select>
+        </el-form-item>
         <el-form-item label="团课课程" prop="courseId">
-          <el-select v-model="form.courseId" placeholder="选择团课" style="width: 100%" @change="onCourseChange">
-            <el-option v-for="c in courseList" :key="c.id" :label="c.name" :value="c.id" />
+          <el-select
+            v-model="form.courseId"
+            :placeholder="form.locationId ? '选择团课' : '请先选择上课地点'"
+            style="width: 100%"
+            :disabled="!form.locationId"
+            @change="onCourseChange"
+          >
+            <el-option v-for="c in dialogCourseList" :key="c.id" :label="c.name" :value="c.id" />
           </el-select>
         </el-form-item>
         <!-- 选择课程后展示模板时间地点 -->
@@ -82,21 +110,39 @@
             {{ selectedCourse.location }}
           </span>
         </el-form-item>
-        <el-form-item label="排课日期" prop="scheduleDate">
+        <el-form-item label="成团人数" v-if="selectedCourse">
+          <span style="color: #606266">
+            {{ selectedCourse.minGroupSize || 1 }} 人成团
+          </span>
+        </el-form-item>
+        <el-form-item v-if="editingId" label="排课日期" prop="scheduleDate">
           <el-date-picker
             v-model="form.scheduleDate"
             type="date"
             placeholder="选择具体上课日期"
             format="YYYY-MM-DD"
             value-format="YYYY-MM-DD"
+            :disabled-date="disablePastDate"
+            style="width: 100%"
+          />
+        </el-form-item>
+        <el-form-item v-else label="排课日期" prop="scheduleDates">
+          <el-date-picker
+            v-model="form.scheduleDates"
+            type="dates"
+            placeholder="可多选多个排课日期"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD"
+            :disabled-date="disablePastDate"
             style="width: 100%"
           />
         </el-form-item>
         <el-form-item label="总座位" prop="totalSeats">
-          <el-input-number v-model="form.totalSeats" :min="1" style="width: 100%" />
+          <el-input-number v-model="form.totalSeats" :min="minSeats" style="width: 100%" />
+          <div v-if="selectedCourse" class="form-tip">总座位数不能少于成团人数 {{ minSeats }} 人</div>
         </el-form-item>
-        <el-form-item label="教练">
-          <el-select v-model="form.coachId" placeholder="选择教练（可覆盖课程默认教练）" clearable style="width: 100%">
+        <el-form-item label="授课教练" prop="coachId">
+          <el-select v-model="form.coachId" placeholder="选择本次排课教练" style="width: 100%">
             <el-option v-for="c in coachList" :key="c.id" :label="c.name" :value="c.id" />
           </el-select>
         </el-form-item>
@@ -129,8 +175,8 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
-import { getScheduleList, addSchedule, updateSchedule, deleteSchedule, getCourseList, getScheduleAttendees, groupSettle, checkGroupStatus } from '../../api/course'
+import { computed, ref, reactive, onMounted } from 'vue'
+import { getScheduleList, addScheduleBatch, updateSchedule, deleteSchedule, getCourseList, getCourseLocationList, getScheduleAttendees, groupSettle, checkGroupStatus } from '../../api/course'
 import { getCoachList } from '../../api/coach'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
@@ -138,6 +184,7 @@ const loading = ref(false)
 const tableData = ref([])
 const total = ref(0)
 const courseList = ref([])
+const locationList = ref([])
 const coachList = ref([])
 const dialogVisible = ref(false)
 const editingId = ref(null)
@@ -152,16 +199,56 @@ const attendeeList = ref([])
 const selectedAbsent = ref([]) // 勾选的是出勤的，unselected 就是缺勤
 const currentSettleScheduleId = ref(null)
 
-const query = reactive({ pageNum: 1, pageSize: 10, courseId: null })
-const form = reactive({ courseId: null, scheduleDate: '', totalSeats: 20, coachId: null })
-const rules = {
-  courseId: [{ required: true, message: '请选择课程', trigger: 'change' }],
-  scheduleDate: [{ required: true, message: '请选择排课日期', trigger: 'change' }]
+const query = reactive({ pageNum: 1, pageSize: 10, locationId: null, courseId: null })
+const form = reactive({ locationId: null, courseId: null, scheduleDate: '', scheduleDates: [], totalSeats: 20, coachId: null })
+const validateTotalSeats = (_, value, callback) => {
+  const limit = minSeats.value
+  if (value == null || value <= 0) {
+    callback(new Error('请输入正确的总座位数'))
+    return
+  }
+  if (value < limit) {
+    callback(new Error(`总座位数不能少于成团人数 ${limit} 人`))
+    return
+  }
+  callback()
 }
+const rules = {
+  locationId: [{ required: true, message: '请选择上课地点', trigger: 'change' }],
+  courseId: [{ required: true, message: '请选择课程', trigger: 'change' }],
+  scheduleDate: [{ required: true, message: '请选择排课日期', trigger: 'change' }],
+  scheduleDates: [{ required: true, message: '请至少选择一个排课日期', trigger: 'change' }],
+  totalSeats: [{ validator: validateTotalSeats, trigger: 'change' }],
+  coachId: [{ required: true, message: '请选择授课教练', trigger: 'change' }]
+}
+
+const queryCourseList = computed(() => {
+  if (!query.locationId) {
+    return courseList.value
+  }
+  return courseList.value.filter(item => item.locationId === query.locationId)
+})
+
+const dialogCourseList = computed(() => {
+  if (!form.locationId) {
+    return []
+  }
+  return courseList.value.filter(item => item.locationId === form.locationId)
+})
+
+const minSeats = computed(() => {
+  return selectedCourse.value?.minGroupSize || 1
+})
 
 const statusTag = (status) => {
   const map = { 0: { label: '未开始', type: 'info' }, 1: { label: '进行中', type: 'success' }, 2: { label: '已结课', type: '' }, 3: { label: '已取消', type: 'danger' } }
   return map[status] || { label: '未知', type: 'info' }
+}
+
+const disablePastDate = (date) => {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  return date.getTime() < today.getTime()
 }
 
 const loadData = async () => {
@@ -181,31 +268,62 @@ const loadCourses = async () => {
   courseList.value = res.data.records
 }
 
+const loadLocations = async () => {
+  const res = await getCourseLocationList({ status: 1 })
+  locationList.value = res.data || []
+}
+
 const loadCoaches = async () => {
-  const res = await getCoachList({ pageNum: 1, pageSize: 100 })
+  const res = await getCoachList({ pageNum: 1, pageSize: 100, status: 1 })
   coachList.value = res.data.records
 }
 
 const handleAdd = () => {
   editingId.value = null
   selectedCourse.value = null
-  Object.assign(form, { courseId: null, scheduleDate: '', totalSeats: 20, coachId: null })
+  Object.assign(form, { locationId: query.locationId || null, courseId: null, scheduleDate: '', scheduleDates: [], totalSeats: 20, coachId: null })
   dialogVisible.value = true
 }
 
-// 选择团课后自动带入教练
 const onCourseChange = (courseId) => {
   const course = courseList.value.find(c => c.id === courseId)
   selectedCourse.value = course || null
-  if (course && course.coachId) {
-    form.coachId = course.coachId
+  form.locationId = course?.locationId || form.locationId
+  if (form.totalSeats < minSeats.value) {
+    form.totalSeats = minSeats.value
+  }
+}
+
+const handleQueryLocationChange = () => {
+  query.pageNum = 1
+  query.courseId = null
+  loadData()
+}
+
+const handleQueryCourseChange = () => {
+  query.pageNum = 1
+  loadData()
+}
+
+const handleFormLocationChange = () => {
+  if (selectedCourse.value?.locationId !== form.locationId) {
+    form.courseId = null
+    selectedCourse.value = null
   }
 }
 
 const handleEdit = (row) => {
+  const course = courseList.value.find(c => c.id === row.courseId) || null
   editingId.value = row.id
-  selectedCourse.value = courseList.value.find(c => c.id === row.courseId) || null
-  Object.assign(form, { courseId: row.courseId, scheduleDate: row.scheduleDate || (row.startTime ? row.startTime.slice(0, 10) : ''), totalSeats: row.totalSeats, coachId: row.coachId })
+  selectedCourse.value = course
+  Object.assign(form, {
+    locationId: course?.locationId || null,
+    courseId: row.courseId,
+    scheduleDate: row.scheduleDate || (row.startTime ? row.startTime.slice(0, 10) : ''),
+    scheduleDates: [],
+    totalSeats: Math.max(row.totalSeats || 0, course?.minGroupSize || 1),
+    coachId: row.coachId
+  })
   dialogVisible.value = true
 }
 
@@ -213,13 +331,19 @@ const handleSubmit = async () => {
   const valid = await formRef.value.validate().catch(() => false)
   if (!valid) return
   if (editingId.value) {
-    await updateSchedule({ ...form, id: editingId.value })
+    const submitData = { ...form, id: editingId.value }
+    delete submitData.locationId
+    delete submitData.scheduleDates
+    await updateSchedule(submitData)
   } else {
     const submitData = { ...form }
+    submitData.scheduleDates = [...new Set((submitData.scheduleDates || []).filter(Boolean))]
+    delete submitData.locationId
+    delete submitData.scheduleDate
     delete submitData.id
-    await addSchedule(submitData)
+    await addScheduleBatch(submitData)
   }
-  ElMessage.success('操作成功')
+  ElMessage.success(editingId.value ? '操作成功' : `已新增 ${form.scheduleDates.length} 条排课`)
   dialogVisible.value = false
   loadData()
 }
@@ -291,6 +415,7 @@ const getCourseInfo = (courseId) => {
 onMounted(() => {
   loadData()
   loadCourses()
+  loadLocations()
   loadCoaches()
 })
 </script>
@@ -298,6 +423,8 @@ onMounted(() => {
 <style scoped>
 .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
 .toolbar-left { display: flex; gap: 12px; }
+.toolbar-actions { display: flex; gap: 12px; }
 .pagination { display: flex; justify-content: flex-end; margin-top: 16px; }
 .settle-tip { color: #909399; font-size: 13px; margin-bottom: 12px; }
+.form-tip { font-size: 12px; color: #909399; line-height: 1.4; margin-top: 6px; }
 </style>

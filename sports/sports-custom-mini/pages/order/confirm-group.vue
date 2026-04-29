@@ -13,28 +13,18 @@
 				<view class="course-price-row"><text class="cp-s">¥</text><text class="cp-n">{{ course.price }}</text><text class="cp-u">/人</text></view>
 			</view>
 
-			<view class="info-card" v-if="schedule">
+			<view class="info-card" v-if="schedules.length">
 				<view class="info-icon-wrap"><text class="info-icon">📅</text></view>
 				<view class="info-body">
-					<text class="info-label">DATE & TIME</text>
-					<text class="info-date">{{ formatScheduleDate(schedule.scheduleDate || schedule.startTime) }}</text>
-					<text class="info-time">{{ course && course.startHour ? course.startHour : formatTime(schedule.startTime) }} - {{ course && course.endHour ? course.endHour : formatTime(schedule.endTime) }}</text>
-				</view>
-			</view>
-
-			<view class="info-card" v-if="schedule">
-				<view class="info-icon-wrap"><text class="info-icon">📍</text></view>
-				<view class="info-body">
-					<text class="info-label">LOCATION</text>
-					<text class="info-value-lg">{{ (course && course.location) || schedule.location || '待确认' }}</text>
-				</view>
-			</view>
-
-			<view class="info-card" v-if="schedule">
-				<view class="info-icon-wrap"><text class="info-icon">👥</text></view>
-				<view class="info-body">
-					<text class="info-label">ENROLLMENT</text>
-					<text class="info-value-lg">已报 {{ schedule.enrolledSeats }}/{{ schedule.totalSeats }} 人</text>
+					<text class="info-label">SELECTED SESSIONS</text>
+					<text class="info-value-lg">已选择 {{ selectedCount }} 个未来场次</text>
+					<view class="schedule-summary-list">
+						<view class="schedule-summary-item" v-for="sch in schedules" :key="sch.id">
+							<text class="summary-date">{{ formatScheduleDate(sch.scheduleDate || sch.startTime) }}</text>
+							<text class="summary-time">{{ course && course.startHour ? course.startHour : formatTime(sch.startTime) }} - {{ course && course.endHour ? course.endHour : formatTime(sch.endTime) }}</text>
+							<text class="summary-meta">{{ (course && course.location) || sch.location || '待确认' }} · 已报 {{ sch.enrolledSeats }}/{{ sch.totalSeats }}</text>
+						</view>
+					</view>
 				</view>
 			</view>
 
@@ -42,12 +32,12 @@
 				<view class="tip-bar"></view>
 				<view class="tip-content">
 					<view class="tip-header"><text class="tip-icon">ℹ️</text><text class="tip-title">支付提示</text></view>
-					<text class="tip-desc">下单后将通过<text class="bold-text">微信群</text>沟通具体上课安排，请保持联系方式畅通。</text>
+					<text class="tip-desc">下单后将通过<text class="bold-text">微信群</text>沟通具体上课安排，请保持联系方式畅通。{{ singleScheduleMode ? '' : '多场次报名会拆分为多笔团课订单并一次性完成支付。' }}</text>
 				</view>
 			</view>
 
 			<!-- 优惠券 -->
-			<view class="coupon-card" @tap="showCouponPicker = true">
+			<view class="coupon-card" v-if="singleScheduleMode" @tap="showCouponPicker = true">
 				<text class="coupon-label">🎫 优惠券</text>
 				<view class="coupon-right">
 					<text class="coupon-value" v-if="selectedCoupon">-¥{{ couponAmount }}</text>
@@ -55,10 +45,16 @@
 					<text class="coupon-arrow">›</text>
 				</view>
 			</view>
+			<view class="coupon-card disabled" v-else>
+				<text class="coupon-label">🎫 优惠券</text>
+				<view class="coupon-right">
+					<text class="coupon-value none">多场次报名暂不支持优惠券</text>
+				</view>
+			</view>
 
 			<view class="cost-card">
 				<text class="cost-section-title">费用明细</text>
-				<view class="cost-item"><text class="cost-label">课程费用</text><text class="cost-val">¥{{ course.price }}</text></view>
+				<view class="cost-item"><text class="cost-label">课程费用</text><text class="cost-val">¥{{ unitPrice.toFixed(2) }} x {{ selectedCount }}</text></view>
 				<view class="cost-item" v-if="couponAmount > 0"><text class="cost-label">优惠券折扣</text><text class="cost-val hl">-¥{{ couponAmount.toFixed(2) }}</text></view>
 				<view class="cost-divider"></view>
 				<view class="cost-item total"><text class="cost-label bold">实付金额</text><text class="cost-val bold big hl">¥{{ actualAmount }}</text></view>
@@ -68,7 +64,7 @@
 		</scroll-view>
 
 		<!-- 优惠券弹窗 -->
-		<view class="coupon-mask" v-if="showCouponPicker" @tap="showCouponPicker = false">
+		<view class="coupon-mask" v-if="showCouponPicker && singleScheduleMode" @tap="showCouponPicker = false">
 			<view class="coupon-popup" @tap.stop>
 				<view class="popup-title">选择优惠券</view>
 				<view class="popup-list">
@@ -98,7 +94,7 @@
 
 <script>
 import { getCourseDetail, getScheduleDetail } from '../../api/course'
-import { createCourseOrder, payOrder } from '../../api/order'
+import { createBatchCourseOrder, createCourseOrder, payBatchOrders } from '../../api/order'
 import { getUsableCoupons } from '../../api/coupon'
 import config from '../../utils/config'
 import { checkLogin } from '../../utils/auth'
@@ -107,9 +103,9 @@ export default {
 	data() {
 		return {
 			courseId: null,
-			scheduleId: null,
+			scheduleIds: [],
 			course: null,
-			schedule: null,
+			schedules: [],
 			usableCoupons: [],
 			selectedCoupon: null,
 			couponAmount: 0,
@@ -118,51 +114,70 @@ export default {
 		}
 	},
 	computed: {
+		selectedCount() {
+			return this.scheduleIds.length
+		},
+		singleScheduleMode() {
+			return this.selectedCount === 1
+		},
+		unitPrice() {
+			return parseFloat((this.course && this.course.price) || 0) || 0
+		},
 		actualAmount() {
 			if (!this.course) return '0.00'
-			const price = parseFloat(this.course.price) || 0
-			return Math.max(0, price - this.couponAmount).toFixed(2)
+			const total = this.unitPrice * this.selectedCount
+			return Math.max(0, total - this.couponAmount).toFixed(2)
 		}
 	},
 	onLoad(options) {
 		if (!checkLogin()) return
 		this.courseId = options.courseId
-		this.scheduleId = options.scheduleId
+		this.scheduleIds = (options.scheduleIds || options.scheduleId || '')
+			.split(',')
+			.map(id => Number(id))
+			.filter(Boolean)
 		this.loadCourse()
-		this.loadSchedule()
-		this.loadCoupons()
+		this.loadSchedules()
 	},
 	methods: {
 		getImageUrl: config.getImageUrl,
 		async loadCourse() {
 			try {
 				this.course = await getCourseDetail(this.courseId)
+				if (this.singleScheduleMode) {
+					this.loadCoupons()
+				}
 			} catch(e) {
 				uni.showToast({ title: '加载失败', icon: 'none' })
 			}
 		},
-		async loadSchedule() {
-			if (!this.scheduleId) return
+		async loadSchedules() {
+			if (!this.scheduleIds.length) return
 			try {
-				this.schedule = await getScheduleDetail(this.scheduleId)
+				this.schedules = await Promise.all(this.scheduleIds.map(id => getScheduleDetail(id)))
 			} catch(e) {
 				console.error('加载排课失败', e)
 			}
 		},
 		async loadCoupons() {
+			if (!this.singleScheduleMode || !this.course) {
+				this.usableCoupons = []
+				return
+			}
 			try {
-				this.usableCoupons = await getUsableCoupons(1, 99999)
+				this.usableCoupons = await getUsableCoupons(1, this.unitPrice)
 			} catch(e) {
 				this.usableCoupons = []
 			}
 		},
 		pickCoupon(uc) {
+			if (!this.singleScheduleMode) return
 			if (this.selectedCoupon && this.selectedCoupon.id === uc.id) {
 				this.selectedCoupon = null
 				this.couponAmount = 0
 			} else {
 				this.selectedCoupon = uc
-				const price = parseFloat(this.course.price) || 0
+				const price = this.unitPrice
 				if (uc.couponType === 1 || uc.couponType === 3) {
 					this.couponAmount = parseFloat(uc.couponDiscount) || 0
 				} else if (uc.couponType === 2) {
@@ -201,13 +216,28 @@ export default {
 			}
 			this.paying = true
 			try {
-				// 创建订单，跳转到订单详情页等待用户支付
-				const orderData = { courseId: this.courseId, scheduleId: this.scheduleId }
-				if (this.selectedCoupon) {
-					orderData.couponId = this.selectedCoupon.id
+				if (this.singleScheduleMode) {
+					const orderData = { courseId: this.courseId, scheduleId: this.scheduleIds[0] }
+					if (this.selectedCoupon) {
+						orderData.couponId = this.selectedCoupon.id
+					}
+					const order = await createCourseOrder(orderData)
+					uni.redirectTo({ url: `/pages/order/order-detail-course?id=${order.id}&fromPay=1` })
+					return
 				}
-				const order = await createCourseOrder(orderData)
-				uni.redirectTo({ url: `/pages/order/order-detail-course?id=${order.id}&fromPay=1` })
+
+				const orders = await createBatchCourseOrder({
+					courseId: this.courseId,
+					scheduleIds: this.scheduleIds
+				})
+				const orderIds = (orders || []).map(item => item.id).filter(Boolean)
+				if (!orderIds.length) {
+					throw new Error('批量下单失败')
+				}
+				await payBatchOrders(orderIds)
+				uni.redirectTo({
+					url: `/pages/order/success-course?batch=1&count=${orderIds.length}&amount=${encodeURIComponent(this.actualAmount)}&orderIds=${orderIds.join(',')}`
+				})
 			} catch(e) {
 				console.error('下单失败', e)
 				const errorMsg = e.msg || e.message || '下单失败'
@@ -251,6 +281,11 @@ export default {
 .info-time { font-size: 28rpx; color: #9c3f00; font-weight: 600; }
 .info-value-lg { font-size: 32rpx; font-weight: 900; display: block; }
 .info-sub { font-size: 22rpx; color: #595c5d; margin-top: 4rpx; }
+.schedule-summary-list { margin-top: 16rpx; display: flex; flex-direction: column; gap: 12rpx; }
+.schedule-summary-item { padding: 20rpx; border-radius: 16rpx; background: #f5f6f7; }
+.summary-date { display: block; font-size: 28rpx; font-weight: 900; color: #2c2f30; margin-bottom: 6rpx; }
+.summary-time { display: block; font-size: 24rpx; color: #9c3f00; font-weight: 700; margin-bottom: 6rpx; }
+.summary-meta { display: block; font-size: 22rpx; color: #595c5d; line-height: 1.5; }
 
 .tip-card { background: rgba(156,63,0,0.04); border-radius: 20rpx; padding: 20rpx; display: flex; gap: 12rpx; margin-bottom: 16rpx; }
 .tip-bar { width: 6rpx; border-radius: 999rpx; background: #ff7a2f; }
@@ -276,6 +311,7 @@ export default {
 .pay-text { font-size: 28rpx; color: #fff; font-weight: 900; }
 
 .coupon-card { background: #fff; border-radius: 24rpx; padding: 24rpx; margin-bottom: 16rpx; display: flex; justify-content: space-between; align-items: center; }
+.coupon-card.disabled { opacity: 0.8; }
 .coupon-label { font-size: 28rpx; font-weight: 700; }
 .coupon-right { display: flex; align-items: center; gap: 8rpx; }
 .coupon-value { font-size: 26rpx; color: #9c3f00; font-weight: 700; }

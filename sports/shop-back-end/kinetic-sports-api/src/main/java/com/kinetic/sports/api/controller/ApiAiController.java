@@ -28,16 +28,24 @@ public class ApiAiController {
 
     @GetMapping("/session/list")
     public ServerResponseEntity<List<AiSessionItemVO>> sessionList() {
+        if (!StpUtil.isLogin()) {
+            return ServerResponseEntity.fail(401, "请先登录");
+        }
         return ServerResponseEntity.success(aiCustomerService.listUserSessions(StpUtil.getLoginIdAsLong()));
     }
 
     @GetMapping("/session/{id}")
-    public ServerResponseEntity<AiSessionDetailVO> sessionDetail(@PathVariable Long id) {
-        return ServerResponseEntity.success(aiCustomerService.getUserSessionDetail(id, StpUtil.getLoginIdAsLong()));
+    public ServerResponseEntity<AiSessionDetailVO> sessionDetail(@PathVariable Long id,
+                                                                 @RequestParam(required = false) String guestToken) {
+        Long userId = StpUtil.isLogin() ? StpUtil.getLoginIdAsLong() : null;
+        return ServerResponseEntity.success(aiCustomerService.getClientSessionDetail(id, userId, guestToken));
     }
 
     @PostMapping("/session/{id}/feedback")
     public ServerResponseEntity<Void> feedback(@PathVariable Long id, @RequestBody Map<String, Object> params) {
+        if (!StpUtil.isLogin()) {
+            return ServerResponseEntity.fail(401, "请先登录");
+        }
         Long messageId = params.get("messageId") == null ? null : Long.parseLong(String.valueOf(params.get("messageId")));
         Integer rating = params.get("rating") == null ? 1 : Integer.parseInt(String.valueOf(params.get("rating")));
         String comment = params.get("comment") == null ? null : String.valueOf(params.get("comment"));
@@ -48,8 +56,9 @@ public class ApiAiController {
     @PostMapping("/session/{id}/handover")
     public ServerResponseEntity<Void> handover(@PathVariable Long id, @RequestBody(required = false) Map<String, Object> params) {
         String remark = params == null || params.get("remark") == null ? null : String.valueOf(params.get("remark"));
+        String guestToken = params == null || params.get("guestToken") == null ? null : String.valueOf(params.get("guestToken"));
         Long userId = StpUtil.isLogin() ? StpUtil.getLoginIdAsLong() : null;
-        aiCustomerService.createHandover(id, userId, remark);
+        aiCustomerService.createHandover(id, userId, guestToken, remark);
         return ServerResponseEntity.success();
     }
 }

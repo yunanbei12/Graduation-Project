@@ -48,7 +48,7 @@
                     <text class="action-chip-text">{{ action.label }}</text>
                   </view>
                 </view>
-                <view class="feedback-row" v-if="item.messageId && isLoggedIn && !item.feedbackSent">
+                <view class="feedback-row" v-if="item.messageId && isLoggedIn && item.sourceType !== 'human' && item.sourceType !== 'system' && !item.feedbackSent">
                   <view class="feedback-btn feedback-good" @tap="submitFeedback(item, 1)">
                     <text class="feedback-icon">👍</text>
                     <text class="feedback-label">有用</text>
@@ -90,6 +90,7 @@
 <script>
 import { chatWithAi, getAiSessionDetail, requestAiHandover, submitAiFeedback } from '../../api/ai'
 import config from '../../utils/config'
+import { TAB_BAR_PAGES, canAccessPage, filterRecommendActions, filterRecommendCards } from '../../utils/demo-mode'
 
 export default {
   data() {
@@ -104,6 +105,7 @@ export default {
       sessionStatus: 0,
       sessionNeedHandover: false,
       currentUserAvatar: '',
+      guestToken: '',
       messages: [
         {
           localId: 'welcome',
@@ -152,7 +154,7 @@ export default {
     this.cacheScope = this.getCacheScope()
     this.syncCurrentUser()
     this.restoreLocalMessages()
-    if (this.sessionId && this.isLoggedIn) {
+    if (this.sessionId) {
       this.loadSessionDetail()
     }
     this.startPolling()
@@ -164,7 +166,7 @@ export default {
       this.cacheScope = nextScope
       this.restoreLocalMessages()
     }
-    if (this.sessionId && this.isLoggedIn) {
+    if (this.sessionId) {
       this.loadSessionDetail()
     }
     this.startPolling()
@@ -192,6 +194,9 @@ export default {
     getSessionStorageKey() {
       return `ai_chat_session_id_${this.cacheScope}`
     },
+    getGuestTokenStorageKey() {
+      return 'ai_chat_guest_token'
+    },
     buildWelcomeMessage() {
       return {
         localId: 'welcome',
@@ -211,13 +216,21 @@ export default {
     getImageUrl(url) {
       return config.getImageUrl(url)
     },
+    sanitizeAssistantMessage(message = {}) {
+      return {
+        ...message,
+        cards: filterRecommendCards(message.cards || []),
+        actions: filterRecommendActions(message.actions || [])
+      }
+    },
     restoreLocalMessages() {
+      this.guestToken = this.getGuestToken()
       this.sessionId = uni.getStorageSync(this.getSessionStorageKey()) || null
       this.sessionStatus = 0
       this.sessionNeedHandover = false
       const cached = uni.getStorageSync(this.getMessageStorageKey())
       if (cached && Array.isArray(cached) && cached.length) {
-        this.messages = cached
+        this.messages = cached.map(item => item.role === 'assistant' ? this.sanitizeAssistantMessage(item) : item)
       } else {
         this.messages = [this.buildWelcomeMessage()]
       }
@@ -228,11 +241,22 @@ export default {
       if (this.sessionId) {
         uni.setStorageSync(this.getSessionStorageKey(), this.sessionId)
       }
+      if (this.guestToken) {
+        uni.setStorageSync(this.getGuestTokenStorageKey(), this.guestToken)
+      }
+    },
+    getGuestToken() {
+      if (this.isLoggedIn) return ''
+      const cached = uni.getStorageSync(this.getGuestTokenStorageKey())
+      if (cached) return cached
+      const token = `guest_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`
+      uni.setStorageSync(this.getGuestTokenStorageKey(), token)
+      return token
     },
     startPolling() {
       this.stopPolling()
       this.pollTimer = setInterval(() => {
-        if (this.sessionId && this.isLoggedIn && !this.loading && !this.isSyncing) {
+        if (this.sessionId && !this.loading && !this.isSyncing) {
           this.loadSessionDetail(true)
         }
       }, 3000)
@@ -255,7 +279,7 @@ export default {
     async loadSessionDetail(silent = false) {
       this.isSyncing = true
       try {
-        const detail = await getAiSessionDetail(this.sessionId)
+        const detail = await getAiSessionDetail(this.sessionId, this.isLoggedIn ? {} : { guestToken: this.guestToken })
         this.sessionStatus = Number(detail.status || 0)
         this.sessionNeedHandover = !!detail.needHandover
         const remoteMessages = (detail.messages || []).map(item => ({
@@ -268,7 +292,7 @@ export default {
           actions: item.actions || [],
           messageId: item.id,
           feedbackSent: this.findFeedbackState(item.id)
-        }))
+        })).map(item => item.role === 'assistant' ? this.sanitizeAssistantMessage(item) : item)
         if (remoteMessages.length) {
           const changed = this.buildMessageFingerprint(remoteMessages) !== this.buildMessageFingerprint(this.messages)
           if (!changed) return
@@ -321,15 +345,16 @@ export default {
       this.scrollToBottom()
 
       try {
-        const res = await chatWithAi({ sessionId: this.sessionId, message: text })
+        const res = await chatWithAi({ sessionId: this.sessionId, guestToken: this.guestToken, message: text })
         if (previousSessionId && res.sessionId && res.sessionId !== previousSessionId && !shouldStartNewRound) {
           this.beginFreshSession()
           this.messages.push(userMessage)
         }
         this.sessionId = res.sessionId
+        this.guestToken = res.guestToken || this.guestToken
         this.sessionStatus = Number(res.status || this.sessionStatus || 0)
         this.sessionNeedHandover = !!res.needHandover
-        this.messages.push({
+        this.messages.push(this.sanitizeAssistantMessage({
           localId: `a-${Date.now()}`,
           role: 'assistant',
           replyText: res.replyText,
@@ -338,7 +363,7 @@ export default {
           actions: res.actions || [],
           messageId: res.messageId,
           feedbackSent: false
-        })
+        }))
         this.persistMessages()
         this.scrollToBottom()
         this.startPolling()
@@ -355,7 +380,7 @@ export default {
       }
     },
     getDisplayActions(message) {
-      const actions = [...(message.actions || [])]
+      const actions = [...filterRecommendActions(message.actions || [])]
       const hasHandover = actions.some(item => item.type === 'handover')
       if (message.role === 'assistant' && message.sourceType !== 'human' && message.sourceType !== 'system' && !hasHandover && this.sessionId && this.sessionStatus !== 1 && this.sessionStatus !== 3) {
         actions.push({ type: 'handover', label: '转人工', value: 'manual_service' })
@@ -380,7 +405,7 @@ export default {
       if (action.type === 'handover') {
         if (!this.sessionId) return
         try {
-          await requestAiHandover(this.sessionId, { remark: message.replyText })
+          await requestAiHandover(this.sessionId, { remark: message.replyText, guestToken: this.guestToken })
           this.sessionStatus = 2
           this.sessionNeedHandover = true
           uni.showToast({ title: '已提交人工处理', icon: 'success' })
@@ -391,6 +416,7 @@ export default {
     },
     async submitFeedback(message, rating) {
       if (!this.sessionId || !message.messageId) return
+      if (message.sourceType === 'human' || message.sourceType === 'system') return
       try {
         await submitAiFeedback(this.sessionId, { messageId: message.messageId, rating })
         message.feedbackSent = true
@@ -402,8 +428,11 @@ export default {
     },
     goByRoute(route) {
       if (!route) return
-      const tabPages = ['/pages/index/index', '/pages/course/course', '/pages/mall/mall', '/pages/profile/profile']
-      if (tabPages.includes(route)) {
+      if (!canAccessPage(route)) {
+        uni.showToast({ title: '答辩模式下该页面已隐藏', icon: 'none' })
+        return
+      }
+      if (TAB_BAR_PAGES.includes(route)) {
         uni.switchTab({ url: route })
       } else {
         uni.navigateTo({ url: route })

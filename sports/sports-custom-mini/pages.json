@@ -43,6 +43,12 @@
 			}
 		},
 		{
+			"path": "pages/course/location-picker",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		{
 			"path": "pages/order/confirm-product",
 			"style": {
 				"navigationStyle": "custom"
@@ -191,6 +197,12 @@
 			"style": {
 				"navigationStyle": "custom"
 			}
+		},
+		{
+			"path": "pages/webview/webview",
+			"style": {
+				"navigationStyle": "custom"
+			}
 		}
 	],
 	"globalStyle": {
@@ -218,10 +230,10 @@
 				"selectedIconPath": "static/tab/course-active.png"
 			},
 			{
-				"pagePath": "pages/mall/mall",
-				"text": "商城",
-				"iconPath": "static/tab/mall.png",
-				"selectedIconPath": "static/tab/mall-active.png"
+				"pagePath": "pages/coach/coach-list",
+				"text": "教练",
+				"iconPath": "static/tab/coach.png",
+				"selectedIconPath": "static/tab/coach-active.png"
 			},
 			{
 				"pagePath": "pages/profile/profile",

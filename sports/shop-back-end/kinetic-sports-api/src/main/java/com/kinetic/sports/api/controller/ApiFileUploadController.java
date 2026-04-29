@@ -1,6 +1,7 @@
 package com.kinetic.sports.api.controller;
 
 import com.kinetic.sports.common.response.ServerResponseEntity;
+import com.kinetic.sports.common.util.ContentSecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -28,15 +29,8 @@ public class ApiFileUploadController {
      */
     @PostMapping("/upload")
     public ServerResponseEntity<String> upload(@RequestParam("file") MultipartFile file) {
-        if (file.isEmpty()) {
-            return ServerResponseEntity.fail("文件不能为空");
-        }
         String datePath = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        String originalFilename = file.getOriginalFilename();
-        String ext = "";
-        if (originalFilename != null && originalFilename.contains(".")) {
-            ext = originalFilename.substring(originalFilename.lastIndexOf("."));
-        }
+        String ext = ContentSecurityUtils.validateAndResolveImageExtension(file);
         String newFilename = UUID.randomUUID().toString().replace("-", "") + ext;
 
         File dir = new File(uploadDir, datePath);
@@ -49,7 +43,7 @@ public class ApiFileUploadController {
         } catch (IOException e) {
             return ServerResponseEntity.fail("文件保存失败");
         }
-        String url = "http://localhost:8086" + urlPrefix + "/" + datePath + "/" + newFilename;
+        String url = urlPrefix + "/" + datePath + "/" + newFilename;
         return ServerResponseEntity.success(url);
     }
 }

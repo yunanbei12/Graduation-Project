@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kinetic.sports.bean.model.Prod;
 import com.kinetic.sports.common.response.ServerResponseEntity;
+import com.kinetic.sports.common.util.ContentSecurityUtils;
 import com.kinetic.sports.service.ProdService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -29,17 +30,19 @@ public class ProdController {
 
     @GetMapping("/detail/{id}")
     public ServerResponseEntity<Prod> detail(@PathVariable Long id) {
-        return ServerResponseEntity.success(prodService.getById(id));
+        return ServerResponseEntity.success(sanitizeProd(prodService.getById(id)));
     }
 
     @PostMapping
     public ServerResponseEntity<Void> save(@RequestBody Prod prod) {
+        sanitizeProd(prod);
         prodService.save(prod);
         return ServerResponseEntity.success();
     }
 
     @PutMapping
     public ServerResponseEntity<Void> update(@RequestBody Prod prod) {
+        sanitizeProd(prod);
         prodService.updateById(prod);
         return ServerResponseEntity.success();
     }
@@ -48,5 +51,15 @@ public class ProdController {
     public ServerResponseEntity<Void> delete(@PathVariable Long id) {
         prodService.removeById(id);
         return ServerResponseEntity.success();
+    }
+
+    private Prod sanitizeProd(Prod prod) {
+        if (prod == null) {
+            return null;
+        }
+        prod.setName(ContentSecurityUtils.normalizeText(prod.getName()));
+        prod.setDescription(ContentSecurityUtils.normalizeText(prod.getDescription()));
+        prod.setDetail(ContentSecurityUtils.sanitizeRichText(prod.getDetail()));
+        return prod;
     }
 }

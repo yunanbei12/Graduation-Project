@@ -5,6 +5,11 @@ export const createCourseOrder = (data) => {
   return http.post('/order/course', data)
 }
 
+// 批量创建课程订单
+export const createBatchCourseOrder = (data) => {
+  return http.post('/order/course/batch', data)
+}
+
 // 创建商品订单
 export const createProdOrder = (data) => {
   return http.post('/order/prod', data)
@@ -43,6 +48,11 @@ export const refundOrder = (id, refundReason) => {
 // 模拟支付
 export const payOrder = (id) => {
   return http.put(`/order/pay/${id}`)
+}
+
+// 批量支付课程订单
+export const payBatchOrders = (orderIds) => {
+  return http.put('/order/pay/batch', { orderIds })
 }
 
 // 确认收货

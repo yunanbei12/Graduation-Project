@@ -3,11 +3,14 @@ package com.kinetic.sports.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.kinetic.sports.bean.model.Order;
 
+import java.util.List;
 import java.util.Map;
 
 public interface OrderService extends IService<Order> {
 
     Order createCourseOrder(Long userId, Order params);
+
+    List<Order> createBatchCourseOrders(Long userId, Order params);
 
     Order createProdOrder(Long userId, Order params);
 
@@ -16,6 +19,8 @@ public interface OrderService extends IService<Order> {
     void autoCancelOrder(Long orderId, String reason);
 
     void payOrder(Long userId, Long orderId);
+
+    void payBatchOrders(Long userId, List<Long> orderIds);
 
     void payOrderByAdmin(Long orderId);
 

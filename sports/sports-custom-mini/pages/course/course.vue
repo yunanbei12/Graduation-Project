@@ -28,6 +28,14 @@
 						</view>
 					</view>
 				</scroll-view>
+
+				<view v-if="activeTab === 'group'" class="location-entry" @tap="openLocationPicker">
+					<view class="location-entry-left">
+						<text class="location-entry-label">地点筛选</text>
+						<text class="location-entry-value">{{ activeLocation }}</text>
+					</view>
+					<text class="location-entry-arrow">›</text>
+				</view>
 			</view>
 
 			<!-- 私教课列表 -->
@@ -62,21 +70,18 @@
 			<!-- 团课列表 -->
 			<view v-if="activeTab === 'group'" class="list-section">
 				<view class="group-card" v-for="(item, index) in groupClasses" :key="index" @tap="goGroupDetail(item)">
-					<view class="group-header">
-						<view class="group-time-tag" :class="{ today: item.isToday }">
-							<text class="group-time-icon">📅</text>
-							<text class="group-time-text">{{ item.time }}</text>
-						</view>
-						<view class="group-seats">
-							<text class="group-seats-text">已报 </text>
-							<text class="group-seats-num">{{ item.enrolled }}</text>
-							<text class="group-seats-text">/{{ item.total }}人</text>
-						</view>
-					</view>
+					<image class="group-cover" :src="getImageUrl(item.locationImage || item.pic) || '/static/logo.png'" mode="aspectFill" />
+					<view class="group-content">
 					<text class="group-name">{{ item.name }}</text>
 					<view class="group-location">
 						<text class="group-loc-icon">📍</text>
-						<text class="group-loc-text">{{ item.location }}</text>
+						<text class="group-loc-text">{{ item.location || '待设置地点' }}</text>
+					</view>
+					<view class="group-time-tag">
+						<text class="group-time-icon">🕒</text>
+						<text class="group-time-text">{{ item.timeRange || '待设置时间段' }}</text>
+					</view>
+					<text class="group-tip">进入详情可查看未来所有可报名排期</text>
 					</view>
 					<view class="group-footer">
 						<view class="group-price-row">
@@ -96,7 +101,7 @@
 </template>
 
 <script>
-import { getCourseList, getCourseCategoryList, getScheduleList } from '../../api/course'
+import { getCourseList, getCourseCategoryList } from '../../api/course'
 import config from '../../utils/config'
 
 export default {
@@ -104,6 +109,7 @@ export default {
 		return {
 			activeTab: 'private',
 			activeCategory: '全部',
+			activeLocation: '全部地点',
 			categoryId: null,
 			categoryMap: {},
 			categories: ['全部'],
@@ -118,6 +124,9 @@ export default {
 	watch: {
 		activeTab() {
 			this.pageNum = 1
+			if (this.activeTab !== 'group') {
+				this.activeLocation = '全部地点'
+			}
 			if (!this._tabChanging) {
 				this.loadCourses()
 			}
@@ -137,6 +146,14 @@ export default {
 		this.loadCategories()
 		// 处理来自其他页面的 tab 跳转意图
 		const app = getApp()
+		if (app._courseLocationSelection !== undefined) {
+			this.activeLocation = app._courseLocationSelection || '全部地点'
+			app._courseLocationSelection = undefined
+			if (this.activeTab === 'group') {
+				this.pageNum = 1
+				this.loadCourses()
+			}
+		}
 		if (app._courseTabIntent) {
 			const intent = app._courseTabIntent
 			app._courseTabIntent = null
@@ -174,8 +191,18 @@ export default {
 		onCategoryChange(name) {
 			this.activeCategory = name
 			this.categoryId = name === '全部' ? null : (this.categoryMap[name] || null)
+			if (this.activeTab === 'group') {
+				this.activeLocation = '全部地点'
+			}
 			this.pageNum = 1
 			this.loadCourses()
+		},
+		openLocationPicker() {
+			const selectedLocation = encodeURIComponent(this.activeLocation || '全部地点')
+			const categoryId = this.categoryId || ''
+			uni.navigateTo({
+				url: `/pages/course/location-picker?selectedLocation=${selectedLocation}&categoryId=${categoryId}`
+			})
 		},
 		async loadCourses() {
 			if (this.loading) return
@@ -183,6 +210,9 @@ export default {
 			const type = this.activeTab === 'private' ? 1 : 2
 			const params = { pageNum: this.pageNum, pageSize: this.pageSize, type }
 			if (this.categoryId) params.categoryId = this.categoryId
+			if (type === 2 && this.activeLocation !== '全部地点') {
+				params.location = this.activeLocation
+			}
 			try {
 				const res = await getCourseList(params)
 				const records = res.records || []
@@ -199,51 +229,22 @@ export default {
 						features: c.features ? (typeof c.features === 'string' ? JSON.parse(c.features) : c.features) : []
 					}))
 				} else {
-					// 团课：加载每个课程的最新排课
-					const groupItems = records.map(c => ({
+					this.groupClasses = records.map(c => ({
 						id: c.id,
 						name: c.name,
-						time: '',
-						location: '',
+						pic: c.pic || '',
+						locationImage: c.locationImage || '',
+						location: c.location || '',
+						timeRange: c.startHour && c.endHour ? `${c.startHour}-${c.endHour}` : '',
 						price: c.price,
-						enrolled: 0,
-						total: 0,
-						isToday: false,
-						scheduleLoaded: false
+						startHour: c.startHour || '',
+						endHour: c.endHour || ''
 					}))
-					this.groupClasses = groupItems
-					// 异步加载每个团课的排课
-					groupItems.forEach((item, idx) => {
-						this.loadScheduleForItem(item.id, idx)
-					})
 				}
 			} catch(e) {
 				console.error('加载课程失败', e)
 			} finally {
 				this.loading = false
-			}
-		},
-		async loadScheduleForItem(courseId, idx) {
-			try {
-				const res = await getScheduleList(courseId)
-				const list = res.records || []
-				if (list.length > 0 && this.groupClasses[idx]) {
-					const sch = list[0]
-					const d = new Date(sch.startTime)
-					const today = new Date()
-					const isToday = d.toDateString() === today.toDateString()
-					const m = d.getMonth() + 1
-					const day = d.getDate()
-					const weekDays = ['周日','周一','周二','周三','周四','周五','周六']
-					this.groupClasses[idx].time = `${m}/${day} ${weekDays[d.getDay()]} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`
-					this.groupClasses[idx].location = sch.location || ''
-					this.groupClasses[idx].enrolled = sch.enrolledSeats || 0
-					this.groupClasses[idx].total = sch.totalSeats || 0
-					this.groupClasses[idx].isToday = isToday
-					this.groupClasses[idx].scheduleLoaded = true
-				}
-			} catch(e) {
-				// ignore
 			}
 		},
 		goPrivateDetail(item) {
@@ -308,6 +309,19 @@ export default {
 	font-size: 26rpx; color: #595c5d; font-weight: 500;
 	&.active { color: #9c3f00; font-weight: 700; }
 }
+.location-entry {
+	margin-bottom: 16rpx;
+	background: #fff;
+	border-radius: 20rpx;
+	padding: 20rpx 24rpx;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+.location-entry-left { display: flex; flex-direction: column; gap: 6rpx; }
+.location-entry-label { font-size: 22rpx; color: #abadae; }
+.location-entry-value { font-size: 28rpx; color: #2c2f30; font-weight: 700; }
+.location-entry-arrow { font-size: 34rpx; color: #abadae; }
 
 .list-section { padding: 16rpx 24rpx; }
 
@@ -357,26 +371,26 @@ export default {
 
 /* 团课卡片 */
 .group-card {
-	background: #fff; border-radius: 32rpx; padding: 24rpx;
+	background: #fff; border-radius: 32rpx; overflow: hidden;
 	margin-bottom: 16rpx;
 }
-.group-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12rpx; }
+.group-cover { width: 100%; height: 240rpx; display: block; }
+.group-content { padding: 24rpx 24rpx 0; }
 .group-time-tag {
-	display: flex; align-items: center; gap: 6rpx;
-	background: #eff1f2; padding: 6rpx 16rpx; border-radius: 8rpx;
-	&.today { background: rgba(255,122,47,0.08); }
+	display: inline-flex; align-items: center; gap: 6rpx;
+	background: #eff1f2; padding: 6rpx 16rpx; border-radius: 999rpx;
+	margin-bottom: 12rpx;
 }
 .group-time-icon { font-size: 20rpx; }
 .group-time-text { font-size: 20rpx; color: #595c5d; font-weight: 700; }
-.group-seats-text { font-size: 22rpx; color: #595c5d; font-weight: 700; }
-.group-seats-num { font-size: 22rpx; color: #9c3f00; font-weight: 900; }
 .group-name { font-size: 32rpx; font-weight: 700; color: #2c2f30; margin-bottom: 8rpx; }
 .group-location { display: flex; align-items: center; gap: 6rpx; margin-bottom: 16rpx; }
 .group-loc-icon { font-size: 24rpx; }
 .group-loc-text { font-size: 26rpx; color: #595c5d; }
+.group-tip { display: block; font-size: 22rpx; color: #abadae; margin-bottom: 16rpx; }
 .group-footer {
 	display: flex; align-items: center; justify-content: space-between;
-	padding-top: 16rpx;
+	padding: 16rpx 24rpx 24rpx;
 	border-top: 2rpx dashed rgba(171,173,174,0.3);
 }
 .group-price-row { display: flex; align-items: baseline; }

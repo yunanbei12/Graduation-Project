@@ -15,6 +15,10 @@ public class AiChatResponse {
 
     private Long messageId;
 
+    private String guestToken;
+
+    private Integer status;
+
     private String replyText;
 
     private String intent;

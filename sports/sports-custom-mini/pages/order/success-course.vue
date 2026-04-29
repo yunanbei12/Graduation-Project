@@ -21,12 +21,16 @@
       <view class="info-card">
         <view class="info-row">
           <text class="info-label">支付金额</text>
-          <text class="info-value price">¥ {{ orderInfo.actualAmount || '0.00' }}</text>
+          <text class="info-value price">¥ {{ displayAmount }}</text>
         </view>
         <view class="divider"></view>
+        <view class="info-row" v-if="isBatch">
+          <text class="info-label">报名场次</text>
+          <text class="info-value">{{ batchCount }} 个</text>
+        </view>
         <view class="info-row">
-          <text class="info-label">订单编号</text>
-          <text class="info-value">{{ orderInfo.orderNumber || '-' }}</text>
+          <text class="info-label">{{ isBatch ? '订单数量' : '订单编号' }}</text>
+          <text class="info-value">{{ isBatch ? `${orderIds.length} 笔订单` : (orderInfo.orderNumber || '-') }}</text>
         </view>
         <view class="info-row">
           <text class="info-label">支付时间</text>
@@ -74,10 +78,10 @@
           <text class="btn-home-text">返回首页</text>
           <text class="btn-home-icon">🏠</text>
         </view>
-        <view class="btn-order" @click="goOrders">
-          <text class="btn-order-text">查看订单详情</text>
-          <text class="btn-order-icon">📋</text>
-        </view>
+      <view class="btn-order" @click="goOrders">
+        <text class="btn-order-text">{{ isBatch ? '查看订单列表' : '查看订单详情' }}</text>
+        <text class="btn-order-icon">📋</text>
+      </view>
       </view>
 
       <!-- 底部版权 -->
@@ -89,7 +93,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { getOrderDetail } from '../../api/order'
 import config from '../../utils/config'
 
@@ -98,14 +102,22 @@ const courseInfo = ref(null)
 const coachInfo = ref(null)
 const scheduleInfo = ref(null)
 const orderId = ref(null)
+const orderIds = ref([])
+const isBatch = ref(false)
+const batchCount = ref(0)
+const batchAmount = ref('0.00')
 
 onMounted(() => {
   // 从URL参数获取orderId
   const pages = getCurrentPages()
   const currentPage = pages[pages.length - 1]
   const options = currentPage.options || currentPage.$route?.query || {}
+  isBatch.value = options.batch === '1'
+  batchCount.value = Number(options.count || 0)
+  batchAmount.value = options.amount ? decodeURIComponent(options.amount) : '0.00'
+  orderIds.value = (options.orderIds || '').split(',').filter(Boolean)
   orderId.value = options.orderId
-  if (orderId.value) {
+  if (!isBatch.value && orderId.value) {
     loadOrder()
   }
 })
@@ -126,6 +138,8 @@ function formatNow() {
   const d = new Date()
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`
 }
+
+const displayAmount = computed(() => (isBatch.value ? batchAmount.value : (orderInfo.value.actualAmount || '0.00')))
 
 const handleClose = () => {
   uni.switchTab({ url: '/pages/index/index' });

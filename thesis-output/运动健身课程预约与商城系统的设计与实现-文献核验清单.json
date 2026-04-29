@@ -1,0 +1,128 @@
+[
+  {
+    "title": "Documentation Overview",
+    "authors": "Spring",
+    "year": 2026,
+    "source": "Spring Boot Documentation",
+    "doi_or_url": "https://docs.spring.io/spring-boot/documentation.html",
+    "relevance_note": "用于说明 Spring Boot 架构与自动配置能力。",
+    "status": "verified"
+  },
+  {
+    "title": "Introduction",
+    "authors": "Vue.js",
+    "year": 2026,
+    "source": "Vue Official Guide",
+    "doi_or_url": "https://vuejs.org/guide/introduction",
+    "relevance_note": "用于说明 Vue 3 组件化与响应式开发方式。",
+    "status": "verified"
+  },
+  {
+    "title": "uni-app 官网",
+    "authors": "DCloud",
+    "year": 2026,
+    "source": "uni-app Official Documentation",
+    "doi_or_url": "https://uniapp.dcloud.net.cn/",
+    "relevance_note": "用于说明 uni-app 的跨端开发能力。",
+    "status": "verified"
+  },
+  {
+    "title": "Introduction",
+    "authors": "MyBatis-Plus",
+    "year": 2026,
+    "source": "MyBatis-Plus Documentation",
+    "doi_or_url": "https://baomidou.com/en/introduce/",
+    "relevance_note": "用于说明 ORM 增强能力与 CRUD 支持。",
+    "status": "verified"
+  },
+  {
+    "title": "Sa-Token 在线文档",
+    "authors": "Sa-Token",
+    "year": 2026,
+    "source": "Sa-Token Official Documentation",
+    "doi_or_url": "https://sa-token.cc/doc.html",
+    "relevance_note": "用于说明项目登录认证与权限控制实现。",
+    "status": "verified"
+  },
+  {
+    "title": "MySQL 8.0 Reference Manual",
+    "authors": "Oracle",
+    "year": 2026,
+    "source": "MySQL Official Manual",
+    "doi_or_url": "https://dev.mysql.com/doc/mysql/8.0/en/",
+    "relevance_note": "用于说明 MySQL 关系型数据库设计基础。",
+    "status": "verified"
+  },
+  {
+    "title": "Locks and synchronizers",
+    "authors": "Redisson",
+    "year": 2026,
+    "source": "Redisson Documentation",
+    "doi_or_url": "https://redisson.pro/docs/data-and-services/locks-and-synchronizers/index.html",
+    "relevance_note": "用于说明订单与并发场景中的分布式锁。",
+    "status": "verified"
+  },
+  {
+    "title": "Quick Start",
+    "authors": "Element Plus",
+    "year": 2026,
+    "source": "Element Plus Documentation",
+    "doi_or_url": "https://element-plus.org/en-US/guide/quickstart.html",
+    "relevance_note": "用于说明后台管理端 UI 组件基础。",
+    "status": "verified"
+  },
+  {
+    "title": "Sports recommender systems: overview and research directions",
+    "authors": "Felfernig A; Wundara M; Tran TNT; et al.",
+    "year": 2024,
+    "source": "Journal of Intelligent Information Systems",
+    "doi_or_url": "https://link.springer.com/article/10.1007/s10844-023-00809-5",
+    "relevance_note": "用于说明体育推荐系统研究方向。",
+    "status": "verified"
+  },
+  {
+    "title": "Designing Virtual Coaching Solutions",
+    "authors": "Schlieter H; Gand K; Weimann TG; et al.",
+    "year": 2024,
+    "source": "Business & Information Systems Engineering",
+    "doi_or_url": "https://link.springer.com/article/10.1007/s12599-023-00840-7",
+    "relevance_note": "用于说明虚拟教练与数字化训练服务设计。",
+    "status": "verified"
+  },
+  {
+    "title": "Design and Implementation of an Intelligent Web Service Agent Based on Seq2Seq and Website Crawler",
+    "authors": "Hsih MH; Yang JX; Hsieh CC",
+    "year": 2024,
+    "source": "Information",
+    "doi_or_url": "https://www.mdpi.com/2078-2489/15/12/818",
+    "relevance_note": "用于说明智能客服服务代理设计。",
+    "status": "verified"
+  },
+  {
+    "title": "Modern software and physical education: can online training enhance gym training?",
+    "authors": "Ge L; Li M; Ning C",
+    "year": 2024,
+    "source": "BMC Medical Education",
+    "doi_or_url": "https://bmcmededuc.biomedcentral.com/articles/10.1186/s12909-024-05367-y",
+    "relevance_note": "用于说明在线训练服务的应用价值。",
+    "status": "verified"
+  },
+  {
+    "title": "A prospective non-randomized feasibility study of an online membership-based fitness program for promoting physical activity in people with mobility impairments",
+    "authors": "Malone LA; Mehta T; Mendonca CJ; et al.",
+    "year": 2024,
+    "source": "Pilot and Feasibility Studies",
+    "doi_or_url": "https://pilotfeasibilitystudies.biomedcentral.com/articles/10.1186/s40814-024-01478-7",
+    "relevance_note": "用于说明在线健身平台可行性研究。",
+    "status": "verified"
+  },
+  {
+    "title": "The More Realism, the Better? How Does the Realism of AI Customer Service Agents Influence Customer Satisfaction and Repeat Purchase Intention in Service Recovery",
+    "authors": "Hu Y; Xiao Y; Hua Y; et al.",
+    "year": 2024,
+    "source": "Behavioral Sciences",
+    "doi_or_url": "https://www.mdpi.com/2076-328X/14/12/1182",
+    "relevance_note": "用于说明 AI 客服对满意度与复购的影响。",
+    "status": "verified"
+  }
+]

@@ -38,6 +38,10 @@ public class CheckinController {
         if (request.getUserId() == null || request.getCourseId() == null || request.getCoachId() == null || request.getCheckinTime() == null) {
             return ServerResponseEntity.fail("请选择学员、课程、教练和上课时间");
         }
+        LocalDateTime now = LocalDateTime.now();
+        if (request.getCheckinTime().isAfter(now)) {
+            return ServerResponseEntity.fail("上课时间不能晚于当前时间");
+        }
 
         Course course = courseService.getById(request.getCourseId());
         if (course == null || course.getType() == null || course.getType() != 1) {
@@ -49,16 +53,20 @@ public class CheckinController {
             return ServerResponseEntity.fail("教练不存在或已停用");
         }
 
-        UserCoursePackage pkg = userCoursePackageService.list(
+        List<UserCoursePackage> packages = userCoursePackageService.list(
                 new LambdaQueryWrapper<UserCoursePackage>()
                         .eq(UserCoursePackage::getUserId, request.getUserId())
                         .eq(UserCoursePackage::getCourseId, request.getCourseId())
                         .eq(UserCoursePackage::getStatus, 1)
                         .orderByAsc(UserCoursePackage::getExpireTime)
                         .orderByAsc(UserCoursePackage::getCreateTime)
-        ).stream()
+        );
+        syncExpiredPackages(packages);
+
+        UserCoursePackage pkg = packages.stream()
                 .filter(item -> item.getUsedLessons() != null
                         && item.getTotalLessons() != null
+                        && !isPackageExpired(item, now)
                         && item.getUsedLessons() < item.getTotalLessons())
                 .findFirst()
                 .orElse(null);
@@ -122,6 +130,9 @@ public class CheckinController {
         if (schedule.getStatus() == 2) {
             return ServerResponseEntity.fail("该排课已结课");
         }
+        if (schedule.getStatus() == 3) {
+            return ServerResponseEntity.fail("该排课已取消，不能结课");
+        }
 
         Course course = courseService.getById(schedule.getCourseId());
         BigDecimal coachRatio = course.getSettleRatio() != null ? course.getSettleRatio() : BigDecimal.ZERO;
@@ -133,7 +144,6 @@ public class CheckinController {
                         .in(Order::getStatus, 2, 3, 4) // 已支付/待排课/已完成
         );
 
-        List<Long> attendedUserIds = new ArrayList<>();
         for (Order order : paidOrders) {
             Long uid = order.getUserId();
             boolean isAbsent = absentUserIds != null && absentUserIds.contains(uid);
@@ -155,11 +165,10 @@ public class CheckinController {
             checkin.setSettleStatus(0);
             courseCheckinService.save(checkin);
 
-            // 将已出勤订单状态更新为已完成
-            if (!isAbsent) {
+            if (order.getStatus() != null && order.getStatus() != 4) {
                 order.setStatus(4);
+                order.setFinishTime(LocalDateTime.now());
                 orderService.updateById(order);
-                attendedUserIds.add(uid);
             }
         }
 
@@ -227,7 +236,9 @@ public class CheckinController {
         LambdaQueryWrapper<UserCoursePackage> wrapper = new LambdaQueryWrapper<>();
         if (userId != null) wrapper.eq(UserCoursePackage::getUserId, userId);
         wrapper.orderByDesc(UserCoursePackage::getCreateTime);
-        return ServerResponseEntity.success(userCoursePackageService.page(page, wrapper));
+        Page<UserCoursePackage> result = userCoursePackageService.page(page, wrapper);
+        syncExpiredPackages(result.getRecords());
+        return ServerResponseEntity.success(result);
     }
 
     /**
@@ -239,6 +250,9 @@ public class CheckinController {
         if (checkin == null) {
             return ServerResponseEntity.fail("记录不存在");
         }
+        if (checkin.getStatus() != null && checkin.getStatus() == 0) {
+            return ServerResponseEntity.success();
+        }
         checkin.setStatus(0);
         courseCheckinService.updateById(checkin);
 
@@ -246,15 +260,18 @@ public class CheckinController {
         if (checkin.getCheckinType() == 1 && checkin.getPackageId() != null) {
             UserCoursePackage pkg = userCoursePackageService.getById(checkin.getPackageId());
             if (pkg != null) {
+                LocalDateTime now = LocalDateTime.now();
                 boolean wasCompleted = pkg.getStatus() != null && pkg.getStatus() == 3;
-                pkg.setUsedLessons(Math.max(0, pkg.getUsedLessons() - 1));
-                if (pkg.getUsedLessons() < pkg.getTotalLessons()) {
-                    pkg.setStatus(1);
+                int usedLessons = pkg.getUsedLessons() == null ? 0 : pkg.getUsedLessons();
+                int totalLessons = pkg.getTotalLessons() == null ? 0 : pkg.getTotalLessons();
+                pkg.setUsedLessons(Math.max(0, usedLessons - 1));
+                if (pkg.getUsedLessons() < totalLessons) {
+                    pkg.setStatus(isPackageExpired(pkg, now) ? 0 : 1);
                 }
                 userCoursePackageService.updateById(pkg);
 
                 // 如果课包从已完成状态恢复，将订单状态也恢复为待排课
-                if (wasCompleted && pkg.getOrderId() != null) {
+                if (wasCompleted && pkg.getStatus() != null && pkg.getStatus() == 1 && pkg.getOrderId() != null) {
                     Order order = orderService.getById(pkg.getOrderId());
                     if (order != null && order.getStatus() != null && order.getStatus() == 4) {
                         order.setStatus(3); // 恢复为待排课
@@ -266,5 +283,35 @@ public class CheckinController {
         }
 
         return ServerResponseEntity.success();
+    }
+
+    private void syncExpiredPackages(List<UserCoursePackage> packages) {
+        if (packages == null || packages.isEmpty()) {
+            return;
+        }
+        LocalDateTime now = LocalDateTime.now();
+        List<UserCoursePackage> expiredPackages = new ArrayList<>();
+        for (UserCoursePackage pkg : packages) {
+            if (isExpiredActivePackage(pkg, now)) {
+                pkg.setStatus(0);
+                expiredPackages.add(pkg);
+            }
+        }
+        if (!expiredPackages.isEmpty()) {
+            userCoursePackageService.updateBatchById(expiredPackages);
+        }
+    }
+
+    private boolean isExpiredActivePackage(UserCoursePackage pkg, LocalDateTime now) {
+        return pkg != null
+                && pkg.getStatus() != null
+                && pkg.getStatus() == 1
+                && isPackageExpired(pkg, now);
+    }
+
+    private boolean isPackageExpired(UserCoursePackage pkg, LocalDateTime now) {
+        return pkg != null
+                && pkg.getExpireTime() != null
+                && !pkg.getExpireTime().isAfter(now);
     }
 }

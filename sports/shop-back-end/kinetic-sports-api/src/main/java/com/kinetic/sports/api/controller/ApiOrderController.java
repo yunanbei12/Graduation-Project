@@ -42,6 +42,12 @@ public class ApiOrderController {
         return ServerResponseEntity.success(orderService.createCourseOrder(userId, order));
     }
 
+    @PostMapping("/course/batch")
+    public ServerResponseEntity<List<Order>> createBatchCourseOrder(@RequestBody Order order) {
+        Long userId = StpUtil.getLoginIdAsLong();
+        return ServerResponseEntity.success(orderService.createBatchCourseOrders(userId, order));
+    }
+
     @PostMapping("/prod")
     public ServerResponseEntity<Order> createProdOrder(@RequestBody Order order) {
         Long userId = StpUtil.getLoginIdAsLong();
@@ -82,15 +88,19 @@ public class ApiOrderController {
         if (order.getOrderType() == 1 && order.getCourseId() != null) {
             Course course = courseService.getById(order.getCourseId());
             result.put("course", course);
-            // 获取教练信息
-            if (course != null && course.getCoachId() != null) {
-                Coach coach = coachService.getById(course.getCoachId());
-                result.put("coach", coach);
-            }
             // 团课排课信息
+            Long coachId = course != null ? course.getCoachId() : null;
             if (order.getScheduleId() != null) {
                 CourseSchedule schedule = courseScheduleService.getById(order.getScheduleId());
                 result.put("schedule", schedule);
+                if (schedule != null && schedule.getCoachId() != null) {
+                    coachId = schedule.getCoachId();
+                }
+            }
+            // 获取教练信息
+            if (coachId != null) {
+                Coach coach = coachService.getById(coachId);
+                result.put("coach", coach);
             }
         }
 
@@ -136,6 +146,13 @@ public class ApiOrderController {
         return ServerResponseEntity.success();
     }
 
+    @PutMapping("/pay/batch")
+    public ServerResponseEntity<Void> batchPay(@RequestBody Order params) {
+        Long userId = StpUtil.getLoginIdAsLong();
+        orderService.payBatchOrders(userId, params.getOrderIds());
+        return ServerResponseEntity.success();
+    }
+
     @PutMapping("/confirm/{id}")
     public ServerResponseEntity<Void> confirmReceive(@PathVariable Long id) {
         Long userId = StpUtil.getLoginIdAsLong();
@@ -145,21 +162,26 @@ public class ApiOrderController {
 
     @GetMapping("/schedule/{scheduleId}/attendees")
     public ServerResponseEntity<List<Map<String, Object>>> getScheduleAttendees(@PathVariable Long scheduleId) {
-        List<Order> paidOrders = orderService.list(
+        Long userId = StpUtil.getLoginIdAsLong();
+        Order selfOrder = orderService.getOne(
                 new LambdaQueryWrapper<Order>()
+                        .eq(Order::getUserId, userId)
                         .eq(Order::getScheduleId, scheduleId)
                         .in(Order::getStatus, 2, 3, 4)
+                        .last("limit 1")
         );
+        if (selfOrder == null) {
+            return ServerResponseEntity.fail("无权查看该场次报名信息");
+        }
+
         List<Map<String, Object>> result = new ArrayList<>();
-        for (Order order : paidOrders) {
-            User user = userService.getById(order.getUserId());
-            if (user != null) {
-                Map<String, Object> item = new HashMap<>();
-                item.put("userId", user.getId());
-                item.put("nickName", user.getNickName());
-                item.put("avatarUrl", user.getAvatarUrl());
-                result.add(item);
-            }
+        User user = userService.getById(userId);
+        if (user != null) {
+            Map<String, Object> item = new HashMap<>();
+            item.put("userId", user.getId());
+            item.put("nickName", user.getNickName());
+            item.put("avatarUrl", user.getAvatarUrl());
+            result.add(item);
         }
         return ServerResponseEntity.success(result);
     }

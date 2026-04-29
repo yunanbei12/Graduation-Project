@@ -6,6 +6,7 @@ import com.kinetic.sports.bean.model.Prod;
 import com.kinetic.sports.bean.model.ProdCategory;
 import com.kinetic.sports.bean.model.Sku;
 import com.kinetic.sports.common.response.ServerResponseEntity;
+import com.kinetic.sports.common.util.ContentSecurityUtils;
 import com.kinetic.sports.service.ProdService;
 import com.kinetic.sports.service.ProdCategoryService;
 import com.kinetic.sports.service.SkuService;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/prod")
@@ -38,12 +40,16 @@ public class ApiProdController {
                     .or().like(Prod::getDescription, keyword));
         }
         wrapper.orderByDesc(Prod::getSales);
-        return ServerResponseEntity.success(prodService.page(page, wrapper));
+        Page<Prod> result = prodService.page(page, wrapper);
+        if (result.getRecords() != null) {
+            result.setRecords(result.getRecords().stream().map(this::sanitizeProd).collect(Collectors.toList()));
+        }
+        return ServerResponseEntity.success(result);
     }
 
     @GetMapping("/detail/{id}")
     public ServerResponseEntity<Prod> detail(@PathVariable Long id) {
-        return ServerResponseEntity.success(prodService.getById(id));
+        return ServerResponseEntity.success(sanitizeProd(prodService.getById(id)));
     }
 
     @GetMapping("/sku/list")
@@ -56,5 +62,13 @@ public class ApiProdController {
     public ServerResponseEntity<List<ProdCategory>> categoryList() {
         return ServerResponseEntity.success(prodCategoryService.list(
                 new LambdaQueryWrapper<ProdCategory>().eq(ProdCategory::getStatus, 1).orderByAsc(ProdCategory::getSort)));
+    }
+
+    private Prod sanitizeProd(Prod prod) {
+        if (prod == null) {
+            return null;
+        }
+        prod.setDetail(ContentSecurityUtils.sanitizeRichText(prod.getDetail()));
+        return prod;
     }
 }

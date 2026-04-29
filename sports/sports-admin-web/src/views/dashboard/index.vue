@@ -51,7 +51,6 @@
           <div class="quick-actions">
             <el-button type="primary" @click="$router.push('/course')">管理课程</el-button>
             <el-button type="success" @click="$router.push('/coach')">管理教练</el-button>
-            <el-button type="warning" @click="$router.push('/prod')">管理商品</el-button>
             <el-button type="info" @click="$router.push('/order')">查看订单</el-button>
           </div>
         </el-card>

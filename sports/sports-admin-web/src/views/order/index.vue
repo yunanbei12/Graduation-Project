@@ -3,10 +3,6 @@
     <el-card shadow="never">
       <div class="toolbar">
         <div class="toolbar-left">
-          <el-select v-model="query.orderType" placeholder="订单类型" clearable style="width: 140px" @change="loadData">
-            <el-option label="课程订单" :value="1" />
-            <el-option label="商品订单" :value="2" />
-          </el-select>
           <el-select v-model="query.status" placeholder="订单状态" clearable style="width: 140px" @change="loadData">
             <el-option v-for="s in statusOptions" :key="s.value" :label="s.label" :value="s.value" />
           </el-select>
@@ -17,9 +13,7 @@
         <el-table-column prop="id" label="ID" width="80" />
         <el-table-column prop="orderNumber" label="订单号" width="200" />
         <el-table-column prop="orderType" label="类型" width="100">
-          <template #default="{ row }">
-            <el-tag :type="row.orderType === 1 ? 'primary' : 'warning'">{{ row.orderType === 1 ? '课程' : '商品' }}</el-tag>
-          </template>
+          <template #default><el-tag type="primary">课程</el-tag></template>
         </el-table-column>
         <el-table-column prop="totalAmount" label="总金额" width="100">
           <template #default="{ row }">¥{{ row.totalAmount }}</template>
@@ -41,8 +35,6 @@
               <template #dropdown>
                 <el-dropdown-menu>
                   <el-dropdown-item command="2" v-if="row.status === 1">模拟支付</el-dropdown-item>
-                  <el-dropdown-item command="3" v-if="row.status === 2 && row.orderType === 2">确认发货</el-dropdown-item>
-                  <el-dropdown-item command="4" v-if="row.status === 3 && row.orderType === 2">确认收货完成</el-dropdown-item>
                   <el-dropdown-item command="7" v-if="row.status === 6">通过退款</el-dropdown-item>
                   <el-dropdown-item command="8" v-if="row.status === 6">驳回退款</el-dropdown-item>
                 </el-dropdown-menu>
@@ -66,7 +58,7 @@
     <el-dialog v-model="detailVisible" title="订单详情" width="700px">
       <el-descriptions :column="2" border v-if="detailData">
         <el-descriptions-item label="订单号">{{ detailData.orderNumber }}</el-descriptions-item>
-        <el-descriptions-item label="订单类型">{{ detailData.orderType === 1 ? '课程订单' : '商品订单' }}</el-descriptions-item>
+        <el-descriptions-item label="订单类型">课程订单</el-descriptions-item>
         <el-descriptions-item label="状态">{{ getStatusLabel(detailData.status, detailData.orderType) }}</el-descriptions-item>
         <el-descriptions-item label="退款前状态">{{ detailData.beforeRefundStatus ? getStatusLabel(detailData.beforeRefundStatus, detailData.orderType) : '-' }}</el-descriptions-item>
         <el-descriptions-item label="总金额">¥{{ detailData.totalAmount }}</el-descriptions-item>
@@ -95,12 +87,12 @@ const total = ref(0)
 const detailVisible = ref(false)
 const detailData = ref(null)
 
-const query = reactive({ pageNum: 1, pageSize: 10, orderType: null, status: null })
+const query = reactive({ pageNum: 1, pageSize: 10, orderType: 1, status: null })
 
 const statusOptions = [
   { label: '待支付', value: 1 },
-  { label: '已支付/待发货', value: 2 },
-  { label: '待排课/待收货', value: 3 },
+  { label: '已支付', value: 2 },
+  { label: '待排课', value: 3 },
   { label: '已完成', value: 4 },
   { label: '已取消', value: 5 },
   { label: '退款中', value: 6 },
@@ -118,20 +110,10 @@ const getStatusLabel = (status, orderType) => {
     7: '已退款',
     8: '退款驳回(历史)'
   }
-  const productMap = {
-    1: '待支付',
-    2: '待发货',
-    3: '待收货',
-    4: '已完成',
-    5: '已取消',
-    6: '退款中',
-    7: '已退款',
-    8: '退款驳回(历史)'
-  }
   const fallbackMap = {
     1: '待支付',
-    2: '已支付/待发货',
-    3: '待排课/待收货',
+    2: '已支付',
+    3: '待排课',
     4: '已完成',
     5: '已取消',
     6: '退款中',
@@ -139,7 +121,6 @@ const getStatusLabel = (status, orderType) => {
     8: '退款驳回(历史)'
   }
   if (orderType === 1) return courseMap[status] || '未知'
-  if (orderType === 2) return productMap[status] || '未知'
   return fallbackMap[status] || '未知'
 }
 const getStatusType = (status) => {

@@ -38,13 +38,16 @@
 				<view v-else class="schedule-list">
 					<view
 						v-for="(sch, si) in schedules" :key="sch.id"
-						class="schedule-card" :class="{ active: selectedSchedule && selectedSchedule.id === sch.id }"
-						@tap="selectSchedule(sch)"
+						class="schedule-card" :class="{ active: isScheduleSelected(sch.id) }"
+						@tap="toggleSchedule(sch)"
 					>
 						<view class="sch-top">
 							<text class="sch-date">📅 {{ formatScheduleDate(sch.scheduleDate || sch.startTime) }}</text>
-							<text class="sch-time">{{ course.startHour || formatTime(sch.startTime) }} - {{ course.endHour || formatTime(sch.endTime) }}</text>
+							<view class="sch-select-indicator" :class="{ active: isScheduleSelected(sch.id) }">
+								<text class="sch-select-text">{{ isScheduleSelected(sch.id) ? '已选' : '选择' }}</text>
+							</view>
 						</view>
+						<text class="sch-time">{{ course.startHour || formatTime(sch.startTime) }} - {{ course.endHour || formatTime(sch.endTime) }}</text>
 						<view class="sch-bottom">
 							<text class="sch-location">📍 {{ course.location || sch.location || '待确认' }}</text>
 							<text class="sch-seats">{{ sch.enrolledSeats }}/{{ sch.totalSeats }}人</text>
@@ -54,6 +57,7 @@
 						</view>
 					</view>
 				</view>
+				<text v-if="selectedCount > 0" class="schedule-picked-tip">已选择 {{ selectedCount }} 个未来场次</text>
 			</view>
 
 			<!-- 课程亮点 -->
@@ -112,9 +116,9 @@
 				<text class="bar-icon-text">💬</text>
 				<text class="bar-btn-label">立即咨询</text>
 			</view>
-			<view class="bar-btn-primary" :class="{ disabled: !selectedSchedule }" @tap="goConfirm">
+			<view class="bar-btn-primary" :class="{ disabled: selectedCount === 0 }" @tap="goConfirm">
 				<text class="bar-btn-icon">⚡</text>
-				<text class="bar-btn-text">{{ selectedSchedule ? '立即报名' : '请选择时间' }}</text>
+				<text class="bar-btn-text">{{ selectedCount > 0 ? `报名 ${selectedCount} 个场次` : '请选择时间' }}</text>
 			</view>
 		</view>
 	</view>
@@ -132,13 +136,20 @@ export default {
 			courseId: null,
 			course: null,
 			schedules: [],
-			selectedSchedule: null,
+			selectedScheduleIds: [],
+			initialScheduleId: null,
 			relatedCourses: []
 		}
 	},
 	onLoad(options) {
 		this.courseId = options.id
+		this.initialScheduleId = options.scheduleId ? Number(options.scheduleId) : null
 		this.loadDetail()
+	},
+	computed: {
+		selectedCount() {
+			return this.selectedScheduleIds.length
+		}
 	},
 	methods: {
 		getImageUrl: config.getImageUrl,
@@ -159,7 +170,10 @@ export default {
 				const res = await getScheduleList(this.courseId)
 				this.schedules = res.records || []
 				if (this.schedules.length > 0) {
-					this.selectedSchedule = this.schedules[0]
+					const presetId = this.initialScheduleId && this.schedules.some(item => item.id === this.initialScheduleId)
+						? this.initialScheduleId
+						: this.schedules[0].id
+					this.selectedScheduleIds = presetId ? [presetId] : []
 				}
 			} catch(e) {
 				console.error('加载排课失败', e)
@@ -197,8 +211,15 @@ export default {
 				sourceSection: 'detail_main'
 			}).catch(() => {})
 		},
-		selectSchedule(sch) {
-			this.selectedSchedule = sch
+		isScheduleSelected(scheduleId) {
+			return this.selectedScheduleIds.includes(scheduleId)
+		},
+		toggleSchedule(sch) {
+			if (this.isScheduleSelected(sch.id)) {
+				this.selectedScheduleIds = this.selectedScheduleIds.filter(id => id !== sch.id)
+				return
+			}
+			this.selectedScheduleIds = [...this.selectedScheduleIds, sch.id]
 		},
 		formatScheduleDate(dt) {
 			if (!dt) return ''
@@ -226,11 +247,11 @@ export default {
 		},
 		goBack() { uni.navigateBack(); },
 		goConfirm() {
-			if (!this.selectedSchedule) {
+			if (this.selectedScheduleIds.length === 0) {
 				uni.showToast({ title: '请选择上课时间', icon: 'none' })
 				return
 			}
-			uni.navigateTo({ url: `/pages/order/confirm-group?courseId=${this.courseId}&scheduleId=${this.selectedSchedule.id}` })
+			uni.navigateTo({ url: `/pages/order/confirm-group?courseId=${this.courseId}&scheduleIds=${this.selectedScheduleIds.join(',')}` })
 		}
 	}
 }
@@ -274,10 +295,14 @@ export default {
 }
 .sch-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12rpx; }
 .sch-date { font-size: 28rpx; font-weight: 700; color: #2c2f30; }
-.sch-time { font-size: 26rpx; color: #9c3f00; font-weight: 600; }
+.sch-time { font-size: 26rpx; color: #9c3f00; font-weight: 600; display: block; margin-bottom: 12rpx; }
 .sch-bottom { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12rpx; }
 .sch-location { font-size: 24rpx; color: #595c5d; }
 .sch-seats { font-size: 24rpx; color: #9c3f00; font-weight: 700; }
+.sch-select-indicator { padding: 6rpx 16rpx; border-radius: 999rpx; background: #eff1f2; }
+.sch-select-indicator.active { background: rgba(156,63,0,0.12); }
+.sch-select-text { font-size: 20rpx; color: #595c5d; font-weight: 700; }
+.schedule-picked-tip { display: block; margin-top: 8rpx; font-size: 22rpx; color: #9c3f00; font-weight: 700; }
 
 .loading-wrap { display: flex; align-items: center; justify-content: center; height: 60vh; }
 .loading-text { font-size: 28rpx; color: #999; }

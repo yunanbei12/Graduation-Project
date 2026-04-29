@@ -1,5 +1,6 @@
 package com.kinetic.sports.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -28,6 +29,9 @@ public class UserBehaviorServiceImpl extends ServiceImpl<UserBehaviorMapper, Use
     private static final int PROD_ITEM_TYPE = 2;
     private static final String VIEW_DETAIL = "view_detail";
     private static final String RECOMMEND_CLICK = "recommend_click";
+    private static final int ACTIVE_STATUS = 1;
+    private static final Set<String> ALLOWED_BEHAVIOR_TYPES = Set.of(VIEW_DETAIL, RECOMMEND_CLICK);
+    private static final long DUPLICATE_WINDOW_SECONDS = 30L;
 
     private final CourseService courseService;
     private final ProdService prodService;
@@ -38,41 +42,32 @@ public class UserBehaviorServiceImpl extends ServiceImpl<UserBehaviorMapper, Use
                 || !StringUtils.hasText(behavior.getBehaviorType())) {
             return;
         }
-        behavior.setId(null);
-        behavior.setUserId(userId);
-        this.save(behavior);
+        UserBehavior normalized = normalizeBehavior(behavior);
+        if (normalized == null || isDuplicateBehavior(userId, normalized)) {
+            return;
+        }
+        normalized.setId(null);
+        normalized.setUserId(userId);
+        this.save(normalized);
     }
 
     @Override
     public Map<String, Object> getRecommendStatsSummary() {
-        LocalDateTime since = LocalDateTime.now().minusDays(30);
-        List<UserBehavior> behaviors = this.list(new LambdaQueryWrapper<UserBehavior>()
-                .ge(UserBehavior::getCreateTime, since)
-                .orderByDesc(UserBehavior::getCreateTime));
-
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime since = now.minusDays(30);
         Map<String, Object> result = new LinkedHashMap<>();
-        long totalCount = behaviors.size();
-        long detailViews = behaviors.stream().filter(it -> VIEW_DETAIL.equals(it.getBehaviorType())).count();
-        long recommendClicks = behaviors.stream().filter(it -> RECOMMEND_CLICK.equals(it.getBehaviorType())).count();
-        long uniqueUsers = behaviors.stream().map(UserBehavior::getUserId).filter(Objects::nonNull).distinct().count();
-        long courseViews = behaviors.stream().filter(it -> VIEW_DETAIL.equals(it.getBehaviorType()) && Objects.equals(it.getItemType(), COURSE_ITEM_TYPE)).count();
-        long prodViews = behaviors.stream().filter(it -> VIEW_DETAIL.equals(it.getBehaviorType()) && Objects.equals(it.getItemType(), PROD_ITEM_TYPE)).count();
-        long courseClicks = behaviors.stream().filter(it -> RECOMMEND_CLICK.equals(it.getBehaviorType()) && Objects.equals(it.getItemType(), COURSE_ITEM_TYPE)).count();
-        long prodClicks = behaviors.stream().filter(it -> RECOMMEND_CLICK.equals(it.getBehaviorType()) && Objects.equals(it.getItemType(), PROD_ITEM_TYPE)).count();
-
-        result.put("totalBehaviors", totalCount);
-        result.put("detailViews", detailViews);
-        result.put("recommendClicks", recommendClicks);
-        result.put("uniqueUsers", uniqueUsers);
-        result.put("courseViews", courseViews);
-        result.put("prodViews", prodViews);
-        result.put("courseClicks", courseClicks);
-        result.put("prodClicks", prodClicks);
-
-        result.put("trend", buildTrend(behaviors));
-        result.put("topClickedItems", buildTopItems(behaviors, RECOMMEND_CLICK));
-        result.put("topViewedItems", buildTopItems(behaviors, VIEW_DETAIL));
-        result.put("sourceSections", buildSourceSections(behaviors));
+        result.put("totalBehaviors", countByCondition(since, null, null));
+        result.put("detailViews", countByCondition(since, VIEW_DETAIL, null));
+        result.put("recommendClicks", countByCondition(since, RECOMMEND_CLICK, null));
+        result.put("uniqueUsers", countDistinctUsers(since));
+        result.put("courseViews", countByCondition(since, VIEW_DETAIL, COURSE_ITEM_TYPE));
+        result.put("prodViews", countByCondition(since, VIEW_DETAIL, PROD_ITEM_TYPE));
+        result.put("courseClicks", countByCondition(since, RECOMMEND_CLICK, COURSE_ITEM_TYPE));
+        result.put("prodClicks", countByCondition(since, RECOMMEND_CLICK, PROD_ITEM_TYPE));
+        result.put("trend", buildTrend(now.minusDays(6).toLocalDate()));
+        result.put("topClickedItems", buildTopItems(since, RECOMMEND_CLICK));
+        result.put("topViewedItems", buildTopItems(since, VIEW_DETAIL));
+        result.put("sourceSections", buildSourceSections(since));
         return result;
     }
 
@@ -135,24 +130,93 @@ public class UserBehaviorServiceImpl extends ServiceImpl<UserBehaviorMapper, Use
         return result;
     }
 
-    private List<Map<String, Object>> buildTrend(List<UserBehavior> behaviors) {
+    private UserBehavior normalizeBehavior(UserBehavior behavior) {
+        if (!ALLOWED_BEHAVIOR_TYPES.contains(behavior.getBehaviorType())) {
+            return null;
+        }
+        if (!isActiveItem(behavior.getItemType(), behavior.getItemId())) {
+            return null;
+        }
+        if (behavior.getSourceItemType() != null || behavior.getSourceItemId() != null) {
+            if (behavior.getSourceItemType() == null || behavior.getSourceItemId() == null
+                    || !isActiveItem(behavior.getSourceItemType(), behavior.getSourceItemId())) {
+                behavior.setSourceItemType(null);
+                behavior.setSourceItemId(null);
+            }
+        }
+        return behavior;
+    }
+
+    private boolean isDuplicateBehavior(Long userId, UserBehavior behavior) {
+        UserBehavior latest = this.getOne(new LambdaQueryWrapper<UserBehavior>()
+                .eq(UserBehavior::getUserId, userId)
+                .eq(UserBehavior::getItemType, behavior.getItemType())
+                .eq(UserBehavior::getItemId, behavior.getItemId())
+                .eq(UserBehavior::getBehaviorType, behavior.getBehaviorType())
+                .orderByDesc(UserBehavior::getCreateTime)
+                .last("limit 1"));
+        if (latest == null || latest.getCreateTime() == null) {
+            return false;
+        }
+        boolean sameSource = Objects.equals(defaultString(latest.getSourcePage()), defaultString(behavior.getSourcePage()))
+                && Objects.equals(defaultString(latest.getSourceSection()), defaultString(behavior.getSourceSection()))
+                && Objects.equals(latest.getSourceItemType(), behavior.getSourceItemType())
+                && Objects.equals(latest.getSourceItemId(), behavior.getSourceItemId());
+        if (!sameSource) {
+            return false;
+        }
+        return java.time.Duration.between(latest.getCreateTime(), LocalDateTime.now()).getSeconds() < DUPLICATE_WINDOW_SECONDS;
+    }
+
+    private boolean isActiveItem(Integer itemType, Long itemId) {
+        if (itemType == null || itemId == null) {
+            return false;
+        }
+        if (Objects.equals(itemType, COURSE_ITEM_TYPE)) {
+            Course course = courseService.getById(itemId);
+            return course != null && Objects.equals(course.getStatus(), ACTIVE_STATUS);
+        }
+        if (Objects.equals(itemType, PROD_ITEM_TYPE)) {
+            Prod prod = prodService.getById(itemId);
+            return prod != null && Objects.equals(prod.getStatus(), ACTIVE_STATUS);
+        }
+        return false;
+    }
+
+    private long countByCondition(LocalDateTime since, String behaviorType, Integer itemType) {
+        return this.count(new LambdaQueryWrapper<UserBehavior>()
+                .ge(UserBehavior::getCreateTime, since)
+                .eq(StringUtils.hasText(behaviorType), UserBehavior::getBehaviorType, behaviorType)
+                .eq(itemType != null, UserBehavior::getItemType, itemType));
+    }
+
+    private long countDistinctUsers(LocalDateTime since) {
+        QueryWrapper<UserBehavior> wrapper = new QueryWrapper<>();
+        wrapper.select("COUNT(DISTINCT user_id) AS val")
+                .ge("create_time", since);
+        return queryLongValue(wrapper);
+    }
+
+    private List<Map<String, Object>> buildTrend(LocalDate startDate) {
         Map<LocalDate, long[]> dailyMap = new LinkedHashMap<>();
         for (int i = 6; i >= 0; i--) {
             dailyMap.put(LocalDate.now().minusDays(i), new long[]{0L, 0L});
         }
-        for (UserBehavior behavior : behaviors) {
-            if (behavior.getCreateTime() == null) {
-                continue;
-            }
-            LocalDate date = behavior.getCreateTime().toLocalDate();
-            long[] bucket = dailyMap.get(date);
-            if (bucket == null) {
-                continue;
-            }
-            if (VIEW_DETAIL.equals(behavior.getBehaviorType())) {
-                bucket[0]++;
-            } else if (RECOMMEND_CLICK.equals(behavior.getBehaviorType())) {
-                bucket[1]++;
+        QueryWrapper<UserBehavior> wrapper = new QueryWrapper<>();
+        wrapper.select(
+                        "DATE(create_time) AS behaviorDate",
+                        "SUM(CASE WHEN behavior_type = 'view_detail' THEN 1 ELSE 0 END) AS viewCount",
+                        "SUM(CASE WHEN behavior_type = 'recommend_click' THEN 1 ELSE 0 END) AS clickCount"
+                )
+                .ge("create_time", startDate.atStartOfDay())
+                .groupBy("DATE(create_time)")
+                .orderByAsc("behaviorDate");
+        for (Map<String, Object> item : this.baseMapper.selectMaps(wrapper)) {
+            LocalDate date = parseDate(item.get("behaviorDate"));
+            long[] bucket = date == null ? null : dailyMap.get(date);
+            if (bucket != null) {
+                bucket[0] = toLong(item.get("viewCount"));
+                bucket[1] = toLong(item.get("clickCount"));
             }
         }
         List<Map<String, Object>> list = new ArrayList<>();
@@ -166,23 +230,24 @@ public class UserBehaviorServiceImpl extends ServiceImpl<UserBehaviorMapper, Use
         return list;
     }
 
-    private List<Map<String, Object>> buildTopItems(List<UserBehavior> behaviors, String behaviorType) {
-        Map<String, Long> counter = behaviors.stream()
-                .filter(it -> behaviorType.equals(it.getBehaviorType()))
-                .collect(Collectors.groupingBy(it -> it.getItemType() + ":" + it.getItemId(), Collectors.counting()));
-        if (counter.isEmpty()) {
+    private List<Map<String, Object>> buildTopItems(LocalDateTime since, String behaviorType) {
+        QueryWrapper<UserBehavior> wrapper = new QueryWrapper<>();
+        wrapper.select("item_type AS itemType", "item_id AS itemId", "COUNT(*) AS totalCount")
+                .ge("create_time", since)
+                .eq("behavior_type", behaviorType)
+                .groupBy("item_type", "item_id")
+                .orderByDesc("totalCount")
+                .last("limit 10");
+        List<Map<String, Object>> rows = this.baseMapper.selectMaps(wrapper);
+        if (rows.isEmpty()) {
             return Collections.emptyList();
         }
 
         Set<Long> courseIds = new HashSet<>();
         Set<Long> prodIds = new HashSet<>();
-        counter.keySet().forEach(key -> {
-            String[] parts = key.split(":");
-            if (parts.length != 2) {
-                return;
-            }
-            Integer currentItemType = Integer.parseInt(parts[0]);
-            Long itemId = Long.parseLong(parts[1]);
+        rows.forEach(row -> {
+            Integer currentItemType = toInteger(row.get("itemType"));
+            Long itemId = toLong(row.get("itemId"));
             if (Objects.equals(currentItemType, COURSE_ITEM_TYPE)) {
                 courseIds.add(itemId);
             } else if (Objects.equals(currentItemType, PROD_ITEM_TYPE)) {
@@ -195,34 +260,33 @@ public class UserBehaviorServiceImpl extends ServiceImpl<UserBehaviorMapper, Use
         Map<Long, Prod> prodMap = safeListProdsByIds(prodIds).stream()
                 .collect(Collectors.toMap(Prod::getId, Function.identity(), (left, right) -> left));
 
-        return counter.entrySet().stream()
-                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
-                .limit(10)
-                .map(entry -> {
-                    String[] parts = entry.getKey().split(":");
-                    Integer currentItemType = Integer.parseInt(parts[0]);
-                    Long itemId = Long.parseLong(parts[1]);
-                    Map<String, Object> item = new LinkedHashMap<>();
-                    item.put("itemType", currentItemType);
-                    item.put("itemTypeText", Objects.equals(currentItemType, COURSE_ITEM_TYPE) ? "课程" : "商品");
-                    item.put("itemId", itemId);
-                    item.put("count", entry.getValue());
-                    item.put("itemName", resolveItemName(currentItemType, itemId, courseMap, prodMap));
-                    return item;
-                })
-                .collect(Collectors.toList());
+        return rows.stream().map(row -> {
+            Integer currentItemType = toInteger(row.get("itemType"));
+            Long itemId = toLong(row.get("itemId"));
+            Map<String, Object> item = new LinkedHashMap<>();
+            item.put("itemType", currentItemType);
+            item.put("itemTypeText", Objects.equals(currentItemType, COURSE_ITEM_TYPE) ? "课程" : "商品");
+            item.put("itemId", itemId);
+            item.put("count", toLong(row.get("totalCount")));
+            item.put("itemName", resolveItemName(currentItemType, itemId, courseMap, prodMap));
+            return item;
+        }).collect(Collectors.toList());
     }
 
-    private List<Map<String, Object>> buildSourceSections(List<UserBehavior> behaviors) {
-        return behaviors.stream()
-                .filter(it -> StringUtils.hasText(it.getSourceSection()))
-                .collect(Collectors.groupingBy(UserBehavior::getSourceSection, Collectors.counting()))
-                .entrySet().stream()
-                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
-                .map(entry -> {
+    private List<Map<String, Object>> buildSourceSections(LocalDateTime since) {
+        QueryWrapper<UserBehavior> wrapper = new QueryWrapper<>();
+        wrapper.select("source_section AS sourceSection", "COUNT(*) AS totalCount")
+                .ge("create_time", since)
+                .isNotNull("source_section")
+                .ne("source_section", "")
+                .groupBy("source_section")
+                .orderByDesc("totalCount")
+                .last("limit 20");
+        return this.baseMapper.selectMaps(wrapper).stream()
+                .map(row -> {
                     Map<String, Object> item = new LinkedHashMap<>();
-                    item.put("sourceSection", entry.getKey());
-                    item.put("count", entry.getValue());
+                    item.put("sourceSection", row.get("sourceSection"));
+                    item.put("count", toLong(row.get("totalCount")));
                     return item;
                 })
                 .collect(Collectors.toList());
@@ -253,5 +317,47 @@ public class UserBehaviorServiceImpl extends ServiceImpl<UserBehaviorMapper, Use
         }
         Prod prod = prodMap.get(itemId);
         return prod == null ? "商品#" + itemId : prod.getName();
+    }
+
+    private long queryLongValue(QueryWrapper<UserBehavior> wrapper) {
+        List<Map<String, Object>> rows = this.baseMapper.selectMaps(wrapper);
+        if (rows.isEmpty()) {
+            return 0L;
+        }
+        return toLong(rows.get(0).get("val"));
+    }
+
+    private LocalDate parseDate(Object value) {
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof LocalDate localDate) {
+            return localDate;
+        }
+        return LocalDate.parse(String.valueOf(value));
+    }
+
+    private long toLong(Object value) {
+        if (value instanceof Number number) {
+            return number.longValue();
+        }
+        if (value == null) {
+            return 0L;
+        }
+        return Long.parseLong(String.valueOf(value));
+    }
+
+    private Integer toInteger(Object value) {
+        if (value instanceof Number number) {
+            return number.intValue();
+        }
+        if (value == null) {
+            return null;
+        }
+        return Integer.parseInt(String.valueOf(value));
+    }
+
+    private String defaultString(String value) {
+        return value == null ? "" : value;
     }
 }

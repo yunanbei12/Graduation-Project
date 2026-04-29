@@ -1,0 +1,221 @@
+@startuml
+title 体育   教培 管理    系统 类图
+
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam defaultFontName Microsoft YaHei
+skinparam classFontName Microsoft YaHei
+skinparam ArrowFontName Microsoft YaHei
+
+class BaseEntity {
+  +id: Long
+  +createTime: LocalDateTime
+  +updateTime: LocalDateTime
+  +isDeleted: Integer
+}
+
+class User {
+  +nickName: String
+  +phone: String
+  +openId: String
+  +status: Integer
+  +register(): void
+  +updateProfile(): void
+  +placeOrder(): void
+}
+
+class Course {
+  +name: String
+  +type: Integer
+  +price: BigDecimal
+  +lessonCount: Integer
+  +status: Integer
+  +publish(): void
+  +updateInfo(): void
+  +changeStatus(): void
+}
+
+class Coach {
+  +name: String
+  +phone: String
+  +years: Integer
+  +rating: Double
+  +status: Integer
+  +updateProfile(): void
+  +acceptSchedule(): void
+}
+
+class CourseSchedule {
+  +courseId: Long
+  +coachId: Long
+  +scheduleDate: LocalDate
+  +totalSeats: Integer
+  +enrolledSeats: Integer
+  +status: Integer
+  +allocateSeats(): void
+  +updateStatus(): void
+}
+
+class Order {
+  +orderNumber: String
+  +userId: Long
+  +courseId: Long
+  +actualAmount: BigDecimal
+  +paymentTime: LocalDateTime
+  +status: Integer
+  +submit(): void
+  +pay(): void
+  +cancel(): void
+  +complete(): void
+}
+
+class UserCoursePackage {
+  +userId: Long
+  +courseId: Long
+  +totalLessons: Integer
+  +usedLessons: Integer
+  +expireTime: LocalDateTime
+  +status: Integer
+  +deductLesson(): void
+  +checkExpire(): void
+}
+
+class CourseCheckin {
+  +userId: Long
+  +courseId: Long
+  +scheduleId: Long
+  +checkinTime: LocalDateTime
+  +status: Integer
+  +coachAmount: BigDecimal
+  +checkin(): void
+  +calculateSettlement(): void
+}
+
+class Coupon {
+  +name: String
+  +type: Integer
+  +discount: BigDecimal
+  +minAmount: BigDecimal
+  +scope: Integer
+  +status: Integer
+  +isValid(): Boolean
+  +matchScope(): Boolean
+}
+
+class UserCoupon {
+  +userId: Long
+  +couponId: Long
+  +orderId: Long
+  +status: Integer
+  +useTime: LocalDateTime
+  +lock(): void
+  +use(): void
+  +expire(): void
+}
+
+class CoachSettlement {
+  +coachId: Long
+  +periodStart: LocalDate
+  +periodEnd: LocalDate
+  +totalLessons: Integer
+  +totalAmount: BigDecimal
+  +status: Integer
+  +generate(): void
+  +confirm(): void
+}
+
+class UserBehavior {
+  +userId: Long
+  +itemId: Long
+  +behaviorType: String
+  +sourcePage: String
+  +sourceSection: String
+  +record(): void
+}
+
+class AiSession {
+  +userId: Long
+  +title: String
+  +lastIntent: String
+  +status: Integer
+  +needHandover: Integer
+  +startSession(): void
+  +closeSession(): void
+}
+
+class AiMessage {
+  +sessionId: Long
+  +role: String
+  +content: String
+  +intent: String
+  +confidence: BigDecimal
+  +sourceType: String
+  +appendMessage(): void
+}
+
+class AiKnowledge {
+  +title: String
+  +category: String
+  +keywords: String
+  +content: String
+  +status: Integer
+  +matchKeyword(): Boolean
+}
+
+class AiHandover {
+  +sessionId: Long
+  +userId: Long
+  +latestQuestion: String
+  +status: Integer
+  +handledBy: String
+  +createHandover(): void
+  +handle(): void
+}
+
+BaseEntity <|-- User
+BaseEntity <|-- Course
+BaseEntity <|-- Coach
+BaseEntity <|-- CourseSchedule
+BaseEntity <|-- Order
+BaseEntity <|-- UserCoursePackage
+BaseEntity <|-- CourseCheckin
+BaseEntity <|-- Coupon
+BaseEntity <|-- UserCoupon
+BaseEntity <|-- CoachSettlement
+BaseEntity <|-- UserBehavior
+BaseEntity <|-- AiSession
+BaseEntity <|-- AiMessage
+BaseEntity <|-- AiKnowledge
+BaseEntity <|-- AiHandover
+
+User "1" -- "0..*" Order
+User "1" -- "0..*" UserCoursePackage
+User "1" -- "0..*" UserCoupon
+User "1" -- "0..*" UserBehavior
+User "1" -- "0..*" AiSession
+
+Course "1" -- "0..*" CourseSchedule
+Course "1" -- "0..*" Order
+Course "1" -- "0..*" UserCoursePackage
+Course "1" -- "0..*" CourseCheckin
+
+Coach "1" -- "0..*" Course
+Coach "1" -- "0..*" CourseSchedule
+Coach "1" -- "0..*" CourseCheckin
+Coach "1" -- "0..*" CoachSettlement
+
+CourseSchedule "1" -- "0..*" Order
+CourseSchedule "1" -- "0..*" CourseCheckin
+
+Order "0..1" -- "1" Coupon
+Order "1" -- "0..1" UserCoursePackage
+
+Coupon "1" -- "0..*" UserCoupon
+UserCoursePackage "1" -- "0..*" CourseCheckin
+
+AiSession "1" -- "0..*" AiMessage
+AiSession "1" -- "0..1" AiHandover
+AiMessage ..> AiKnowledge : 匹配    知识 库
+UserBehavior ..> Course : 记录   课程   行为
+
+@enduml

@@ -15,6 +15,20 @@ export const getCourseCategoryList = () => {
   return http.get('/course/category/list')
 }
 
+// 团课地点列表
+export const getCourseLocationList = (categoryId) => {
+  const params = {}
+  if (categoryId) params.categoryId = categoryId
+  return http.get('/course/location/list', params)
+}
+
+// 团课地点对象列表
+export const getCourseLocationOptions = (categoryId) => {
+  const params = {}
+  if (categoryId) params.categoryId = categoryId
+  return http.get('/course/location/options', params)
+}
+
 // 团课排课列表
 export const getScheduleList = (courseId) => {
   return http.get('/course/schedule/list', { courseId, pageSize: 50 })

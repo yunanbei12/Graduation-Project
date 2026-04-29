@@ -38,20 +38,13 @@
 			</view>
 
 			<!-- 快捷导航 -->
-			<view class="quick-cards">
-				<view class="quick-card" @tap="goOrders('product')">
+			<view :class="['quick-cards', { single: orderCards.length === 1 }]">
+				<view class="quick-card" v-for="item in orderCards" :key="item.type" @tap="goOrders(item.type)">
 					<view class="qc-icon-wrap">
-						<text class="qc-icon">📦</text>
+						<text class="qc-icon">{{ item.icon }}</text>
 					</view>
-					<text class="qc-title">商品订单</text>
-					<text class="qc-sub">购物记录</text>
-				</view>
-				<view class="quick-card" @tap="goOrders('course')">
-					<view class="qc-icon-wrap">
-						<text class="qc-icon">📋</text>
-					</view>
-					<text class="qc-title">课程订单</text>
-					<text class="qc-sub">预约与消课</text>
+					<text class="qc-title">{{ item.title }}</text>
+					<text class="qc-sub">{{ item.subTitle }}</text>
 				</view>
 			</view>
 
@@ -104,6 +97,7 @@
 
 <script>
 import { getUserInfo } from '../../api/auth'
+import { DEMO_MODE } from '../../utils/demo-mode'
 
 export default {
 	data() {
@@ -113,10 +107,20 @@ export default {
 			funcItems: [
 				{ icon: '📦', name: '我的课包', route: '/pages/profile/my-packages' },
 				{ icon: '🎫', name: '我的优惠券', route: '/pages/profile/my-coupons' },
-				{ icon: '📍', name: '地址管理', route: '/pages/address/address-list' },
 				{ icon: '🤖', name: 'AI客服', route: '/pages/ai/chat', tag: 'NEW' },
 				{ icon: '⚙️', name: '系统设置', tag: '' }
 			]
+		}
+	},
+	computed: {
+		orderCards() {
+			const cards = [
+				{ type: 'course', icon: '📋', title: '课程订单', subTitle: '预约与消课' }
+			]
+			if (!DEMO_MODE.hideCommerce) {
+				cards.unshift({ type: 'product', icon: '📦', title: '商品订单', subTitle: '购物记录' })
+			}
+			return cards
 		}
 	},
 	onShow() {
@@ -238,6 +242,7 @@ export default {
 
 /* 快捷导航 */
 .quick-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16rpx; padding: 24rpx; }
+.quick-cards.single { grid-template-columns: 1fr; }
 .quick-card {
 	background: #fff; border-radius: 24rpx; padding: 28rpx;
 	display: flex; flex-direction: column; align-items: center;

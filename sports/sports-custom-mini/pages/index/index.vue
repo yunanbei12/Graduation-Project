@@ -79,27 +79,6 @@
 				</scroll-view>
 			</view>
 
-			<view class="section" v-if="recommendedProducts.length">
-				<view class="section-header">
-					<text class="section-title">推荐装备</text>
-					<text class="section-subtitle">把运动偏好延伸到装备选购</text>
-				</view>
-				<scroll-view scroll-x class="recommend-scroll" show-scrollbar="false">
-					<view class="recommend-row">
-						<view class="recommend-card" v-for="item in recommendedProducts" :key="'prod-' + item.id" @tap="openRecommendProd(item)">
-							<image class="recommend-img" :src="getImageUrl(item.pic)" mode="aspectFill" />
-							<view class="recommend-body">
-								<text class="recommend-tag">装备</text>
-								<text class="recommend-name">{{ item.name }}</text>
-								<text class="recommend-reason">{{ item.reason }}</text>
-								<text class="recommend-extra">销量 {{ item.sales || 0 }}</text>
-								<text class="recommend-price price-text">¥{{ item.price }}</text>
-							</view>
-						</view>
-					</view>
-				</scroll-view>
-			</view>
-
 			<!-- 周边团课 -->
 			<view class="section" v-if="nearbyClasses.length">
 				<view class="section-header">
@@ -145,13 +124,14 @@ import { getHomeRecommend } from '../../api/recommend'
 import { getBannerList } from '../../api/banner'
 import { getUpcomingSchedules } from '../../api/course'
 import config from '../../utils/config'
+import { normalizeMiniPagePath, normalizeSafeWebUrl } from '../../utils/content'
+import { TAB_BAR_PAGES, canAccessPage } from '../../utils/demo-mode'
 
 export default {
 	data() {
 		return {
 			banners: [],
 			recommendedCourses: [],
-			recommendedProducts: [],
 			nearbyClasses: [],
 			coaches: [],
 			communityPosts: []
@@ -161,6 +141,9 @@ export default {
 		this.loadBanners()
 		this.loadRecommendations()
 		this.loadNearbyClasses()
+	},
+	onShow() {
+		this.loadRecommendations()
 	},
 	methods: {
 		getImageUrl(url) {
@@ -209,18 +192,24 @@ export default {
 			try {
 				const data = await getHomeRecommend({ courseLimit: 4, prodLimit: 4 })
 				this.recommendedCourses = data.courseList || []
-				this.recommendedProducts = data.prodList || []
 			} catch (e) {
 				this.recommendedCourses = []
-				this.recommendedProducts = []
 			}
 		},
 		navigateTo(url) {
-			const tabPages = ['/pages/index/index', '/pages/course/course', '/pages/mall/mall', '/pages/profile/profile']
-			if (tabPages.includes(url)) {
-				uni.switchTab({ url })
+			const pageUrl = normalizeMiniPagePath(url)
+			if (!pageUrl) {
+				uni.showToast({ title: '页面地址无效', icon: 'none' })
+				return
+			}
+			if (!canAccessPage(pageUrl)) {
+				uni.showToast({ title: '答辩模式下该页面已隐藏', icon: 'none' })
+				return
+			}
+			if (TAB_BAR_PAGES.includes(pageUrl)) {
+				uni.switchTab({ url: pageUrl })
 			} else {
-				uni.navigateTo({ url })
+				uni.navigateTo({ url: pageUrl })
 			}
 		},
 		goPrivateCourse() {
@@ -234,16 +223,19 @@ export default {
 		onBannerTap(banner) {
 			if (!banner || !banner.linkUrl) return
 			if (banner.linkType === 1) {
-				// 页面跳转
-				const tabPages = ['/pages/index/index', '/pages/course/course', '/pages/mall/mall', '/pages/profile/profile']
-				if (tabPages.includes(banner.linkUrl)) {
-					uni.switchTab({ url: banner.linkUrl })
-				} else {
-					uni.navigateTo({ url: banner.linkUrl })
+				const pageUrl = normalizeMiniPagePath(banner.linkUrl)
+				if (!pageUrl) {
+					uni.showToast({ title: '页面地址无效', icon: 'none' })
+					return
 				}
+				this.navigateTo(pageUrl)
 			} else if (banner.linkType === 3) {
-				// H5
-				uni.navigateTo({ url: `/pages/webview/webview?url=${encodeURIComponent(banner.linkUrl)}` })
+				const webUrl = normalizeSafeWebUrl(banner.linkUrl)
+				if (!webUrl) {
+					uni.showToast({ title: '外链地址无效', icon: 'none' })
+					return
+				}
+				uni.navigateTo({ url: `/pages/webview/webview?url=${encodeURIComponent(webUrl)}` })
 			}
 		},
 		goGroupDetail(item) {
@@ -259,10 +251,6 @@ export default {
 				? `/pages/course/course-detail-group?id=${item.id}`
 				: `/pages/course/course-detail-private?id=${item.id}`
 			uni.navigateTo({ url })
-		},
-		openRecommendProd(item) {
-			this.trackRecommend('prod', item, 'home_recommend')
-			uni.navigateTo({ url: `/pages/mall/product-detail?id=${item.id}` })
 		},
 		trackRecommend(bizType, item, sourceSection) {
 			if (!uni.getStorageSync('token')) return

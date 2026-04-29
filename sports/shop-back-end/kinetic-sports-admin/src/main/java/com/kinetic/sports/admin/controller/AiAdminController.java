@@ -1,9 +1,11 @@
 package com.kinetic.sports.admin.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kinetic.sports.bean.model.*;
+import com.kinetic.sports.bean.vo.ai.AiAdminUserVO;
 import com.kinetic.sports.bean.vo.ai.AiSessionDetailVO;
 import com.kinetic.sports.common.response.ServerResponseEntity;
 import com.kinetic.sports.service.*;
@@ -30,6 +32,7 @@ public class AiAdminController {
     private final SysUserService sysUserService;
 
     @GetMapping("/session/list")
+    @SaCheckPermission("ai:session")
     public ServerResponseEntity<Page<Map<String, Object>>> sessionList(
             @RequestParam(defaultValue = "1") Integer pageNum,
             @RequestParam(defaultValue = "10") Integer pageSize,
@@ -42,10 +45,12 @@ public class AiAdminController {
     }
 
     @GetMapping("/session/{id}")
+    @SaCheckPermission("ai:session")
     public ServerResponseEntity<Map<String, Object>> sessionDetail(@PathVariable Long id) {
         AiSession session = aiSessionService.getById(id);
         AiSessionDetailVO detail = aiCustomerService.getSessionDetail(id);
         User user = session != null && session.getUserId() != null ? userService.getById(session.getUserId()) : null;
+        AiAdminUserVO safeUser = buildAdminUser(user);
         List<AiHandover> handovers = aiHandoverService.list(new LambdaQueryWrapper<AiHandover>()
                 .eq(AiHandover::getSessionId, id)
                 .orderByDesc(AiHandover::getCreateTime));
@@ -56,7 +61,7 @@ public class AiAdminController {
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("session", session);
         result.put("detail", detail);
-        result.put("user", user);
+        result.put("user", safeUser);
         result.put("conversationKey", session != null && session.getUserId() != null ? "user_" + session.getUserId() : "guest_" + id);
         result.put("sessionHistory", aiCustomerService.getAdminSessionHistory(id));
         result.put("handovers", handovers);
@@ -65,6 +70,7 @@ public class AiAdminController {
     }
 
     @PutMapping("/session/{id}/status")
+    @SaCheckPermission("ai:session")
     public ServerResponseEntity<Void> updateSessionStatus(@PathVariable Long id, @RequestBody Map<String, Object> params) {
         AiSession session = aiSessionService.getById(id);
         if (session == null) {
@@ -91,6 +97,7 @@ public class AiAdminController {
     }
 
     @PostMapping("/session/{id}/reply")
+    @SaCheckPermission("ai:session")
     public ServerResponseEntity<Void> reply(@PathVariable Long id, @RequestBody Map<String, Object> params) {
         String replyText = params.get("replyText") == null ? null : String.valueOf(params.get("replyText"));
         boolean resolveAfterReply = Boolean.parseBoolean(String.valueOf(params.getOrDefault("resolveAfterReply", false)));
@@ -103,6 +110,7 @@ public class AiAdminController {
     }
 
     @PostMapping("/session/{id}/terminate")
+    @SaCheckPermission("ai:session")
     public ServerResponseEntity<Void> terminate(@PathVariable Long id, @RequestBody(required = false) Map<String, Object> params) {
         Long adminUserId = StpUtil.getLoginIdAsLong();
         SysUser sysUser = sysUserService.getById(adminUserId);
@@ -113,11 +121,13 @@ public class AiAdminController {
     }
 
     @GetMapping("/handover/list")
+    @SaCheckPermission("ai:session")
     public ServerResponseEntity<List<Map<String, Object>>> handoverList(@RequestParam(required = false) Integer status) {
         return ServerResponseEntity.success(aiCustomerService.getHandoverList(status));
     }
 
     @GetMapping("/knowledge/list")
+    @SaCheckPermission("ai:knowledge")
     public ServerResponseEntity<Page<AiKnowledge>> knowledgeList(
             @RequestParam(defaultValue = "1") Integer pageNum,
             @RequestParam(defaultValue = "10") Integer pageSize,
@@ -140,25 +150,41 @@ public class AiAdminController {
     }
 
     @PostMapping("/knowledge")
+    @SaCheckPermission("ai:knowledge")
     public ServerResponseEntity<Void> createKnowledge(@RequestBody AiKnowledge knowledge) {
         aiKnowledgeService.save(knowledge);
         return ServerResponseEntity.success();
     }
 
     @PutMapping("/knowledge")
+    @SaCheckPermission("ai:knowledge")
     public ServerResponseEntity<Void> updateKnowledge(@RequestBody AiKnowledge knowledge) {
         aiKnowledgeService.updateById(knowledge);
         return ServerResponseEntity.success();
     }
 
     @DeleteMapping("/knowledge/{id}")
+    @SaCheckPermission("ai:knowledge")
     public ServerResponseEntity<Void> deleteKnowledge(@PathVariable Long id) {
         aiKnowledgeService.removeById(id);
         return ServerResponseEntity.success();
     }
 
     @GetMapping("/stats/summary")
+    @SaCheckPermission("ai:stats")
     public ServerResponseEntity<Map<String, Object>> statsSummary() {
         return ServerResponseEntity.success(aiCustomerService.getStatsSummary());
+    }
+
+    private AiAdminUserVO buildAdminUser(User user) {
+        if (user == null) {
+            return null;
+        }
+        AiAdminUserVO result = new AiAdminUserVO();
+        result.setId(user.getId());
+        result.setNickName(user.getNickName());
+        result.setAvatarUrl(user.getAvatarUrl());
+        result.setPhone(user.getPhone());
+        return result;
     }
 }

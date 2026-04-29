@@ -56,6 +56,12 @@ public class Course extends BaseEntity {
     /** 团课上课地点 */
     private String location;
 
+    /** 团课上课地点图片 */
+    private String locationImage;
+
+    /** 团课地点ID */
+    private Long locationId;
+
     /** 教练分成比例(0.5=50%) */
     private BigDecimal settleRatio;
 

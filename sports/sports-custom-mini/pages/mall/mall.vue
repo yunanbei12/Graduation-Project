@@ -5,7 +5,11 @@
 				<text class="brand-logo">⚡</text>
 				<text class="brand-name">KINETIC</text>
 			</view>
+			<view class="header-right">
+				<text class="header-icon">🔔</text>
+			</view>
 		</view>
+
 		<scroll-view scroll-y class="content-scroll">
 			<!-- 搜索栏 -->
 			<view class="search-section">

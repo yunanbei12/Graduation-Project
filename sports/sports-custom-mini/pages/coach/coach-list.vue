@@ -1,13 +1,14 @@
 <template>
   <view class="page">
     <!-- 顶部导航 -->
-    <view class="nav-bar">
-      <text class="nav-back" @click="goBack">←</text>
-      <text class="nav-title">明星教练</text>
-      <view style="width: 60rpx;"></view>
+    <view class="header">
+      <view class="header-left">
+        <text class="brand-logo">⚡</text>
+        <text class="brand-name">KINETIC</text>
+      </view>
     </view>
 
-    <scroll-view scroll-y class="scroll-area">
+    <scroll-view scroll-y class="content-scroll">
       <!-- 教练列表 -->
       <view class="coach-list">
         <view class="coach-card" v-for="(coach, idx) in coaches" :key="idx" @click="goDetail(coach)">
@@ -94,7 +95,6 @@ const loadCoaches = async () => {
 
 onMounted(() => loadCoaches())
 
-const goBack = () => uni.navigateBack();
 const goDetail = (coach) => uni.navigateTo({ url: `/pages/coach/coach-detail?id=${coach.id}` });
 </script>
 
@@ -102,23 +102,45 @@ const goDetail = (coach) => uni.navigateTo({ url: `/pages/coach/coach-detail?id=
 .page {
   min-height: 100vh;
   background: #f5f6f7;
-  display: flex;
-  flex-direction: column;
 }
-.nav-bar {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 99;
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 99;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 32rpx;
+  padding: 0 24rpx;
   height: calc(88rpx + env(safe-area-inset-top));
   padding-top: env(safe-area-inset-top);
-  background: #fff;
+  background-color: #f5f6f7;
 }
-.nav-back { font-size: 40rpx; color: #2c2f30; width: 60rpx; }
-.nav-title { font-size: 34rpx; font-weight: 700; color: #2c2f30; }
 
-.scroll-area { flex: 1; height: 0; margin-top: calc(88rpx + env(safe-area-inset-top)); }
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.brand-logo {
+  font-size: 36rpx;
+}
+
+.brand-name {
+  font-weight: 900;
+  font-style: italic;
+  font-size: 38rpx;
+  color: #9c3f00;
+  letter-spacing: -2rpx;
+}
+
+.content-scroll {
+  height: calc(100vh - 88rpx - env(safe-area-inset-top));
+  margin-top: calc(88rpx + env(safe-area-inset-top));
+}
 
 .coach-list {
   padding: 24rpx 32rpx;

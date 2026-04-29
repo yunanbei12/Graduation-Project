@@ -1,0 +1,29 @@
+﻿类名称,方法名称,方法描述,返回值类型
+AuthController,"login(Map<String, String>)",校验管理员账号密码并生成登录令牌,"Map<String, Object>"
+AuthController,info(),获取当前登录管理员信息,SysUser
+AuthController,logout(),退出登录并清除会话状态,Void
+AuthController,"updatePassword(Map<String, String>)",修改当前管理员登录密码,Void
+SysUserController,"list(Integer,Integer,String,Integer)",分页查询后台管理员列表,Page<SysUser>
+SysUserController,detail(Long),查询后台管理员详情,SysUser
+SysUserController,save(SysUser),新增后台管理员,Void
+SysUserController,update(SysUser),修改后台管理员基础信息,Void
+SysUserController,resetPassword(SysUser),重置后台管理员密码,Void
+SysUserController,delete(Long),删除后台管理员账号,Void
+SysUserController,updateStatus(SysUser),修改后台管理员启用状态,Void
+SysRoleController,"list(Integer,Integer,String)",分页查询角色列表,Page<SysRole>
+SysRoleController,all(),查询全部启用角色,List<SysRole>
+SysRoleController,detail(Long),查询角色详情,SysRole
+SysRoleController,save(SysRole),新增角色信息,Void
+SysRoleController,update(SysRole),修改角色信息,Void
+SysRoleController,delete(Long),删除角色及其菜单关联,Void
+SysRoleController,roleMenus(Long),查询角色已分配的菜单编号集合,List<Long>
+SysRoleController,"assignMenus(Long,List<Long>)",为角色分配菜单权限,Void
+SysMenuController,list(),查询全部菜单列表,List<SysMenu>
+SysMenuController,tree(),构建并返回菜单树结构,List<SysMenu>
+SysMenuController,userMenus(),按当前登录角色返回可访问菜单树,List<SysMenu>
+SysMenuController,detail(Long),查询菜单详情,SysMenu
+SysMenuController,save(SysMenu),新增菜单资源,Void
+SysMenuController,update(SysMenu),修改菜单资源,Void
+SysMenuController,delete(Long),删除菜单资源,Void
+MemberController,"list(Integer,Integer,String)",分页查询小程序用户列表,Page<User>
+MemberController,"updateStatus(Map<String, Object>)",修改小程序用户启用状态,Void

@@ -160,6 +160,7 @@ import { getRelatedProdRecommend } from '../../api/recommend'
 import { addToCart } from '../../api/cart'
 import { getUsableCoupons } from '../../api/coupon'
 import config from '../../utils/config'
+import { sanitizeRichText } from '../../utils/content'
 
 export default {
 	data() {
@@ -189,7 +190,10 @@ export default {
 		async loadProduct() {
 			try {
 				const res = await getProdDetail(this.prodId)
-				this.product = res
+				this.product = {
+					...res,
+					detail: sanitizeRichText(res.detail || '')
+				}
 				// 图片路径处理
 				const rawImages = res.pics ? res.pics.split(',').filter(p => p) : (res.pic ? [res.pic] : [])
 				this.images = rawImages.map(img => config.getImageUrl(img))
