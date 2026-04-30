@@ -8,4 +8,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CourseCheckinServiceImpl extends ServiceImpl<CourseCheckinMapper, CourseCheckin> implements CourseCheckinService {
+
+    @Override
+    public long countDistinctUsersByCoachId(Long coachId) {
+        if (coachId == null) {
+            return 0L;
+        }
+        return baseMapper.countDistinctUsersByCoachId(coachId);
+    }
 }

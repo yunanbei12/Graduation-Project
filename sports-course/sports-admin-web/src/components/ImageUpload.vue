@@ -30,7 +30,7 @@ import { computed } from 'vue'
 
 const props = defineProps({
   modelValue: { type: String, default: '' },
-  tip: { type: String, default: '支持 jpg/png，不超过 2MB' }
+  tip: { type: String, default: '支持 jpg/png/gif，不超过 10MB' }
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -54,9 +54,9 @@ const beforeUpload = (file) => {
     ElMessage.error('只能上传图片文件')
     return false
   }
-  const isLt2M = file.size / 1024 / 1024 < 2
-  if (!isLt2M) {
-    ElMessage.error('图片大小不能超过 2MB')
+  const isLt10M = file.size / 1024 / 1024 < 10
+  if (!isLt10M) {
+    ElMessage.error('图片大小不能超过 10MB')
     return false
   }
   return true

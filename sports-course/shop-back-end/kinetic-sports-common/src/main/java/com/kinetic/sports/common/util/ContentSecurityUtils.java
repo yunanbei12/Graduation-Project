@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 
 public final class ContentSecurityUtils {
 
-    private static final long MAX_IMAGE_SIZE = 2L * 1024 * 1024;
+    private static final long MAX_IMAGE_SIZE = 10L * 1024 * 1024;
     private static final Set<String> ALLOWED_IMAGE_EXTENSIONS = Set.of(".jpg", ".jpeg", ".png", ".gif");
     private static final Set<String> ALLOWED_IMAGE_CONTENT_TYPES = Set.of("image/jpeg", "image/png", "image/gif");
     private static final Pattern HTML_COMMENT_PATTERN = Pattern.compile("<!--.*?-->", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
@@ -112,7 +112,7 @@ public final class ContentSecurityUtils {
             throw new IllegalArgumentException("文件不能为空");
         }
         if (file.getSize() > MAX_IMAGE_SIZE) {
-            throw new IllegalArgumentException("图片大小不能超过 2MB");
+            throw new IllegalArgumentException("图片大小不能超过 10MB");
         }
 
         String extension = extensionOf(file.getOriginalFilename());

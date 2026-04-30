@@ -142,7 +142,7 @@ public class CourseScheduleTask {
      * 解析课程结束时间
      */
     private LocalDateTime resolveEndTime(CourseSchedule schedule) {
-        // 优先使用排课表中的结束时间（兼容旧数据）
+        // 优先使用排课快照中的结束时间，避免重复解析课程模板
         if (schedule.getEndTime() != null) {
             return schedule.getEndTime();
         }

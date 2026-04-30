@@ -19,13 +19,13 @@ public class CourseSchedule extends BaseEntity {
     /** 团课排课日期，具体时间段从课程模板读取 */
     private LocalDate scheduleDate;
 
-    /** 兼容旧数据，新数据只用 scheduleDate */
+    /** 排课开始时间快照，便于排序、展示和定时任务直接使用 */
     private LocalDateTime startTime;
 
-    /** 兼容旧数据 */
+    /** 排课结束时间快照，便于排序、展示和定时任务直接使用 */
     private LocalDateTime endTime;
 
-    /** 兼容旧数据，地点现已移至课程模板 */
+    /** 排课地点快照，通常与课程模板地点保持一致 */
     private String location;
 
     private Integer totalSeats;

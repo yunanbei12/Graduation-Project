@@ -113,6 +113,22 @@ CREATE TABLE IF NOT EXISTS `course_location` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE IF NOT EXISTS `banner` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `title` varchar(100) DEFAULT NULL,
+  `image_url` varchar(500) NOT NULL,
+  `link_url` varchar(500) DEFAULT NULL,
+  `link_type` tinyint NOT NULL DEFAULT 1 COMMENT '1=页面 2=小程序 3=H5',
+  `sort` int NOT NULL DEFAULT 0,
+  `position` tinyint NOT NULL DEFAULT 1 COMMENT '1=首页 2=课程页',
+  `status` tinyint NOT NULL DEFAULT 1 COMMENT '0=禁用 1=启用',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `is_deleted` tinyint NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  KEY `idx_position_status_sort` (`position`, `status`, `sort`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE IF NOT EXISTS `order` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `order_number` varchar(32) NOT NULL,

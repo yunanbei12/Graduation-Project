@@ -26,6 +26,6 @@ public class ApiCoachController {
 
     @GetMapping("/detail/{id}")
     public ServerResponseEntity<Coach> detail(@PathVariable Long id) {
-        return ServerResponseEntity.success(coachService.getById(id));
+        return ServerResponseEntity.success(coachService.getDetailWithStats(id));
     }
 }

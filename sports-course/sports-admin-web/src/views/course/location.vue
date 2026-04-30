@@ -39,16 +39,16 @@
     <el-dialog v-model="dialogVisible" :title="editingId ? '编辑地点' : '新增地点'" width="560px">
       <el-form ref="formRef" :model="form" :rules="rules" label-width="96px">
         <el-form-item label="地点名称" prop="name">
-          <el-input v-model="form.name" placeholder="如：思明馆羽毛球馆A区" />
+          <el-input v-model="form.name" placeholder="如：集美大学光前体育馆" />
         </el-form-item>
         <el-form-item label="地点主图">
           <ImageUpload v-model="form.coverImage" />
         </el-form-item>
         <el-form-item label="详细地址">
-          <el-input v-model="form.address" placeholder="如：集美大学体育馆一层东侧" />
+          <el-input v-model="form.address" placeholder="如：集美区银江路185号" />
         </el-form-item>
         <el-form-item label="地点介绍">
-          <el-input v-model="form.description" type="textarea" :rows="4" placeholder="可填写场地特色、适合课程等说明" />
+          <el-input v-model="form.description" type="textarea" :rows="4" placeholder="" />
         </el-form-item>
         <el-form-item label="排序">
           <el-input-number v-model="form.sort" :min="0" style="width: 100%" />

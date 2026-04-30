@@ -31,12 +31,8 @@
             <text class="stat-label">教龄 (年)</text>
           </view>
           <view class="stat-item">
-            <text class="stat-value">--</text>
-            <text class="stat-label">授课人次</text>
-          </view>
-          <view class="stat-item">
-            <text class="stat-value">--</text>
-            <text class="stat-label">好评率</text>
+            <text class="stat-value">{{ coach.servedUserCount || 0 }}</text>
+            <text class="stat-label">服务学员</text>
           </view>
         </view>
       </view>

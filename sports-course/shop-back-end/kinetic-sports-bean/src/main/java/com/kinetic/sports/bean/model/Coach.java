@@ -1,5 +1,6 @@
 package com.kinetic.sports.bean.model;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -33,4 +34,8 @@ public class Coach extends BaseEntity {
     private String skills;
 
     private Integer status;
+
+    /** 非数据库字段：累计服务学员人数 */
+    @TableField(exist = false)
+    private Long servedUserCount;
 }

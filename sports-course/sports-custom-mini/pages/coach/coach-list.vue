@@ -27,8 +27,11 @@
               </view>
               <text class="coach-title">{{ coach.years }}年教龄</text>
               <view class="cert-tags">
-                <view class="cert-tag" v-for="(cert, ci) in coach.certs" :key="ci">
+                <view class="cert-tag" v-for="(cert, ci) in coach.certs.slice(0, 2)" :key="ci">
                   <text class="cert-text">{{ cert }}</text>
+                </view>
+                <view class="cert-tag cert-tag-more" v-if="coach.certs.length > 2">
+                  <text class="cert-text">+{{ coach.certs.length - 2 }}</text>
                 </view>
               </view>
               <view class="skill-row">
@@ -48,7 +51,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
+import { onShow } from '@dcloudio/uni-app'
 import { getCoachList } from '../../api/coach'
 import config from '../../utils/config'
 
@@ -93,7 +97,9 @@ const loadCoaches = async () => {
   }
 }
 
-onMounted(() => loadCoaches())
+onShow(() => {
+  loadCoaches()
+})
 
 const goDetail = (coach) => uni.navigateTo({ url: `/pages/coach/coach-detail?id=${coach.id}` });
 </script>
@@ -155,16 +161,22 @@ const goDetail = (coach) => uni.navigateTo({ url: `/pages/coach/coach-detail?id=
 }
 .coach-main {
   display: flex;
+  align-items: center;
   gap: 24rpx;
 }
 .avatar-wrap {
   position: relative;
   flex-shrink: 0;
-}
-.coach-avatar {
   width: 180rpx;
   height: 200rpx;
   border-radius: 16rpx;
+  overflow: hidden;
+  background: #eceff1;
+}
+.coach-avatar {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 .rating-badge {
   position: absolute;
@@ -182,6 +194,7 @@ const goDetail = (coach) => uni.navigateTo({ url: `/pages/coach/coach-detail?id=
 
 .coach-info {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 8rpx;
@@ -207,6 +220,9 @@ const goDetail = (coach) => uni.navigateTo({ url: `/pages/coach/coach-detail?id=
   border-radius: 8rpx;
   padding: 6rpx 16rpx;
 }
+.cert-tag-more {
+  background: #fff4ea;
+}
 .cert-text { font-size: 22rpx; color: #666; }
 
 .skill-row {
@@ -222,5 +238,6 @@ const goDetail = (coach) => uni.navigateTo({ url: `/pages/coach/coach-detail?id=
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  width: 100%;
 }
 </style>
