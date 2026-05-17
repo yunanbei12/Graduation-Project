@@ -66,7 +66,7 @@
 				<scroll-view scroll-x class="recommend-scroll" show-scrollbar="false">
 					<view class="recommend-row">
 						<view class="recommend-card" v-for="item in recommendedCourses" :key="'course-' + item.id" @tap="openRecommendCourse(item)">
-							<image class="recommend-img" :src="getImageUrl(item.pic)" mode="aspectFill" />
+							<image class="recommend-img" :src="getCourseCoverImage(item)" mode="aspectFill" />
 							<view class="recommend-body">
 								<text class="recommend-tag">{{ item.courseType === 2 ? '团课' : '私教' }}</text>
 								<text class="recommend-name">{{ item.name }}</text>
@@ -89,7 +89,7 @@
 				<view class="course-grid">
 					<view class="course-card" v-for="(item, index) in nearbyClasses" :key="index" @tap="goGroupDetail(item)">
 						<view class="course-img-wrap">
-							<image class="course-img" :src="getImageUrl(item.image) || '/static/logo.png'" mode="aspectFill" />
+							<image class="course-img" :src="getCourseCoverImage(item)" mode="aspectFill" />
 							<view class="course-location-tag" v-if="item.location">
 								<text class="location-tag-text">📍 {{ item.location }}</text>
 							</view>
@@ -145,9 +145,12 @@ export default {
 	onShow() {
 		this.loadRecommendations()
 	},
-	methods: {
+		methods: {
 		getImageUrl(url) {
 			return config.getImageUrl(url)
+		},
+		getCourseCoverImage(course) {
+			return config.getCourseCoverImage(course)
 		},
 		async loadBanners() {
 			try {
@@ -176,12 +179,14 @@ export default {
 					return {
 						scheduleId: item.scheduleId,
 						courseId: item.courseId,
+						type: 2,
 						name: item.name,
 						price: item.price,
 						seats: item.remainSeats,
 						time: timeLabel,
 						location: item.location || '待确认',
-						image: item.pic
+						pic: item.pic,
+						locationImage: item.locationImage || ''
 					}
 				})
 			} catch(e) {

@@ -7,7 +7,7 @@
 		</view>
 		<scroll-view scroll-y class="content-scroll" v-if="course">
 			<view class="course-card">
-				<image class="course-img" :src="getImageUrl(course.pic) || '/static/images/default-course.png'" mode="aspectFill" />
+				<image class="course-img" :src="getCourseCoverImage(course, '/static/images/default-course.png')" mode="aspectFill" />
 				<text class="course-name">{{ course.name }}</text>
 				<view class="course-tag"><text class="course-tag-text">GROUP CLASS</text></view>
 				<view class="course-price-row"><text class="cp-s">¥</text><text class="cp-n">{{ course.price }}</text><text class="cp-u">/人</text></view>
@@ -141,6 +141,9 @@ export default {
 	},
 	methods: {
 		getImageUrl: config.getImageUrl,
+		getCourseCoverImage(course, fallback) {
+			return config.getCourseCoverImage(course, fallback)
+		},
 		async loadCourse() {
 			try {
 				this.course = await getCourseDetail(this.courseId)

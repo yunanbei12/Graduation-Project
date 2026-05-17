@@ -6,7 +6,7 @@
           <div class="sidebar-header">
             <div>
               <div class="sidebar-title">客服会话</div>
-              <div class="sidebar-sub">像 PC 微信一样查看和切换咨询窗口</div>
+<!--              <div class="sidebar-sub">像 PC 微信一样查看和切换咨询窗口</div>-->
             </div>
             <el-button type="primary" link @click="refreshAll">刷新</el-button>
           </div>
@@ -419,8 +419,8 @@ const markResolved = async (id) => {
 
 const takeoverSession = async () => {
   if (!currentSession.value?.id) return
-  await updateAiSessionStatus(currentSession.value.id, { status: 0, needHandover: 0 })
-  ElMessage.success('已接入人工，请继续回复用户')
+  await updateAiSessionStatus(currentSession.value.id, { status: 2, needHandover: 1 })
+  ElMessage.success('已标记为人工处理中，请继续回复用户')
   await refreshAll()
 }
 

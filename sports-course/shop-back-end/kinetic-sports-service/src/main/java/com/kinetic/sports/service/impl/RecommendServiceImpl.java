@@ -344,6 +344,7 @@ public class RecommendServiceImpl implements RecommendService {
         vo.setBizType("course");
         vo.setName(course.getName());
         vo.setPic(course.getPic());
+        vo.setLocationImage(course.getLocationImage());
         vo.setPrice(course.getPrice());
         vo.setOriginalPrice(course.getOriginalPrice());
         vo.setSales(course.getSales());

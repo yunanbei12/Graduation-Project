@@ -70,7 +70,7 @@
 			<!-- 团课列表 -->
 			<view v-if="activeTab === 'group'" class="list-section">
 				<view class="group-card" v-for="(item, index) in groupClasses" :key="index" @tap="goGroupDetail(item)">
-					<image class="group-cover" :src="getImageUrl(item.locationImage || item.pic) || '/static/logo.png'" mode="aspectFill" />
+					<image class="group-cover" :src="getCourseCoverImage(item)" mode="aspectFill" />
 					<view class="group-content">
 					<text class="group-name">{{ item.name }}</text>
 					<view class="group-location">
@@ -171,9 +171,12 @@ export default {
 			}
 		}
 	},
-	methods: {
+		methods: {
 		getImageUrl(url) {
 			return config.getImageUrl(url)
+		},
+		getCourseCoverImage(course) {
+			return config.getCourseCoverImage(course)
 		},
 		async loadCategories() {
 			try {
@@ -231,6 +234,7 @@ export default {
 				} else {
 					this.groupClasses = records.map(c => ({
 						id: c.id,
+						type: 2,
 						name: c.name,
 						pic: c.pic || '',
 						locationImage: c.locationImage || '',

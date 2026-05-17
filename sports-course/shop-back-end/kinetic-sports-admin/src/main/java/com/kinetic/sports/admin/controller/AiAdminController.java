@@ -31,6 +31,7 @@ public class AiAdminController {
     private final UserService userService;
     private final SysUserService sysUserService;
 
+
     @GetMapping("/session/list")
     @SaCheckPermission("ai:session")
     public ServerResponseEntity<Page<Map<String, Object>>> sessionList(
@@ -43,6 +44,7 @@ public class AiAdminController {
         Page<Map<String, Object>> page = aiCustomerService.getAdminSessionPage(new Page<>(pageNum, pageSize), keyword, intent, status, needHandover);
         return ServerResponseEntity.success(page);
     }
+
 
     @GetMapping("/session/{id}")
     @SaCheckPermission("ai:session")
@@ -69,6 +71,7 @@ public class AiAdminController {
         return ServerResponseEntity.success(result);
     }
 
+
     @PutMapping("/session/{id}/status")
     @SaCheckPermission("ai:session")
     public ServerResponseEntity<Void> updateSessionStatus(@PathVariable Long id, @RequestBody Map<String, Object> params) {
@@ -90,9 +93,24 @@ public class AiAdminController {
             aiCustomerService.terminateSession(id, adminName, remark);
             return ServerResponseEntity.success();
         }
+        if (status != 2) {
+            needHandover = 0;
+        }
         session.setStatus(status);
         session.setNeedHandover(needHandover);
         aiSessionService.updateById(session);
+        if (needHandover != null && needHandover == 0) {
+            List<AiHandover> pending = aiHandoverService.list(new LambdaQueryWrapper<AiHandover>()
+                    .eq(AiHandover::getSessionId, id)
+                    .eq(AiHandover::getStatus, 0));
+            for (AiHandover handover : pending) {
+                handover.setStatus(1);
+                handover.setAdminRemark(remark != null && !remark.isBlank() ? remark : "后台已调整会话状态并结束本次人工处理");
+                handover.setHandledBy(adminName);
+                handover.setHandledTime(LocalDateTime.now());
+                aiHandoverService.updateById(handover);
+            }
+        }
         return ServerResponseEntity.success();
     }
 

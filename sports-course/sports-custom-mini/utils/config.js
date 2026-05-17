@@ -8,7 +8,19 @@ function getImageUrl(url) {
   return BASE_URL + url
 }
 
+// 统一课程封面策略：
+// 团课优先展示地点图，其次课程图；私教课直接展示课程图。
+function getCourseCoverImage(course, fallback = '/static/logo.png') {
+  if (!course) return fallback
+  const isGroupCourse = Number(course.courseType || course.type) === 2
+  const image = isGroupCourse
+    ? (course.locationImage || course.image || course.pic)
+    : (course.pic || course.image)
+  return getImageUrl(image) || fallback
+}
+
 export default {
   BASE_URL,
-  getImageUrl
+  getImageUrl,
+  getCourseCoverImage
 }

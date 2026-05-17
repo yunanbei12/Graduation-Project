@@ -14,7 +14,7 @@
 				<view class="avatar-area" @tap="chooseAvatar">
 					<image
 						class="avatar-img"
-						:src="form.avatarUrl || '/static/头像.png'"
+						:src="getAvatarUrl(form.avatarUrl)"
 						mode="aspectFill"
 					/>
 					<view class="avatar-edit-mask">
@@ -99,6 +99,9 @@ export default {
 		this.loadUserInfo()
 	},
 	methods: {
+		getAvatarUrl(url) {
+			return config.getImageUrl(url) || '/static/头像.png'
+		},
 		async loadUserInfo() {
 			try {
 				const res = await getUserInfo()

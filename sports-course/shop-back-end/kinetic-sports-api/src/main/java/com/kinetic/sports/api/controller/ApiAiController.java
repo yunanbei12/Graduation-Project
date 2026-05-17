@@ -20,12 +20,14 @@ public class ApiAiController {
 
     private final AiCustomerService aiCustomerService;
 
+    //发送消息并获取 AI 回复
     @PostMapping("/chat")
     public ServerResponseEntity<AiChatResponse> chat(@RequestBody AiChatRequest request) {
         Long userId = StpUtil.isLogin() ? StpUtil.getLoginIdAsLong() : null;
         return ServerResponseEntity.success(aiCustomerService.chat(request, userId));
     }
 
+    //查询用户历史会话
     @GetMapping("/session/list")
     public ServerResponseEntity<List<AiSessionItemVO>> sessionList() {
         if (!StpUtil.isLogin()) {
@@ -34,6 +36,7 @@ public class ApiAiController {
         return ServerResponseEntity.success(aiCustomerService.listUserSessions(StpUtil.getLoginIdAsLong()));
     }
 
+    //查看会话详情
     @GetMapping("/session/{id}")
     public ServerResponseEntity<AiSessionDetailVO> sessionDetail(@PathVariable Long id,
                                                                  @RequestParam(required = false) String guestToken) {
@@ -41,6 +44,7 @@ public class ApiAiController {
         return ServerResponseEntity.success(aiCustomerService.getClientSessionDetail(id, userId, guestToken));
     }
 
+    //提交回复反馈
     @PostMapping("/session/{id}/feedback")
     public ServerResponseEntity<Void> feedback(@PathVariable Long id, @RequestBody Map<String, Object> params) {
         if (!StpUtil.isLogin()) {
@@ -53,6 +57,7 @@ public class ApiAiController {
         return ServerResponseEntity.success();
     }
 
+    //请求转人工
     @PostMapping("/session/{id}/handover")
     public ServerResponseEntity<Void> handover(@PathVariable Long id, @RequestBody(required = false) Map<String, Object> params) {
         String remark = params == null || params.get("remark") == null ? null : String.valueOf(params.get("remark"));

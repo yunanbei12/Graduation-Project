@@ -66,7 +66,7 @@
           <template #default="{ row }">
             <el-button link type="primary" @click="handleEdit(row)">编辑</el-button>
             <el-button link type="success" v-if="row.status === 0 || row.status === 1" @click="handleCheckGroup(row)">成团判断</el-button>
-            <el-button link type="warning" v-if="row.status === 0 || row.status === 1" @click="handleSettle(row)">结课</el-button>
+            <el-button link type="warning" v-if="row.status === 1" @click="handleSettle(row)">结课</el-button>
             <el-button link type="danger" @click="handleDelete(row)">删除</el-button>
           </template>
         </el-table-column>
@@ -155,7 +155,7 @@
 
     <!-- 结课弹窗 -->
     <el-dialog v-model="settleVisible" title="团课结课" width="600px">
-      <div class="settle-tip">  请勾选未到场的学员（承认为出勤，不勾就是缺勤）</div>
+      <div class="settle-tip">请勾选未到场的学员；未勾选视为正常出勤。</div>
       <el-table :data="attendeeList" v-loading="attendeeLoading" @selection-change="handleAttendeeSelect">
         <el-table-column type="selection" width="50" />
         <el-table-column label="头像" width="70">
@@ -196,7 +196,7 @@ const settleVisible = ref(false)
 const settling = ref(false)
 const attendeeLoading = ref(false)
 const attendeeList = ref([])
-const selectedAbsent = ref([]) // 勾选的是出勤的，unselected 就是缺勤
+const selectedAbsent = ref([])
 const currentSettleScheduleId = ref(null)
 
 const query = reactive({ pageNum: 1, pageSize: 10, locationId: null, courseId: null })
@@ -384,24 +384,21 @@ const handleSettle = async (row) => {
   }
 }
 
-// table selection变化（勾选的是出勤）
+// table selection变化（勾选的是缺勤）
 const handleAttendeeSelect = (selection) => {
-  selectedAbsent.value = selection // 勾选的为出勤
+  selectedAbsent.value = selection
 }
 
 const confirmSettle = async () => {
   settling.value = true
   try {
-    // selectedAbsent 是勾选的出勤用户，缺勤 = 所有人 - 出勤人
-    const allIds = attendeeList.value.map(u => u.userId)
-    const presentIds = selectedAbsent.value.map(u => u.userId)
-    const absentIds = allIds.filter(id => !presentIds.includes(id))
+    const absentIds = selectedAbsent.value.map(u => u.userId)
     await groupSettle(currentSettleScheduleId.value, absentIds)
     ElMessage.success('结课成功')
     settleVisible.value = false
     loadData()
   } catch (e) {
-    ElMessage.error('结课失败')
+    ElMessage.error(e?.message || e?.msg || '结课失败')
   } finally {
     settling.value = false
   }

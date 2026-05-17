@@ -35,6 +35,18 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+/**
+ * AI 客服核心业务实现类。
+ *
+ * 这个类承担了 AI 客服模块的大部分核心职责：
+ * 1. 管理用户会话（新建、续用、结束、转人工）
+ * 2. 保存聊天消息（用户消息、AI 回复、人工回复、系统提示）
+ * 3. 识别用户问题意图，并路由到不同的业务处理分支
+ * 4. 查询真实业务数据，例如课程、订单、课包、优惠券、签到记录等
+ * 5. 结合知识库和模型增强，生成更自然的回复文本
+ * 6. 支持人工客服接管、人工回复、会话状态收口与用户反馈
+
+ */
 public class AiCustomerServiceImpl implements AiCustomerService {
 
     private static final String LOGIN_ROUTE = "/pages/accountLogin/accountLogin";
@@ -45,9 +57,13 @@ public class AiCustomerServiceImpl implements AiCustomerService {
     private static final String CHECKIN_ROUTE = "/pages/profile/my-checkins";
     private static final String BIND_PHONE_ROUTE = "/pages/profile/bind-phone";
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("MM-dd HH:mm");
+    /** 正常由 AI 自动处理 */
     private static final int SESSION_STATUS_PROCESSING = 0;
+    /** 当前问题已被客服或系统标记为解决 */
     private static final int SESSION_STATUS_RESOLVED = 1;
+    /** 当前会话已转人工，后续用户补充消息不再进入 AI 自动应答 */
     private static final int SESSION_STATUS_WAIT_MANUAL = 2;
+    /** 本轮咨询已结束，用户下次发消息将开启新会话 */
     private static final int SESSION_STATUS_ENDED = 3;
     private static final String RESOLVED_SYSTEM_REPLY = "当前问题已处理完成，后续如果你还有新的问题，继续发送消息即可自动开启新的咨询。";
     private static final String ENDED_SYSTEM_REPLY = "本轮咨询已结束，后续如果你再次发送消息，系统会自动开启新的咨询。";
@@ -72,6 +88,17 @@ public class AiCustomerServiceImpl implements AiCustomerService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    /**
+     * AI 客服用户端主入口。
+     *
+     * 整体流程如下：
+     * 1. 校验用户消息是否为空
+     * 2. 根据 sessionId / userId / guestToken 判断是续用旧会话还是创建新会话
+     * 3. 先保存用户消息
+     * 4. 如果当前会话已转人工，则只记录补充消息，不再走 AI 回复
+     * 5. 如果仍是 AI 处理状态，则识别意图、构造回复、保存 assistant 消息
+     * 6. 更新会话快照（最后问题、最后回复、最后意图、状态）
+     */
     public AiChatResponse chat(AiChatRequest request, Long userId) {
         String message = request == null ? null : request.getMessage();
         if (!StringUtils.hasText(message)) {
@@ -82,6 +109,27 @@ public class AiCustomerServiceImpl implements AiCustomerService {
         AiSession session = prepareSession(request == null ? null : request.getSessionId(), userId, request == null ? null : request.getGuestToken(), message);
         aiMessageService.save(buildUserMessage(session.getId(), userId, message));
 
+        // 人工处理中会话的“补充消息分支”：
+        // 用户继续发送内容时，只同步给人工客服，不再让 AI 自动接话。
+        if (isManualHandlingSession(session)) {
+            AiChatResponse response = new AiChatResponse();
+            response.setSessionId(session.getId());
+            response.setGuestToken(session.getGuestToken());
+            response.setStatus(session.getStatus());
+            response.setReplyText(null);
+            response.setIntent("manual_service_append");
+            response.setConfidence(BigDecimal.ONE);
+            response.setSourceType("system");
+            response.setCards(Collections.emptyList());
+            response.setActions(Collections.emptyList());
+            response.setNeedLogin(false);
+            response.setNeedHandover(true);
+
+            updateWaitingManualSnapshot(session, message, response);
+            return response;
+        }
+
+        // 非人工接管状态下，才进入正常 AI 应答链路。
         String intent = detectIntent(message);
         BigDecimal confidence = estimateConfidence(intent, message);
         ChatDraft draft = buildReply(intent, message, userId, request == null ? null : request.getGuestToken(), session.getId());
@@ -252,8 +300,9 @@ public class AiCustomerServiceImpl implements AiCustomerService {
         session.setLastReply(replyText.trim());
         session.setLastIntent("manual_service");
         session.setLastMessageTime(LocalDateTime.now());
-        session.setNeedHandover(0);
-        session.setStatus(resolveAfterReply ? SESSION_STATUS_RESOLVED : (terminateAfterReply ? SESSION_STATUS_ENDED : SESSION_STATUS_PROCESSING));
+        boolean keepManualHandling = !resolveAfterReply && !terminateAfterReply;
+        session.setNeedHandover(keepManualHandling ? 1 : 0);
+        session.setStatus(resolveAfterReply ? SESSION_STATUS_RESOLVED : (terminateAfterReply ? SESSION_STATUS_ENDED : SESSION_STATUS_WAIT_MANUAL));
         if (resolveAfterReply || terminateAfterReply) {
             session.setResolvedTime(LocalDateTime.now());
         }
@@ -270,10 +319,10 @@ public class AiCustomerServiceImpl implements AiCustomerService {
                 .eq(AiHandover::getSessionId, sessionId)
                 .eq(AiHandover::getStatus, 0));
         for (AiHandover handover : pending) {
-            handover.setStatus(1);
+            handover.setStatus(keepManualHandling ? 0 : 1);
             handover.setAdminRemark(replyText.trim());
             handover.setHandledBy(adminName);
-            handover.setHandledTime(LocalDateTime.now());
+            handover.setHandledTime(keepManualHandling ? null : LocalDateTime.now());
             aiHandoverService.updateById(handover);
         }
     }
@@ -502,9 +551,11 @@ public class AiCustomerServiceImpl implements AiCustomerService {
             if (!hasSessionAccess(session, userId, guestToken)) {
                 throw new KineticSportsBindException("会话不存在");
             }
+            // 已解决 / 已结束的旧会话不再续用，直接开新一轮咨询。
             if (Objects.equals(session.getStatus(), SESSION_STATUS_RESOLVED) || Objects.equals(session.getStatus(), SESSION_STATUS_ENDED)) {
                 return createSession(userId, guestToken, message);
             }
+            // 游客在聊天过程中登录后，把游客会话归并到当前用户名下。
             if (session.getUserId() == null && userId != null) {
                 session.setUserId(userId);
                 session.setGuestToken(null);
@@ -514,6 +565,22 @@ public class AiCustomerServiceImpl implements AiCustomerService {
         }
 
         return createSession(userId, guestToken, message);
+    }
+
+    private boolean isManualHandlingSession(AiSession session) {
+        if (session == null) {
+            return false;
+        }
+        // 第一层判断：会话状态或 handover 标识明确表示“当前走人工链路”。
+        if (Objects.equals(session.getStatus(), SESSION_STATUS_WAIT_MANUAL) || Objects.equals(session.getNeedHandover(), 1)) {
+            return true;
+        }
+        // 第二层兜底：即使状态被某处错误改掉，只要仍有未处理转人工单，也禁止 AI 自动回复。
+        return aiHandoverService.count(
+                new LambdaQueryWrapper<AiHandover>()
+                        .eq(AiHandover::getSessionId, session.getId())
+                        .eq(AiHandover::getStatus, 0)
+        ) > 0;
     }
 
     private AiMessage buildUserMessage(Long sessionId, Long userId, String message) {
@@ -572,6 +639,8 @@ public class AiCustomerServiceImpl implements AiCustomerService {
     }
 
     private void updateSessionSnapshot(AiSession session, String question, AiChatResponse response) {
+        // 正常 AI 回复后的快照更新：
+        // 记录最后问题、最后回复、最后意图，并根据 needHandover 决定是否切到人工处理中。
         session.setTitle(StringUtils.hasText(session.getTitle()) ? session.getTitle() : truncate(question, 18));
         session.setLastQuestion(question);
         session.setLastReply(response.getReplyText());
@@ -583,7 +652,20 @@ public class AiCustomerServiceImpl implements AiCustomerService {
         response.setStatus(session.getStatus());
     }
 
+    private void updateWaitingManualSnapshot(AiSession session, String question, AiChatResponse response) {
+        // 人工处理中时，用户补充消息只更新“最后问题”和时间，不写入新的 AI/系统回复内容。
+        session.setTitle(StringUtils.hasText(session.getTitle()) ? session.getTitle() : truncate(question, 18));
+        session.setLastQuestion(question);
+        session.setLastMessageTime(LocalDateTime.now());
+        session.setStatus(SESSION_STATUS_WAIT_MANUAL);
+        session.setNeedHandover(1);
+        aiSessionService.updateById(session);
+        response.setStatus(session.getStatus());
+    }
+
     private ChatDraft buildReply(String intent, String message, Long userId, String guestToken, Long sessionId) {
+        // 意图分发中心：
+        // 不同类型的问题走不同业务分支，每个分支负责查询真实数据并构造结构化回复。
         return switch (intent) {
             case "course_recommend" -> buildCourseRecommendReply(message, userId);
             case "course_schedule_query" -> buildScheduleReply(message);
@@ -655,23 +737,28 @@ public class AiCustomerServiceImpl implements AiCustomerService {
         if (userId == null) {
             return buildLoginRequiredReply("登录后我才能帮你查询课程订单和退款状态。", COURSE_ORDER_ROUTE);
         }
-        List<Order> orders = orderService.list(
+        List<Order> latestOrders = orderService.list(
                 new LambdaQueryWrapper<Order>()
                         .eq(Order::getUserId, userId)
                         .eq(Order::getOrderType, 1)
                         .orderByDesc(Order::getCreateTime)
                         .last("limit 3")
         );
+        List<Order> allOrders = orderService.list(
+                new LambdaQueryWrapper<Order>()
+                        .eq(Order::getUserId, userId)
+                        .eq(Order::getOrderType, 1)
+        );
 
-        Map<Long, String> itemNameMap = loadOrderItemNameMap(orders);
+        Map<Long, String> itemNameMap = loadOrderItemNameMap(latestOrders);
         ChatDraft draft = new ChatDraft();
-        draft.cards = orders.stream().map(order -> toOrderCard(order, itemNameMap.get(order.getId()))).collect(Collectors.toList());
-        if (orders.isEmpty()) {
+        draft.cards = latestOrders.stream().map(order -> toOrderCard(order, itemNameMap.get(order.getId()))).collect(Collectors.toList());
+        if (latestOrders.isEmpty()) {
             draft.replyText = "我暂时没有查到你的相关订单记录，如果你刚下单，可以稍后刷新订单页再看看。";
         } else {
-            long pending = orders.stream().filter(item -> Objects.equals(item.getStatus(), 1)).count();
-            long paid = orders.stream().filter(item -> Objects.equals(item.getStatus(), 2) || Objects.equals(item.getStatus(), 3)).count();
-            draft.replyText = "我查到了你最近的订单记录。当前有 " + pending + " 笔待支付，" + paid + " 笔已支付待处理，具体信息已经整理在下方卡片里。";
+            long pending = allOrders.stream().filter(item -> Objects.equals(item.getStatus(), 1)).count();
+            long paid = allOrders.stream().filter(item -> Objects.equals(item.getStatus(), 2) || Objects.equals(item.getStatus(), 3)).count();
+            draft.replyText = "我查到了你当前的课程订单情况：共有 " + pending + " 笔待支付，" + paid + " 笔已支付待处理。下方卡片展示的是最近几笔订单，方便你快速查看。";
         }
         draft.actions.add(action("navigate", "查看课程订单", null, COURSE_ORDER_ROUTE));
         draft.sourceType = "rule";
@@ -804,6 +891,10 @@ public class AiCustomerServiceImpl implements AiCustomerService {
     }
 
     private ChatDraft buildManualReply(Long userId, String guestToken, Long sessionId) {
+        // 用户主动要求人工客服时：
+        // 1. 生成或复用未处理的 handover 记录
+        // 2. 把当前会话切换到“人工处理中”
+        // 3. 给前端返回一条“已转人工”的确认回复
         createHandover(sessionId, userId, guestToken, "用户请求人工客服");
         ChatDraft draft = new ChatDraft();
         draft.replyText = "我已经帮你提交人工处理申请，后台客服台会看到这条会话并跟进。你也可以继续补充问题细节，方便后续处理。";
@@ -841,9 +932,14 @@ public class AiCustomerServiceImpl implements AiCustomerService {
         return draft;
     }
 
+    //
     private void applyFinalReply(ChatDraft draft, String intent, String message, Long userId, List<AiKnowledge> knowledges, List<AiCard> cards, String fallback) {
+        // 调用大模型生成更自然、更像真人客服的话术
         String modelReply = aiModelClient.generateReply(intent, message, buildUserProfileSummary(userId), knowledges, cards);
+        // 保存模型返回内容
         draft.modelReply = modelReply;
+        // 如果模型有回复，则优先使用 AI 润色结果
+        // 否则退回规则模板 fallback
         draft.replyText = StringUtils.hasText(modelReply) ? modelReply : fallback;
     }
 

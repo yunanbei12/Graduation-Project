@@ -95,6 +95,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             order.setRemark(params.getRemark());
 
             if (Objects.equals(course.getType(), 2)) {
+                // 团课订单必须绑定具体场次；这里先锁住“用户+场次”维度，避免重复下单。
                 if (params.getScheduleId() == null) {
                     throw new IllegalArgumentException("请选择上课时间");
                 }
@@ -112,6 +113,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 order.setScheduleId(params.getScheduleId());
             }
 
+            // 私教和团课共用订单模型，但优惠券、金额计算在创建阶段统一处理。
             BigDecimal totalAmount = course.getPrice();
             CouponPricing pricing = calculateCouponPricing(userId, params.getCouponId(), totalAmount);
             order.setCouponId(pricing.userCouponId());
@@ -131,6 +133,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             orderItemService.save(item);
 
             lockCouponForOrder(pricing.userCouponId(), userId, order.getId());
+            // 订单创建成功后发送延迟关单消息，避免待支付订单长期占用资源。
             txEventHelper.afterCommit(() -> orderEventPublisher.publishOrderCloseDelay(order.getId()));
             return order;
         } finally {
@@ -334,6 +337,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             boolean canFinalizeGroup = checkTime == null || !LocalDateTime.now().isBefore(checkTime);
 
             if (enrolledCount >= minGroupSize) {
+                // 达到成团人数后，场次进入可履约状态；当前配置下通常在开课时触发。
                 if (Objects.equals(schedule.getStatus(), 0)) {
                     schedule.setStatus(1);
                     courseScheduleService.updateById(schedule);
@@ -352,6 +356,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             }
 
             if (!Objects.equals(schedule.getStatus(), 3)) {
+                // 到了成团判断时间仍未成团，则取消场次并回滚相关订单。
                 schedule.setStatus(3);
                 courseScheduleService.updateById(schedule);
             }
@@ -632,6 +637,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
 
         if (Objects.equals(course.getType(), 1)) {
+            // 私教课支付成功后不是占用场次，而是生成后续可销课的课包。
             order.setStatus(ORDER_PROCESSING);
 
             UserCoursePackage pkg = new UserCoursePackage();
@@ -653,6 +659,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         if (order.getScheduleId() == null) {
             throw new IllegalArgumentException("团课订单缺少排课信息");
         }
+        // 团课支付成功后才真正占用名额，因此这里对场次加锁并递增已报名人数。
         RLock scheduleLock = redissonClient.getLock("order:schedule:" + order.getScheduleId());
         scheduleLock.lock();
         try {
@@ -702,6 +709,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 }
             }
         } else if (latest.getScheduleId() != null) {
+            // 团课退款需要同时回滚场次人数和课程销量，保证排课数据一致。
             CourseSchedule schedule = courseScheduleService.getById(latest.getScheduleId());
             LocalDateTime scheduleStart = resolveStartTime(schedule, course);
             if (scheduleStart != null) {
@@ -777,10 +785,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             return;
         }
 
+        // 通过“开课时间 - 提前分钟数”计算成团检查时刻；当前配置为 0，表示开课时判断。
         LocalDateTime checkTime = scheduleStart.minusMinutes(orderBizProperties.getGroupCheckBeforeMinutes());
         long delayMillis = Math.max(Duration.between(LocalDateTime.now(), checkTime).toMillis(), 1000L);
         long ttlSeconds = Math.max(Duration.between(LocalDateTime.now(), scheduleStart).getSeconds(), 60L);
 
+        // 同一场次只投递一次成团检查消息，避免每次支付都重复入队。
         RBucket<String> bucket = redissonClient.getBucket("order:group:check:scheduled:" + scheduleId);
         boolean firstSchedule = Boolean.TRUE.equals(bucket.trySet("1", ttlSeconds, TimeUnit.SECONDS));
         if (firstSchedule) {

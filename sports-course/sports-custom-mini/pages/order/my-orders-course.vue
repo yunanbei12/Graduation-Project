@@ -24,7 +24,13 @@
       </view>
       <view class="order-card" v-for="order in orders" :key="order.id" @tap="goDetail(order)">
         <view class="order-header">
-          <view class="order-icon-wrap">
+          <image
+            v-if="order.orderItemPic"
+            class="order-img"
+            :src="getImageUrl(order.orderItemPic)"
+            mode="aspectFill"
+          />
+          <view v-else class="order-icon-wrap">
             <text class="order-icon">🏋️</text>
           </view>
           <view class="order-title-area">
@@ -64,7 +70,9 @@
 import { ref } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import { getOrderList, getOrderItems, cancelOrder as cancelOrderApi } from '../../api/order'
+import { getCourseDetail } from '../../api/course'
 import { checkLogin } from '../../utils/auth'
+import config from '../../utils/config'
 
 const subTabs = [
   { label: '全部', status: null },
@@ -80,6 +88,8 @@ const loading = ref(false)
 const pageNum = ref(1)
 const pageSize = 10
 const total = ref(0)
+
+const getImageUrl = (url) => config.getImageUrl(url)
 
 onShow(() => {
   if (!checkLogin()) return
@@ -108,8 +118,20 @@ async function loadOrders(reset = false) {
         const items = await getOrderItems(order.id)
         if (items.length > 0) {
           order.orderItemName = items[0].itemName
+          order.orderItemPic = items[0].itemPic
         }
       } catch(e) {}
+      if (order.courseId) {
+        try {
+          const course = await getCourseDetail(order.courseId)
+          if (course) {
+            order.orderItemName = order.orderItemName || course.name
+            order.orderItemPic = (Number(course.type) === 2
+              ? (course.locationImage || course.pic)
+              : (order.orderItemPic || course.pic))
+          }
+        } catch (e) {}
+      }
     }
     if (reset) {
       orders.value = records

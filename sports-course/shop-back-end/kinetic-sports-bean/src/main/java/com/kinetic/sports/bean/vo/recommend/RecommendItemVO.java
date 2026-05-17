@@ -16,6 +16,8 @@ public class RecommendItemVO {
 
     private String pic;
 
+    private String locationImage;
+
     private BigDecimal price;
 
     private BigDecimal originalPrice;

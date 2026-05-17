@@ -3,7 +3,7 @@ package com.kinetic.sports.service.task;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.kinetic.sports.bean.model.Course;
 import com.kinetic.sports.bean.model.CourseSchedule;
-import com.kinetic.sports.bean.model.Order;
+import com.kinetic.sports.service.CourseCheckinService;
 import com.kinetic.sports.service.CourseScheduleService;
 import com.kinetic.sports.service.CourseService;
 import com.kinetic.sports.service.OrderService;
@@ -12,10 +12,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+
+import com.kinetic.sports.bean.model.Order;
 
 /**
  * 团课排课定时任务
@@ -28,11 +29,12 @@ public class CourseScheduleTask {
     private final CourseScheduleService courseScheduleService;
     private final CourseService courseService;
     private final OrderService orderService;
+    private final CourseCheckinService courseCheckinService;
 
     /**
      * 每30分钟执行一次，检查并更新过期团课状态
-     * 1. 将已过期但未成团的课程状态更新为"已取消"
-     * 2. 将已结束的课程状态更新为"已结束"
+     * 1. 将已过期但未成团的课程状态更新为"已取消"（自动处理）
+     * 2. 已结束的课程需要管理员手动结课确认考勤（仅日志提醒）
      * 
      * initialDelay = 10000 表示应用启动10秒后立即执行一次
      * fixedDelay = 1800000 表示每次执行完成后间隔30分钟再执行
@@ -58,40 +60,41 @@ public class CourseScheduleTask {
      * 取消未成团的过期课程
      */
     private void cancelUngroupedSchedules() {
-        LocalDate today = LocalDate.now();
-        LocalDate yesterday = today.minusDays(1);
+        LocalDateTime now = LocalDateTime.now();
         
-        log.info("开始检查未成团的过期团课，今天是: {}", today);
+        log.info("开始检查未成团的过期团课，当前时间: {}", now);
         
-        // 查询昨天及之前的、状态为"未开始"的团课
+        // 查询已到开课时间但仍未开始的团课
         List<CourseSchedule> schedules = courseScheduleService.list(
                 new LambdaQueryWrapper<CourseSchedule>()
                         .eq(CourseSchedule::getStatus, 0) // 未开始
-                        .le(CourseSchedule::getScheduleDate, yesterday)
         );
         
-        log.info("找到 {} 个未开始的过期团课（日期 <= {}）", schedules.size(), yesterday);
+        log.info("找到 {} 个待检查的未开始团课", schedules.size());
         
         for (CourseSchedule schedule : schedules) {
             try {
                 log.info("处理团课: id={}, courseId={}, scheduleDate={}, status={}", 
                         schedule.getId(), schedule.getCourseId(), schedule.getScheduleDate(), schedule.getStatus());
                 
-                // 检查是否有报名
                 Course course = courseService.getById(schedule.getCourseId());
+                LocalDateTime scheduleStart = resolveStartTime(schedule, course);
+                // 兜底任务只处理“已经到开课时间”的场次，避免提前干预正常报名流程。
+                if (scheduleStart == null || now.isBefore(scheduleStart)) {
+                    continue;
+                }
                 int minGroupSize = (course != null && course.getMinGroupSize() != null) 
                         ? course.getMinGroupSize() : 1;
                 
                 long enrolledCount = orderService.count(new LambdaQueryWrapper<Order>()
                         .eq(Order::getScheduleId, schedule.getId())
-                        .in(Order::getStatus, 1, 2, 3)); // 已支付、进行中、已完成
+                        .in(Order::getStatus, 2, 3, 4));
                 
                 log.info("团课 {} 报名情况: {}/{} 人", schedule.getId(), enrolledCount, minGroupSize);
                 
                 if (enrolledCount < minGroupSize) {
-                    // 未达到成团人数，取消课程
-                    schedule.setStatus(3); // 已取消
-                    courseScheduleService.updateById(schedule);
+                    // 未成团时复用统一成团判断逻辑，确保取消、退款、状态更新走同一套规则。
+                    orderService.checkGroupSchedule(schedule.getId());
                     log.info("✓ 团课 {} 未成团（{}/{}人），已自动取消", 
                             schedule.getId(), enrolledCount, minGroupSize);
                 } else {
@@ -108,29 +111,32 @@ public class CourseScheduleTask {
     }
 
     /**
-     * 标记已结束的课程
+     * 处理已结束但未结课的课程
+     * 注意：定时任务只标记状态，不自动生成签到记录
+     * 签到和考勤必须由管理员手动确认
      */
     private void finishCompletedSchedules() {
-        LocalDate yesterday = LocalDate.now().minusDays(1);
+        LocalDateTime now = LocalDateTime.now();
         
-        // 查询昨天及之前的、状态为"进行中"的团课
+        // 查询已过下课时间、仍处于进行中的团课
         List<CourseSchedule> schedules = courseScheduleService.list(
                 new LambdaQueryWrapper<CourseSchedule>()
                         .eq(CourseSchedule::getStatus, 1) // 进行中
-                        .le(CourseSchedule::getScheduleDate, yesterday)
         );
         
         log.info("找到 {} 个进行中的过期团课", schedules.size());
         
         for (CourseSchedule schedule : schedules) {
             try {
-                // 检查课程是否真的已经结束
-                LocalDateTime scheduleEnd = resolveEndTime(schedule);
+                Course course = courseService.getById(schedule.getCourseId());
+                LocalDateTime scheduleEnd = resolveEndTime(schedule, course);
                 
-                if (scheduleEnd != null && LocalDateTime.now().isAfter(scheduleEnd)) {
-                    schedule.setStatus(2); // 已结束
-                    courseScheduleService.updateById(schedule);
-                    log.info("团课 {} 已结束，状态已更新", schedule.getId());
+                // 课程已结束，但必须有管理员手动结课确认考勤
+                if (scheduleEnd != null && now.isAfter(scheduleEnd)) {
+                    // 不自动生成签到记录，等待管理员手动结课
+                    // 这里只记录日志提醒，不做状态变更
+                    log.warn("团课 {} 已结束（结束时间: {}），请管理员及时结课并确认考勤", 
+                            schedule.getId(), scheduleEnd);
                 }
             } catch (Exception e) {
                 log.error("处理团课 {} 结束状态失败", schedule.getId(), e);
@@ -139,9 +145,27 @@ public class CourseScheduleTask {
     }
 
     /**
+     * 解析课程开始时间
+     */
+    private LocalDateTime resolveStartTime(CourseSchedule schedule, Course course) {
+        if (schedule.getStartTime() != null) {
+            return schedule.getStartTime();
+        }
+        if (schedule.getScheduleDate() != null && course != null && course.getStartHour() != null) {
+            try {
+                LocalTime startTime = LocalTime.parse(course.getStartHour());
+                return LocalDateTime.of(schedule.getScheduleDate(), startTime);
+            } catch (Exception e) {
+                log.warn("解析课程开始时间失败: {}", course.getStartHour(), e);
+            }
+        }
+        return null;
+    }
+
+    /**
      * 解析课程结束时间
      */
-    private LocalDateTime resolveEndTime(CourseSchedule schedule) {
+    private LocalDateTime resolveEndTime(CourseSchedule schedule, Course course) {
         // 优先使用排课快照中的结束时间，避免重复解析课程模板
         if (schedule.getEndTime() != null) {
             return schedule.getEndTime();
@@ -149,7 +173,6 @@ public class CourseScheduleTask {
         
         // 使用课程模板的结束时间
         if (schedule.getScheduleDate() != null) {
-            Course course = courseService.getById(schedule.getCourseId());
             if (course != null && course.getEndHour() != null) {
                 try {
                     // 解析时间字符串，如 "17:00"

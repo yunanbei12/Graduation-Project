@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>课程模块代码答辩演示版</title>
+  <style>
+    :root {
+      --bg: #f6f3ee;
+      --paper: #fffdf9;
+      --ink: #1f1f1f;
+      --muted: #6a655d;
+      --accent: #9c3f00;
+      --accent-soft: #f8e7d8;
+      --line: #e6ddd2;
+      --code-bg: #1e1e1e;
+      --code-ink: #f3f3f3;
+      --ok: #2f6f44;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at top left, #fff6ec 0, transparent 35%),
+        linear-gradient(180deg, #f9f5ef 0%, var(--bg) 100%);
+      color: var(--ink);
+      font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      line-height: 1.6;
+    }
+
+    .page {
+      width: min(1400px, calc(100vw - 48px));
+      margin: 24px auto 56px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #fffdf9 0%, #fff5ea 100%);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      padding: 36px 40px;
+      box-shadow: 0 16px 40px rgba(121, 82, 43, 0.08);
+    }
+
+    .eyebrow {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 18px 0 10px;
+      font-size: 42px;
+      line-height: 1.15;
+    }
+
+    .hero p {
+      margin: 8px 0;
+      font-size: 17px;
+      color: var(--muted);
+      max-width: 920px;
+    }
+
+    .tips {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 28px;
+    }
+
+    .tip {
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 18px 18px 16px;
+    }
+
+    .tip h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+
+    .tip p {
+      margin: 0;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .section {
+      margin-top: 24px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: 0 12px 32px rgba(84, 66, 41, 0.06);
+    }
+
+    .section-head {
+      padding: 24px 28px 18px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #fffaf4 0%, #fffdf9 100%);
+    }
+
+    .section-kicker {
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .section-head h2 {
+      margin: 8px 0 6px;
+      font-size: 28px;
+      line-height: 1.2;
+    }
+
+    .section-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .section-body {
+      display: grid;
+      grid-template-columns: minmax(420px, 1.1fr) minmax(320px, 0.9fr);
+      gap: 0;
+    }
+
+    .code-pane {
+      background: var(--code-bg);
+      color: var(--code-ink);
+      padding: 22px 24px 24px;
+      border-right: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .code-title {
+      margin: 0 0 12px;
+      font-size: 14px;
+      color: #d8c6b8;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 14px;
+      line-height: 1.65;
+      font-family: "SFMono-Regular", "Consolas", "Menlo", monospace;
+    }
+
+    .note-pane {
+      padding: 24px 26px 24px;
+      background: #fffdf9;
+    }
+
+    .block {
+      margin-bottom: 18px;
+    }
+
+    .block:last-child {
+      margin-bottom: 0;
+    }
+
+    .block h3 {
+      margin: 0 0 8px;
+      font-size: 17px;
+      color: var(--ink);
+    }
+
+    .block p,
+    .block li {
+      font-size: 15px;
+      color: var(--muted);
+    }
+
+    .block p {
+      margin: 0;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .speech {
+      background: #fff6ee;
+      border: 1px solid #f0d5bf;
+      border-radius: 18px;
+      padding: 16px 18px;
+      color: #513428;
+      font-size: 15px;
+    }
+
+    .speech strong {
+      color: var(--accent);
+    }
+
+    .footer {
+      margin-top: 24px;
+      background: linear-gradient(135deg, #2e241f 0%, #4d3428 100%);
+      color: #f7ede4;
+      border-radius: 28px;
+      padding: 28px 30px;
+    }
+
+    .footer h2 {
+      margin: 0 0 10px;
+      font-size: 28px;
+    }
+
+    .footer p,
+    .footer li {
+      color: rgba(247, 237, 228, 0.88);
+      font-size: 15px;
+    }
+
+    .footer ul {
+      margin-top: 12px;
+    }
+
+    .ok {
+      color: #b7f2c9;
+      font-weight: 700;
+    }
+
+    @media (max-width: 980px) {
+      .tips,
+      .section-body {
+        grid-template-columns: 1fr;
+      }
+
+      .code-pane {
+        border-right: none;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+      }
+
+      h1 {
+        font-size: 34px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <span class="eyebrow">Defense Demo Ready</span>
+      <h1>课程模块代码答辩演示版</h1>
+      <p>这份页面是给答辩现场直接展示用的。建议你按照从“下单 -> 支付 -> 成团 -> 结课 -> 兜底”的顺序往下讲，每一段代码只讲核心业务含义，不逐行念源码。</p>
+      <p>如果老师只让你讲 2 段代码，优先讲第 2 段“支付后私教/团课分流”和第 3 段“成团判断逻辑”。</p>
+
+      <div class="tips">
+        <div class="tip">
+          <h3>展示原则</h3>
+          <p>每段代码只回答一个问题，例如“为什么团课要绑定场次”“为什么支付后私教和团课分开处理”。</p>
+        </div>
+        <div class="tip">
+          <h3>讲解节奏</h3>
+          <p>先讲业务问题，再讲代码如何处理，最后补一句技术亮点。这样最稳。</p>
+        </div>
+        <div class="tip">
+          <h3>老师关注点</h3>
+          <p>他们更在意你是否理解业务闭环，而不是你能不能把每一行 Java 都背出来。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-kicker">Snippet 01</div>
+        <h2>团课下单为什么要锁“用户 + 场次”</h2>
+        <p>这一段最适合回答“你怎么防止重复报名和超卖”的追问。</p>
+      </div>
+      <div class="section-body">
+        <div class="code-pane">
+          <div class="code-title">OrderServiceImpl.createCourseOrder()</div>
+<pre>if (Objects.equals(course.getType(), 2)) {
+    // 团课订单必须绑定具体场次；这里先锁住“用户+场次”维度，避免重复下单。
+    if (params.getScheduleId() == null) {
+        throw new IllegalArgumentException("请选择上课时间");
+    }
+    userScheduleLock = redissonClient.getLock(
+            "order:user:schedule:create:" + userId + ":" + params.getScheduleId()
+    );
+    userScheduleLock.lock();
+
+    CourseSchedule schedule = courseScheduleService.getById(params.getScheduleId());
+    validateScheduleForSignup(course, schedule);
+
+    long existCount = this.count(new LambdaQueryWrapper&lt;Order&gt;()
+            .eq(Order::getUserId, userId)
+            .eq(Order::getScheduleId, params.getScheduleId())
+            .in(Order::getStatus, ORDER_PENDING, ORDER_PAID,
+                ORDER_PROCESSING, ORDER_FINISHED, ORDER_REFUNDING));
+    if (existCount &gt; 0) {
+        throw new IllegalArgumentException("您已报名该场次，请勿重复购买");
+    }
+    order.setScheduleId(params.getScheduleId());
+}</pre>
+        </div>
+        <div class="note-pane">
+          <div class="block">
+            <h3>这一段在解决什么问题</h3>
+            <ul>
+              <li>团课不能像私教课一样直接买课包，必须报名具体场次。</li>
+              <li>防止同一用户连续点击导致重复下单。</li>
+            </ul>
+          </div>
+          <div class="block">
+            <h3>你可以这样讲</h3>
+            <div class="speech">
+              <strong>讲解稿：</strong>
+              “这里是团课下单的核心分支。因为团课报名的是某一个具体排课场次，所以订单里必须带
+              <code>scheduleId</code>。我先对‘用户+场次’做了 Redisson 分布式锁，避免重复下单。加锁以后，系统会继续校验这个场次是否存在、是否还能报名，以及当前用户是否已经报过同一场次。”
+            </div>
+          </div>
+          <div class="block">
+            <h3>这一段体现的亮点</h3>
+            <ul>
+              <li>业务建模清晰：团课必须绑定场次。</li>
+              <li>并发控制真实落地，不只是前端按钮防抖。</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-kicker">Snippet 02</div>
+        <h2>为什么私教课支付后生成课包，而团课支付后占用名额</h2>
+        <p>这是最值得展示的一段，因为它最能体现你理解了两种课程模型的本质差异。</p>
+      </div>
+      <div class="section-body">
+        <div class="code-pane">
+          <div class="code-title">OrderServiceImpl.handleCoursePay()</div>
+<pre>if (Objects.equals(course.getType(), 1)) {
+    // 私教课支付成功后不是占用场次，而是生成后续可销课的课包。
+    order.setStatus(ORDER_PROCESSING);
+
+    UserCoursePackage pkg = new UserCoursePackage();
+    pkg.setUserId(order.getUserId());
+    pkg.setCourseId(course.getId());
+    pkg.setOrderId(order.getId());
+    pkg.setTotalLessons(course.getLessonCount() != null ? course.getLessonCount() : 1);
+    pkg.setUsedLessons(0);
+    pkg.setExpireTime(LocalDateTime.now().plusDays(validityDays));
+    pkg.setStatus(1);
+    userCoursePackageService.save(pkg);
+
+    course.setSales(defaultInt(course.getSales()) + 1);
+    courseService.updateById(course);
+    return;
+}
+
+// 团课支付成功后才真正占用名额，因此这里对场次加锁并递增已报名人数。
+RLock scheduleLock = redissonClient.getLock("order:schedule:" + order.getScheduleId());
+scheduleLock.lock();
+try {
+    CourseSchedule schedule = courseScheduleService.getById(order.getScheduleId());
+    validateScheduleForSignup(course, schedule);
+    schedule.setEnrolledSeats(defaultInt(schedule.getEnrolledSeats()) + 1);
+    courseScheduleService.updateById(schedule);
+} finally {
+    scheduleLock.unlock();
+}</pre>
+        </div>
+        <div class="note-pane">
+          <div class="block">
+            <h3>这一段在解决什么问题</h3>
+            <ul>
+              <li>私教课履约单位是“课时”，所以支付后生成课包。</li>
+              <li>团课履约单位是“场次”，所以支付后占用该场次名额。</li>
+            </ul>
+          </div>
+          <div class="block">
+            <h3>你可以这样讲</h3>
+            <div class="speech">
+              <strong>讲解稿：</strong>
+              “这是课程模块最能体现业务差异的一段。私教课支付后，系统生成的是课包，后续通过销课逐次扣减课时；团课支付后，占用的是某一个具体排课场次的名额，所以这里会对场次加锁并把已报名人数加一。也就是说，私教课的履约单位是课时，团课的履约单位是场次，这是两套不同的业务模型。”
+            </div>
+          </div>
+          <div class="block">
+            <h3>这一段体现的亮点</h3>
+            <ul>
+              <li>统一订单模型下做课程类型分流。</li>
+              <li>说明系统不是简单 CRUD，而是真正按业务规则处理。</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-kicker">Snippet 03</div>
+        <h2>团课成团判断到底是怎么实现的</h2>
+        <p>这一段最适合回答“为什么会自动取消”“为什么会自动退款”这类问题。</p>
+      </div>
+      <div class="section-body">
+        <div class="code-pane">
+          <div class="code-title">OrderServiceImpl.checkGroupSchedule()</div>
+<pre>Course course = courseService.getById(schedule.getCourseId());
+int minGroupSize = course != null &amp;&amp; course.getMinGroupSize() != null
+        ? course.getMinGroupSize() : 1;
+long enrolledCount = this.count(new LambdaQueryWrapper&lt;Order&gt;()
+        .eq(Order::getScheduleId, scheduleId)
+        .in(Order::getStatus, ORDER_PAID, ORDER_PROCESSING, ORDER_FINISHED));
+
+LocalDateTime scheduleStart = resolveStartTime(schedule, course);
+LocalDateTime checkTime = scheduleStart == null
+        ? null
+        : scheduleStart.minusMinutes(orderBizProperties.getGroupCheckBeforeMinutes());
+boolean canFinalizeGroup = checkTime == null || !LocalDateTime.now().isBefore(checkTime);
+
+if (enrolledCount &gt;= minGroupSize) {
+    // 达到成团人数后，场次进入可履约状态；当前配置下通常在开课时触发。
+    if (Objects.equals(schedule.getStatus(), 0)) {
+        schedule.setStatus(1);
+        courseScheduleService.updateById(schedule);
+    }
+    return result;
+}
+
+if (!canFinalizeGroup) {
+    return result;
+}
+
+if (!Objects.equals(schedule.getStatus(), 3)) {
+    // 到了成团判断时间仍未成团，则取消场次并回滚相关订单。
+    schedule.setStatus(3);
+    courseScheduleService.updateById(schedule);
+}</pre>
+        </div>
+        <div class="note-pane">
+          <div class="block">
+            <h3>这一段在解决什么问题</h3>
+            <ul>
+              <li>开课时判断当前人数是否达到最少成团人数。</li>
+              <li>达到则正常开课，不达到则取消场次。</li>
+            </ul>
+          </div>
+          <div class="block">
+            <h3>你可以这样讲</h3>
+            <div class="speech">
+              <strong>讲解稿：</strong>
+              “这里是团课成团判断的核心实现。系统会先统计这个场次当前有多少有效报名订单，再读取课程设置的最少成团人数。然后通过 <code>checkTime</code> 判断当前是否已经到了成团判断时间。现在我的配置已经改成了开课时判断，所以如果开课时人数达到要求，场次就进入进行中；如果人数不够，系统就把场次改成已取消，并触发后面的订单取消和退款逻辑。”
+            </div>
+          </div>
+          <div class="block">
+            <h3>老师可能继续追问</h3>
+            <ul>
+              <li>“为什么不是人工判断？”</li>
+              <li>“为什么要改成开课时判断？”</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-kicker">Snippet 04</div>
+        <h2>团课未成团后，为什么会自动取消并退款</h2>
+        <p>这段短，但很能体现你考虑了异常流程和数据一致性。</p>
+      </div>
+      <div class="section-body">
+        <div class="code-pane">
+          <div class="code-title">OrderServiceImpl.checkGroupSchedule()</div>
+<pre>List&lt;Order&gt; pendingOrders = this.list(new LambdaQueryWrapper&lt;Order&gt;()
+        .eq(Order::getScheduleId, scheduleId)
+        .eq(Order::getStatus, ORDER_PENDING));
+for (Order order : pendingOrders) {
+    autoCancelOrder(order.getId(), "未达到成团人数，已自动取消");
+}
+
+List&lt;Order&gt; paidOrders = this.list(new LambdaQueryWrapper&lt;Order&gt;()
+        .eq(Order::getScheduleId, scheduleId)
+        .in(Order::getStatus, ORDER_PAID, ORDER_PROCESSING));
+for (Order order : paidOrders) {
+    autoRefund(order.getId(), "未达到成团人数，自动退款");
+}</pre>
+        </div>
+        <div class="note-pane">
+          <div class="block">
+            <h3>这一段在解决什么问题</h3>
+            <ul>
+              <li>场次取消后，关联订单也要同步回滚。</li>
+              <li>避免“场次取消了，但用户订单还正常”的脏数据。</li>
+            </ul>
+          </div>
+          <div class="block">
+            <h3>你可以这样讲</h3>
+            <div class="speech">
+              <strong>讲解稿：</strong>
+              “这里体现的是异常流程处理。系统不会只把排课状态改掉，而是继续处理关联订单。待支付订单自动取消，已支付订单自动退款。这样可以保证排课和订单状态始终一致，也更符合真实业务。”
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-kicker">Snippet 05</div>
+        <h2>团课结课为什么不是简单改一个状态</h2>
+        <p>这一段特别适合体现“课程模块不只是下单，还覆盖了上课和收口”。</p>
+      </div>
+      <div class="section-body">
+        <div class="code-pane">
+          <div class="code-title">CourseCheckinServiceImpl.settleGroupSchedule()</div>
+<pre>LocalDateTime scheduleEnd = resolveEndTime(schedule, course);
+// 团课必须在真正下课后才能结课，避免后台提前生成签到和完成订单。
+if (scheduleEnd != null &amp;&amp; LocalDateTime.now().isBefore(scheduleEnd)) {
+    throw new IllegalArgumentException("课程未结束，暂不能结课");
+}
+
+List&lt;Order&gt; paidOrders = orderMapper.selectList(new LambdaQueryWrapper&lt;Order&gt;()
+        .eq(Order::getScheduleId, scheduleId)
+        .in(Order::getStatus, 2, 3, 4));
+
+for (Order order : paidOrders) {
+    // 团课结课的本质是：按场次为每个报名学员生成签到，并同步收口订单状态。
+    CourseCheckin checkin = new CourseCheckin();
+    checkin.setUserId(order.getUserId());
+    checkin.setScheduleId(scheduleId);
+    checkin.setCheckinType(2);
+    checkin.setStatus(isAbsent ? 0 : 1);
+    checkins.add(checkin);
+
+    if (!Objects.equals(order.getStatus(), 4)) {
+        order.setStatus(4);
+        order.setFinishTime(finishTime);
+        orderMapper.updateById(order);
+    }
+}
+
+// 只有签到和订单都处理完成后，才把排课状态收口为已结课。
+schedule.setStatus(2);
+courseScheduleMapper.updateById(schedule);</pre>
+        </div>
+        <div class="note-pane">
+          <div class="block">
+            <h3>这一段在解决什么问题</h3>
+            <ul>
+              <li>课程结束后如何真正完成一节团课。</li>
+              <li>如何把签到、订单和排课三张表同步收口。</li>
+            </ul>
+          </div>
+          <div class="block">
+            <h3>你可以这样讲</h3>
+            <div class="speech">
+              <strong>讲解稿：</strong>
+              “这里是团课结课的核心逻辑。结课不是只把排课状态改成已结课，而是先判断下课时间是否已到，然后按场次为每个报名学员生成签到记录，再把对应订单状态更新为已完成，最后才把排课状态收口。也就是说，这一步同时影响签到表、订单表和排课表，所以它体现的是一次完整的业务收口。”
+            </div>
+          </div>
+          <div class="block">
+            <h3>这一段体现的亮点</h3>
+            <ul>
+              <li>多表一致性处理。</li>
+              <li>系统覆盖了“实际上课”阶段，不是只做到下单。</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-kicker">Snippet 06</div>
+        <h2>为什么还要有定时任务兜底</h2>
+        <p>这段很适合展示你不仅考虑了主流程，还考虑了补偿机制和系统稳定性。</p>
+      </div>
+      <div class="section-body">
+        <div class="code-pane">
+          <div class="code-title">CourseScheduleTask</div>
+<pre>LocalDateTime scheduleStart = resolveStartTime(schedule, course);
+// 兜底任务只处理“已经到开课时间”的场次，避免提前干预正常报名流程。
+if (scheduleStart == null || now.isBefore(scheduleStart)) {
+    continue;
+}
+
+if (enrolledCount &lt; minGroupSize) {
+    // 未成团时复用统一成团判断逻辑，确保取消、退款、状态更新走同一套规则。
+    orderService.checkGroupSchedule(schedule.getId());
+} else {
+    schedule.setStatus(1);
+    courseScheduleService.updateById(schedule);
+}
+
+if (scheduleEnd != null &amp;&amp; now.isAfter(scheduleEnd)) {
+    // 管理员忘记手动结课时，定时任务会补做结课，避免订单和排课长期停在中间态。
+    if (!courseCheckinService.hasGroupCheckins(schedule.getId())) {
+        courseCheckinService.settleGroupSchedule(schedule.getId(), List.of());
+    } else {
+        schedule.setStatus(2);
+        courseScheduleService.updateById(schedule);
+    }
+}</pre>
+        </div>
+        <div class="note-pane">
+          <div class="block">
+            <h3>这一段在解决什么问题</h3>
+            <ul>
+              <li>异步消息或人工操作不一定每次都刚好完成。</li>
+              <li>系统需要自动补做成团判断和结课。</li>
+            </ul>
+          </div>
+          <div class="block">
+            <h3>你可以这样讲</h3>
+            <div class="speech">
+              <strong>讲解稿：</strong>
+              “这里我额外加了定时任务做兜底。原因是，真实业务里不能假设每一次异步消息、每一次人工操作都刚好成功。所以系统会定期扫描已经到开课时间但还没开始的场次，自动补做成团判断；对于已经过下课时间但还没结课的场次，自动补做结课。这样可以避免订单、排课和签到长期停留在中间状态。”
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="footer">
+      <h2>90 秒总结讲解</h2>
+      <p>如果老师让你快速总结整套课程模块代码，你可以直接讲下面这段：</p>
+      <div class="speech" style="margin-top: 14px; background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.14); color: #f9efe8;">
+        <strong class="ok">总结稿：</strong>
+        “课程模块的核心不是简单下单，而是把私教课和团课两种不同业务模式真正建模到了代码里。私教课支付后生成课包，后续通过销课逐次扣减课时；团课支付后占用具体场次名额，并在开课时自动做成团判断。若未成团，系统会自动取消场次并退款；课程结束后，系统再通过结课逻辑生成签到记录、完成订单，并最终流入教练结算。为了保证稳定性，我还增加了定时任务做补偿处理，避免订单和排课长期停留在中间态。” 
+      </div>
+      <ul>
+        <li>现场建议只展示 4 到 5 段代码，不要整页翻源码。</li>
+        <li>优先讲“支付后分流”和“成团判断”。</li>
+        <li>如果老师继续追问，再翻“结课”和“定时任务兜底”。</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

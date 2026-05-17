@@ -20,7 +20,7 @@ public class OrderBizProperties {
     private Integer closeTimeoutMinutes = 15;
 
     /**
-     * 团课自动成团检查提前时间，单位分钟
+     * 团课自动成团检查提前时间，单位分钟；0 表示开课时判断
      */
-    private Integer groupCheckBeforeMinutes = 120;
+    private Integer groupCheckBeforeMinutes = 0;
 }

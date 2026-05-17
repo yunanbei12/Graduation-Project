@@ -8,7 +8,7 @@
 		<scroll-view scroll-y class="content-scroll" v-if="course">
 			<!-- 课程大图 -->
 			<view class="hero-section">
-				<image class="hero-img" :src="getImageUrl(course.pic) || '/static/images/default-course.png'" mode="aspectFill" />
+				<image class="hero-img" :src="getCourseCoverImage(course, '/static/images/default-course.png')" mode="aspectFill" />
 				<view class="hero-overlay">
 					<view class="hero-tag"><text class="hero-tag-text">GROUP CLASS</text></view>
 					<text class="hero-title">{{ course.name }}</text>
@@ -90,7 +90,7 @@
 				<scroll-view scroll-x class="related-scroll" show-scrollbar="false">
 					<view class="related-row">
 						<view class="related-card" v-for="item in relatedCourses" :key="item.id" @tap="openRelatedCourse(item)">
-							<image class="related-img" :src="getImageUrl(item.pic) || '/static/logo.png'" mode="aspectFill" />
+							<image class="related-img" :src="getCourseCoverImage(item)" mode="aspectFill" />
 							<view class="related-info">
 								<text class="related-type">{{ item.courseType === 2 ? '团课' : '私教' }}</text>
 								<text class="related-name">{{ item.name }}</text>
@@ -153,6 +153,9 @@ export default {
 	},
 	methods: {
 		getImageUrl: config.getImageUrl,
+		getCourseCoverImage(course, fallback) {
+			return config.getCourseCoverImage(course, fallback)
+		},
 		async loadDetail() {
 			try {
 				const data = await getCourseDetail(this.courseId)

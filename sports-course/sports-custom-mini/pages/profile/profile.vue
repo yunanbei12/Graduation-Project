@@ -23,7 +23,7 @@
 					</view>
 					<!-- 已登录状态 -->
 					<view v-else class="hero-top" @tap="goEditProfile">
-						<image class="hero-avatar" :src="userInfo?.avatarUrl || '/static/头像.png'" mode="aspectFill" />
+						<image class="hero-avatar" :src="getAvatarUrl(userInfo?.avatarUrl)" mode="aspectFill" />
 						<view class="hero-info">
 							<view class="hero-name-row">
 								<text class="hero-name">{{ userInfo?.nickName || '用户' }}</text>
@@ -97,6 +97,7 @@
 
 <script>
 import { getUserInfo } from '../../api/auth'
+import config from '../../utils/config'
 
 export default {
 	data() {
@@ -123,6 +124,9 @@ export default {
 		this.loadUserInfo()
 	},
 	methods: {
+		getAvatarUrl(url) {
+			return config.getImageUrl(url) || '/static/头像.png'
+		},
 		async loadUserInfo() {
 			if (!uni.getStorageSync('token')) return
 			try {

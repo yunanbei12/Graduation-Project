@@ -123,59 +123,7 @@ public class CheckinController {
     public ServerResponseEntity<Void> groupSettle(
             @PathVariable Long scheduleId,
             @RequestBody List<Long> absentUserIds) {
-        CourseSchedule schedule = courseScheduleService.getById(scheduleId);
-        if (schedule == null) {
-            return ServerResponseEntity.fail("排课不存在");
-        }
-        if (schedule.getStatus() == 2) {
-            return ServerResponseEntity.fail("该排课已结课");
-        }
-        if (schedule.getStatus() == 3) {
-            return ServerResponseEntity.fail("该排课已取消，不能结课");
-        }
-
-        Course course = courseService.getById(schedule.getCourseId());
-        BigDecimal coachRatio = course.getSettleRatio() != null ? course.getSettleRatio() : BigDecimal.ZERO;
-
-        // 查询该排课已支付的所有订单，获取报名用户列表
-        List<Order> paidOrders = orderService.list(
-                new LambdaQueryWrapper<Order>()
-                        .eq(Order::getScheduleId, scheduleId)
-                        .in(Order::getStatus, 2, 3, 4) // 已支付/待排课/已完成
-        );
-
-        for (Order order : paidOrders) {
-            Long uid = order.getUserId();
-            boolean isAbsent = absentUserIds != null && absentUserIds.contains(uid);
-            int status = isAbsent ? 0 : 1;
-
-            // 创建消课记录（团课不扣课包，仅记录）
-            CourseCheckin checkin = new CourseCheckin();
-            checkin.setUserId(uid);
-            checkin.setCourseId(schedule.getCourseId());
-            checkin.setScheduleId(scheduleId);
-            checkin.setCoachId(schedule.getCoachId());
-            checkin.setLocation(schedule.getLocation());
-            checkin.setCheckinTime(LocalDateTime.now());
-            checkin.setCheckinType(2); // 团课签到
-            checkin.setStatus(status);
-            checkin.setLessonPrice(course.getPrice());
-            checkin.setCoachRatio(coachRatio);
-            checkin.setCoachAmount(course.getPrice().multiply(coachRatio).setScale(2, RoundingMode.HALF_UP));
-            checkin.setSettleStatus(0);
-            courseCheckinService.save(checkin);
-
-            if (order.getStatus() != null && order.getStatus() != 4) {
-                order.setStatus(4);
-                order.setFinishTime(LocalDateTime.now());
-                orderService.updateById(order);
-            }
-        }
-
-        // 更新排课状态为已结束
-        schedule.setStatus(2);
-        courseScheduleService.updateById(schedule);
-
+        courseCheckinService.settleGroupSchedule(scheduleId, absentUserIds);
         return ServerResponseEntity.success();
     }
 

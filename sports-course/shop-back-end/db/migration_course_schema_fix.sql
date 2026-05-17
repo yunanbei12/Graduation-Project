@@ -70,6 +70,46 @@ PREPARE stmt FROM @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
+SET @sql = IF(
+    (SELECT COUNT(*) FROM information_schema.COLUMNS
+     WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'user' AND COLUMN_NAME = 'register_type') = 0,
+    'ALTER TABLE `user` ADD COLUMN `register_type` tinyint DEFAULT NULL COMMENT ''注册方式 0=微信注册 1=手机号注册 2=短信验证码登录'' AFTER `login_password`',
+    'SELECT 1'
+);
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+SET @sql = IF(
+    (SELECT COUNT(*) FROM information_schema.COLUMNS
+     WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'coupon' AND COLUMN_NAME = 'register_gift') = 0,
+    'ALTER TABLE `coupon` ADD COLUMN `register_gift` tinyint DEFAULT 0 COMMENT ''是否注册赠送 0=否 1=是'' AFTER `status`',
+    'SELECT 1'
+);
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+SET @sql = IF(
+    (SELECT COUNT(*) FROM information_schema.COLUMNS
+     WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'coupon' AND COLUMN_NAME = 'activity_trigger') = 0,
+    'ALTER TABLE `coupon` ADD COLUMN `activity_trigger` tinyint DEFAULT NULL COMMENT ''活动触发类型 null=无 1=消费满额'' AFTER `register_gift`',
+    'SELECT 1'
+);
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+SET @sql = IF(
+    (SELECT COUNT(*) FROM information_schema.COLUMNS
+     WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'coupon' AND COLUMN_NAME = 'activity_amount') = 0,
+    'ALTER TABLE `coupon` ADD COLUMN `activity_amount` decimal(10,2) DEFAULT NULL COMMENT ''活动触发金额'' AFTER `activity_trigger`',
+    'SELECT 1'
+);
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 CREATE TABLE IF NOT EXISTS `course_location` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,

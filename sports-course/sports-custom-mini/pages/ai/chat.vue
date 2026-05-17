@@ -100,6 +100,7 @@ export default {
       loading: false,
       isSyncing: false,
       pollTimer: null,
+      pollPauseUntil: 0,
       scrollIntoView: '',
       cacheScope: 'guest',
       sessionStatus: 0,
@@ -256,7 +257,7 @@ export default {
     startPolling() {
       this.stopPolling()
       this.pollTimer = setInterval(() => {
-        if (this.sessionId && !this.loading && !this.isSyncing) {
+        if (this.sessionId && !this.loading && !this.isSyncing && Date.now() >= this.pollPauseUntil) {
           this.loadSessionDetail(true)
         }
       }, 3000)
@@ -269,11 +270,12 @@ export default {
     },
     buildMessageFingerprint(list) {
       return JSON.stringify((list || []).map(item => ({
-        id: item.messageId || item.localId,
         role: item.role,
         replyText: item.replyText,
         content: item.content,
-        sourceType: item.sourceType
+        sourceType: item.sourceType,
+        cards: item.cards || [],
+        actions: item.actions || []
       })))
     },
     async loadSessionDetail(silent = false) {
@@ -346,25 +348,27 @@ export default {
 
       try {
         const res = await chatWithAi({ sessionId: this.sessionId, guestToken: this.guestToken, message: text })
-        if (previousSessionId && res.sessionId && res.sessionId !== previousSessionId && !shouldStartNewRound) {
-          this.beginFreshSession()
-          this.messages.push(userMessage)
-        }
+        this.pollPauseUntil = Date.now() + 2500
         this.sessionId = res.sessionId
         this.guestToken = res.guestToken || this.guestToken
         this.sessionStatus = Number(res.status || this.sessionStatus || 0)
         this.sessionNeedHandover = !!res.needHandover
-        this.messages.push(this.sanitizeAssistantMessage({
-          localId: `a-${Date.now()}`,
-          role: 'assistant',
-          replyText: res.replyText,
-          sourceType: res.sourceType,
-          cards: res.cards || [],
-          actions: res.actions || [],
-          messageId: res.messageId,
-          feedbackSent: false
-        }))
+        if (res.replyText || (res.cards && res.cards.length) || (res.actions && res.actions.length)) {
+          this.messages.push(this.sanitizeAssistantMessage({
+            localId: `a-${Date.now()}`,
+            role: 'assistant',
+            replyText: res.replyText,
+            sourceType: res.sourceType,
+            cards: res.cards || [],
+            actions: res.actions || [],
+            messageId: res.messageId,
+            feedbackSent: false
+          }))
+        }
         this.persistMessages()
+        if (previousSessionId && res.sessionId && res.sessionId !== previousSessionId && !shouldStartNewRound) {
+          await this.loadSessionDetail(true)
+        }
         this.scrollToBottom()
         this.startPolling()
       } catch (e) {

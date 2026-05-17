@@ -10,6 +10,7 @@ import com.kinetic.sports.bean.model.CourseLocation;
 import com.kinetic.sports.bean.model.CourseSchedule;
 import com.kinetic.sports.bean.model.Order;
 import com.kinetic.sports.common.response.ServerResponseEntity;
+import com.kinetic.sports.service.CourseCheckinService;
 import com.kinetic.sports.service.CoachService;
 import com.kinetic.sports.service.CourseLocationService;
 import com.kinetic.sports.service.CourseScheduleService;
@@ -38,6 +39,7 @@ public class ScheduleController {
     private final CoachService coachService;
     private final CourseLocationService courseLocationService;
     private final OrderService orderService;
+    private final CourseCheckinService courseCheckinService;
 
     @GetMapping("/list")
     public ServerResponseEntity<Page<CourseSchedule>> list(
@@ -171,6 +173,19 @@ public class ScheduleController {
 
     @DeleteMapping("/{id}")
     public ServerResponseEntity<Void> delete(@PathVariable Long id) {
+        CourseSchedule schedule = courseScheduleService.getById(id);
+        if (schedule == null) {
+            return ServerResponseEntity.fail("排课不存在");
+        }
+        long relatedOrderCount = orderService.count(new LambdaQueryWrapper<Order>()
+                .eq(Order::getScheduleId, id)
+                .in(Order::getStatus, 1, 2, 3, 4, 6));
+        if (relatedOrderCount > 0) {
+            return ServerResponseEntity.fail("该排课已有报名订单，不能删除");
+        }
+        if (courseCheckinService.hasGroupCheckins(id)) {
+            return ServerResponseEntity.fail("该排课已有结课记录，不能删除");
+        }
         courseScheduleService.removeById(id);
         return ServerResponseEntity.success();
     }

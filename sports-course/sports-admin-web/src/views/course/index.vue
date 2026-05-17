@@ -175,7 +175,7 @@
         <el-form-item label="教练分成(%)">
           <el-input-number v-model="form.settleRatioPercent" :min="0" :max="100" :precision="0" style="width: 100%" />
         </el-form-item>
-        <el-form-item label="课程图片">
+        <el-form-item v-if="form.type === 1" label="课程图片">
           <ImageUpload v-model="form.pic" />
         </el-form-item>
         <el-form-item label="课程描述">
@@ -323,6 +323,7 @@ const handleSubmit = async () => {
       return
     }
     submitData.coachId = null
+    submitData.pic = null
   } else {
     submitData.locationId = null
     submitData.location = null
