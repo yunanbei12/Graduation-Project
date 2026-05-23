@@ -12,7 +12,7 @@ ai:
     enabled: true
     provider: kimi
     base-url: https://api.moonshot.cn/v1
-    api-key: sk-FqCFzS6ASYx3mYAHPieDqEbvnFMqskkNjCuJlbNqPlSMbLQE
+    api-key: ${KIMI_API_KEY:}
     model-name: kimi-k2.5
     temperature: 1
     timeout-seconds: 60
