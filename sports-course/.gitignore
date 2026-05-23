@@ -72,9 +72,13 @@ uploads/
 *.env
 *.env.local
 *.env.*.local
-application-dev.yml
 application-prod.yml
 application-local.yml
+
+# ===========================
+# Obsidian
+# ===========================
+.obsidian/
 
 # ===========================
 # 其他
